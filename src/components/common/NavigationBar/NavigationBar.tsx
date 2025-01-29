@@ -1,6 +1,8 @@
-import Link from "next/link";
-import { useState } from "react";
-import "./NavigationBar.css";
+'use client';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import './NavigationBar.css';
 
 const NavigationBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
