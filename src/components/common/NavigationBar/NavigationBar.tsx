@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useAuth } from "@/lib/api/user/user";
-import "./NavigationBar.css";
-import LogInOutDialog from "../LogInOutDialog/LogInOutDialog";
+import Link from 'next/link';
+import { useAuth } from '@/lib/api/user/user';
+import './NavigationBar.css';
+import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
 
 const NavigationBar = () => {
   const { isLoggedIn } = useAuth();
 
   return (
-    <nav className="navbar">
+    <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between">
       {/* 로고 */}
       <div className="logo">
         <Link href="/">WEBTY</Link>
