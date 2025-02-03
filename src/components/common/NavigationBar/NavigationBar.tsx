@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
-import { useState } from "react";
+import { useAuth } from "@/lib/api/user/user";
 import "./NavigationBar.css";
+import LogInOutDialog from "../LogInOutDialog/LogInOutDialog";
 
 const NavigationBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   return (
     <nav className="navbar">
@@ -23,18 +26,15 @@ const NavigationBar = () => {
         <Link href="/write">
           <button className="write-btn">글 작성</button>
         </Link>
-        {isLoggedIn ? (
-          <>
-            <Link href="/mypage">
-              <button>마이페이지</button>
-            </Link>
-            <button onClick={() => setIsLoggedIn(false)}>로그아웃</button>
-          </>
-        ) : (
-          <Link href="/login">
-            <button onClick={() => setIsLoggedIn(true)}>로그인</button>
+
+        {isLoggedIn && (
+          <Link href="/mypage">
+            <button>마이페이지</button>
           </Link>
         )}
+
+        {/* 로그인 / 로그아웃 모달 */}
+        <LogInOutDialog />
       </div>
     </nav>
   );
