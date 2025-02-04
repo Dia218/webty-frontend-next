@@ -19,7 +19,7 @@ const NavigationBar: React.FC = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between">
       {/* 로고 */}
       <div className="logo">
         <Link href="/">WEBTY</Link>
