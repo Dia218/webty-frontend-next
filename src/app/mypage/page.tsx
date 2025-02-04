@@ -1,16 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAuth } from '@/lib/api/user/user';
 import { useProfile } from '@/lib/api/user/userProfile';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
 
 const MyPage = () => {
   const { isLoggedIn, nickname, profileImage } = useAuth();
   const { handleNicknameChange, handleProfileImageChange, loading, error } =
     useProfile();
 
-  const [newNickname, setNewNickname] = useState('');
+  const [newNickname, setNewNickname] = useState(nickname || '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // 닉네임 수정 버튼 클릭 시
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 0); // 포커스 이동
+  };
+
+  // 닉네임 변경 핸들러
+  const handleSaveNickname = () => {
+    if (newNickname.trim() === '') return alert('닉네임을 입력하세요.');
+    handleNicknameChange(newNickname, setNewNickname);
+    setIsEditing(false);
+  };
 
   if (!isLoggedIn) {
     return (
@@ -21,53 +39,73 @@ const MyPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">마이페이지</h1>
-      {profileImage && (
-        <img
-          src={profileImage}
-          alt="Profile"
-          className="w-24 h-24 rounded-full mb-4"
-        />
-      )}
+    <div className="flex flex-col items-start justify-start min-h-screen p-8">
+      {/* 타이틀 */}
+      <h1 className="text-3xl font-bold mb-4">
+        My Page <span className="text-gray-600">(내 정보)</span>
+      </h1>
+      <hr className="w-full border-gray-300 mb-6" />
 
-      <div className="flex flex-col items-center mb-4">
-        <p className="text-lg font-medium">닉네임: {nickname}</p>
-        <input
-          type="text"
-          value={newNickname}
-          onChange={(e) => setNewNickname(e.target.value)}
-          className="border rounded px-2 py-1 mt-2"
-          placeholder="새 닉네임 입력"
-        />
-        <button
-          onClick={() => handleNicknameChange(newNickname, setNewNickname)}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          disabled={loading}
-        >
-          닉네임 변경
-        </button>
+      {/* 프로필 정보 */}
+      <div className="flex items-center gap-6">
+        {/* 프로필 이미지 */}
+        <div className="relative">
+          <img
+            src={profileImage!}
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover"
+          />
+          <Button
+            variant="outline"
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs px-1 py-1"
+            onClick={() => document.getElementById('fileInput')?.click()}
+          >
+            수정
+          </Button>
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+          />
+        </div>
+
+        {/* 닉네임 & 수정 */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            {!isEditing ? (
+              <>
+                <p className="text-lg font-medium mr-4">닉네임: {nickname}</p>
+                <Button variant="ghost" size="icon" onClick={handleEditClick}>
+                  <Pencil size={16} />
+                  <span>수정</span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  value={newNickname}
+                  onChange={(e) => setNewNickname(e.target.value)}
+                  className="border rounded px-2 py-1"
+                />
+                <Button
+                  onClick={handleSaveNickname}
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                  disabled={loading}
+                >
+                  저장
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col items-center mb-4">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-          className="mt-2"
-        />
-        <button
-          onClick={() =>
-            handleProfileImageChange(selectedFile, setSelectedFile)
-          }
-          className="mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          disabled={loading}
-        >
-          프로필 이미지 변경
-        </button>
-      </div>
-
-      {error && <p className="text-red-500">{error}</p>}
+      {/* 오류 메시지 */}
+      {error && <p className="text-red-500 mt-4">{error}</p>}
     </div>
   );
 };
