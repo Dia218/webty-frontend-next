@@ -7,7 +7,7 @@ import ProfileSection from '@/components/buisness/mypage/ProfileSection';
 
 const MyPage = () => {
   const { isLoggedIn, nickname, profileImage } = useAuth();
-  const { handleNicknameChange, handleProfileImageChange, loading, error } =
+  const { handleNicknameChange, handleProfileImageChange, handleDeleteAccount, loading, error } =
     useProfile();
 
   if (!isLoggedIn) {
@@ -34,6 +34,7 @@ const MyPage = () => {
         nickname={nickname!}
         handleNicknameChange={handleNicknameChange}
         handleProfileImageChange={handleProfileImageChange}
+        handleDeleteAccount={handleDeleteAccount}
       />
 
       {/* 오류 메시지 */}
