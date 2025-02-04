@@ -9,7 +9,7 @@ export const useAuth = () => {
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/me", {
+    fetch("http://localhost:8080/user/info", {
       method: "GET",
       credentials: "include",
     })
