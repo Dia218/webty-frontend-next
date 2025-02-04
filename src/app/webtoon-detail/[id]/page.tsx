@@ -1,28 +1,26 @@
-import { fetchWebtoonById, WebtoonDTO } from '@/lib/api/webtoon/webtoon';
-import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
+import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
 import ClientPage from './ClientPage';
 
-interface WebtoonPageProps {
-  params: { id: string }; // 동적 라우팅에서 전달되는 [id]
+export default async function Page({ params }: { params: { id?: string } }) {
+  const { id } = await params; // 비동기적으로 가져오기 전에 구조 분해 할당 (Next.js에서는 `params`가 동기적으로 전달됨)
+
+  if (!id) {
+    return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
+  }
+
+  try {
+    const webtoon = await fetchWebtoonById(id); // ✅ 비동기 API 호출
+
+    return (
+      <>
+        <ClientPage webtoon={webtoon} />
+      </>
+    );
+  } catch (error) {
+    return (
+      <div className="text-center text-red-500">
+        웹툰 데이터를 불러오는데 실패했습니다.
+      </div>
+    );
+  }
 }
-
-const WebtoonPage = async ({ params }: WebtoonPageProps) => {
-  // API를 통해 웹툰 데이터를 가져옴
-  const { id } = await params;
-  const webtoon: WebtoonDTO = await fetchWebtoonById(id);
-
-  return (
-    <div className="flex flex-col items-center bg-gray-50 min-h-screen">
-      {/* 상단 NavigationBar */}
-      <NavigationBar />
-
-      {/* NavigationBar와 콘텐츠 사이 간격 */}
-      <div className="h-6"></div>
-
-      {/* ClientPage에 데이터 전달 */}
-      <ClientPage webtoon={webtoon} />
-    </div>
-  );
-};
-
-export default WebtoonPage;
