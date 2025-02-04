@@ -1,12 +1,22 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useAuth } from "@/lib/api/user/user";
-import "./NavigationBar.css";
-import LogInOutDialog from "../LogInOutDialog/LogInOutDialog";
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // 페이지 이동을 위해 추가
+import { useAuth } from '@/lib/api/user/user';
+import './NavigationBar.css';
+import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
 
-const NavigationBar = () => {
+const NavigationBar: React.FC = () => {
   const { isLoggedIn } = useAuth();
+  const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
+  const [searchText, setSearchText] = useState('');
+
+  const handleSearch = () => {
+    if (searchText.trim()) {
+      router.push(`/search?query=${encodeURIComponent(searchText)}`); // 검색 페이지로 이동
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -17,8 +27,14 @@ const NavigationBar = () => {
 
       {/* 검색창 */}
       <div className="search-box">
-        <input type="text" placeholder="검색어를 입력하세요" />
-        <button>🔍</button>
+        <input
+          type="text"
+          placeholder="검색어를 입력하세요"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // 엔터 키 검색
+        />
+        <button onClick={handleSearch}>🔍</button>
       </div>
 
       {/* 버튼 그룹 */}
