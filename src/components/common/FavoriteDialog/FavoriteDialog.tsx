@@ -11,13 +11,13 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 
-interface WebtoonDialogProps {
+interface FavoriteDialogProps {
   isOpen: boolean;
   message: string;
   onClose: () => void;
 }
 
-const FavoriteDialog = ({ isOpen, message, onClose }: WebtoonDialogProps) => {
+const FavoriteDialog = ({ isOpen, message, onClose }: FavoriteDialogProps) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogOverlay className="fixed inset-0 bg-black bg-opacity-50" />
