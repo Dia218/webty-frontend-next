@@ -65,5 +65,33 @@ export const useProfile = () => {
     }
   };
 
-  return { handleNicknameChange, handleProfileImageChange, loading, error };
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('정말로 계정을 삭제하시겠습니까?')) return;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${BASE_URL}/users`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (!response.ok) throw new Error('계정 삭제 실패');
+      alert('계정이 삭제되었습니다.');
+      window.location.href = '/'; // 홈으로 이동 (또는 로그인 페이지)
+    } catch (err) {
+      setError('계정 삭제 중 오류가 발생했습니다.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    handleNicknameChange,
+    handleProfileImageChange,
+    handleDeleteAccount,
+    loading,
+    error,
+  };
 };
