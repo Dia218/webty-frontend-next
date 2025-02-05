@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
-import WebtoonList from '@/components/webtoon/webtoonList';
+import WebtoonList from '@/components/buisness/webtoon/WebtoonList';
 import { Button } from '@/components/ui/button'; // UI 버튼 추가
 
 interface Webtoon {
