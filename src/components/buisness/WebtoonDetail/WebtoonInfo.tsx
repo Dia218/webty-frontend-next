@@ -22,14 +22,13 @@ interface WebtoonDTO {
 }
 
 interface WebtoonDetailProps {
-  webtoon: WebtoonDTO; // 단일 웹툰 객체를 props로 전달
+  webtoon: WebtoonDTO;
 }
 
 export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 관심 웹툰 여부 확인
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
       const isFav = await checkFavoriteWebtoon(webtoon.webtoonId);
@@ -39,17 +38,18 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
     fetchFavoriteStatus();
   }, [webtoon.webtoonId]);
 
-  // 관심 웹툰 추가/삭제
   const handleFavoriteToggle = async () => {
-    if (loading) return; // 중복 클릭 방지
+    if (loading) return;
     setLoading(true);
 
     try {
       let success = false;
       if (isFavorite) {
         success = await deleteFavoriteWebtoon(webtoon.webtoonId);
+        alert('관심 웹툰을 삭제하였습니다.');
       } else {
         success = await addFavoriteWebtoon(webtoon.webtoonId);
+        alert('관심 웹툰으로 등록되었습니다.');
       }
 
       if (success) {
@@ -63,14 +63,14 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
   };
 
   return (
-    <Card className="w-full max-w-6xl p-6">
-      <CardContent className="flex items-center gap-10">
+    <Card className="w-full max-w-7xl p-6 mx-auto">
+      <CardContent className="flex items-center gap-16">
         {/* 썸네일 */}
-        <div className="relative">
+        <div className="relative flex-shrink-0">
           <img
             src={webtoon.thumbnailUrl}
             alt={`${webtoon.webtoonName} Thumbnail`}
-            className="w-[300px] h-[400px] object-cover rounded-lg shadow-lg"
+            className="w-[400px] h-[500px] object-cover rounded-lg shadow-lg"
           />
           {/* 관심 웹툰 하트 버튼 */}
           <button
@@ -79,7 +79,7 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
             className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md"
           >
             <Heart
-              size={28}
+              size={24}
               className={`transition-all duration-300 ${
                 isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
               }`}
@@ -88,23 +88,32 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
         </div>
 
         {/* 상세 정보 */}
-        <div className="flex flex-col justify-between h-[400px]">
-          <h1 className="text-4xl font-bold mb-4">{webtoon.webtoonName}</h1>
-          <p className="text-3xl font-bold mb-4">작가: {webtoon.authors}</p>
+        <div className="flex flex-col justify-between flex-grow h-[400px]">
+          <h1 className="text-3xl font-bold mb-4">{webtoon.webtoonName}</h1>
+          <p className="text-xl font-semibold mb-2">작가: {webtoon.authors}</p>
+          {/* 연재 상태 뱃지 */}
           <Badge
             variant={webtoon.finished ? 'default' : 'outline'}
-            className="inline-flex items-center justify-center text-base px-4 py-2 mb-2"
+            className="inline-flex items-center justify-center text-lg px-4 py-2 mb-4"
+            style={{ minWidth: 'auto', width: 'fit-content' }}
           >
             {webtoon.finished ? '연재 완료' : '연재 중'}
           </Badge>
-          <p className="text-3xl font-bold mb-4">플랫폼: {webtoon.platform}</p>
-          <Button asChild className="px-6 py-3 text-base">
+          <p className="text-xl font-semibold mb-4">
+            플랫폼: {webtoon.platform}
+          </p>
+          {/* 바로가기 버튼 */}
+          <Button
+            asChild
+            className="px-5 py-2 text-lg"
+            style={{ minWidth: 'auto', width: 'fit-content' }}
+          >
             <a
               href={webtoon.webtoonLink}
               target="_blank"
               rel="noopener noreferrer"
             >
-              웹툰 바로가기
+              바로가기
             </a>
           </Button>
         </div>
