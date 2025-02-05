@@ -1,19 +1,21 @@
 import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
-import ClientPage from './ClientPage';
+import WebtoonDetail from '@/components/buisness/WebtoonDetail/WebtoonInfo';
+import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 export default async function Page({ params }: { params: { id?: string } }) {
-  const { id } = await params; // 비동기적으로 가져오기 전에 구조 분해 할당 (Next.js에서는 `params`가 동기적으로 전달됨)
+  const { id } = await params;
 
   if (!id) {
     return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
   }
 
   try {
-    const webtoon = await fetchWebtoonById(id); // ✅ 비동기 API 호출
+    const webtoon = await fetchWebtoonById(id);
 
     return (
       <>
-        <ClientPage webtoon={webtoon} />
+        <NavigationBar /> {/* 네비게이션 바 추가 */}
+        <WebtoonDetail webtoon={webtoon} />
       </>
     );
   } catch (error) {

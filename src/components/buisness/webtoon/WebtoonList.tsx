@@ -1,4 +1,4 @@
-import WebtoonItem from '@/components/webtoon/webtoonItem';
+import WebtoonItem from '@/components/buisness/webtoon/WebtoonItem';
 
 interface Webtoon {
   webtoonId: number;

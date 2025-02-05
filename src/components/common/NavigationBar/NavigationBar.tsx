@@ -6,11 +6,14 @@ import { useRouter } from 'next/navigation'; // 페이지 이동을 위해 추�
 import { useAuth } from '@/lib/api/user/user';
 import './NavigationBar.css';
 import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
+import { usePathname } from 'next/navigation';
+import { HIDDEN_ELEMENTS } from './hiddenElements';
 
 const NavigationBar: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
   const [searchText, setSearchText] = useState('');
+  const pathname = usePathname();
 
   const handleSearch = () => {
     if (searchText.trim()) {
@@ -26,28 +29,38 @@ const NavigationBar: React.FC = () => {
       </div>
 
       {/* 검색창 */}
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="검색어를 입력하세요"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // 엔터 키 검색
-        />
-        <button onClick={handleSearch}>🔍</button>
-      </div>
+      {!HIDDEN_ELEMENTS.search.includes(pathname) && (
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="검색어를 입력하세요"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // 엔터 키 검색
+          />
+          <button onClick={handleSearch}>🔍</button>
+        </div>
+      )}
 
       {/* 버튼 그룹 */}
       <div className="nav-buttons">
-        <Link href="/write">
-          <button className="write-btn">글 작성</button>
-        </Link>
+        {!HIDDEN_ELEMENTS.writeButton.includes(pathname) && isLoggedIn && (
+          <Link href="/write">
+            <button className="write-btn">글 작성</button>
+          </Link>
+        )}
 
-        {isLoggedIn && (
+        {!HIDDEN_ELEMENTS.mypageButton.includes(pathname) && isLoggedIn && (
           <Link href="/mypage">
             <button>마이페이지</button>
           </Link>
         )}
+
+      {!HIDDEN_ELEMENTS.logo.includes(pathname) && (
+        <div className="nav-logo">
+          <p>logo</p>
+        </div>
+      )}
 
         {/* 로그인 / 로그아웃 모달 */}
         <LogInOutDialog />
