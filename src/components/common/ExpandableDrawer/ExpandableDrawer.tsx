@@ -24,8 +24,7 @@ const ExpandableDrawer = ({
         <div className="w-full" onClick={handleClick}>
           <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
         </div>
-
-        {children}
+        <div className="p-3">{children}</div>
       </div>
     </div>
   );
