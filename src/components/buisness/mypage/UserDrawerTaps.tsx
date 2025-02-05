@@ -6,8 +6,25 @@ import {
   GhostTabsTrigger,
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
+import WebtoonList from '../webtoon/WebtoonList';
+import { useEffect, useState } from 'react';
+import { getFavoriteWebtoonList } from '@/lib/api/webtoon/favorite';
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 const UserDrawerTaps = () => {
+  const [favoriteWebtoons, setFavoriteWebtoons] = useState<WebtoonDetailDto[]>(
+    []
+  );
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      const data = await getFavoriteWebtoonList();
+      setFavoriteWebtoons(data);
+    };
+
+    fetchFavorites();
+  }, []);
+
   return (
     <GhostTabs defaultValue="firstTap">
       <GhostTabsList>
@@ -17,7 +34,7 @@ const UserDrawerTaps = () => {
       </GhostTabsList>
 
       <GhostTabsContent value="firstTap">
-        <p>관심 웹툰 목록 component가 여기에 들어갑니다.</p>
+        <WebtoonList webtoons={favoriteWebtoons} />
       </GhostTabsContent>
       <GhostTabsContent value="secondTap">
         <p>게시글 보기 component가 여기에 들어갑니다.</p>
