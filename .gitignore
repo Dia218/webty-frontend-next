@@ -44,3 +44,4 @@ next-env.d.ts
 /public/uploads/*
 # 특정 파일은 포함
 !/public/uploads/iconmonstr-user-circle-thin-240.png
+*storybook.log

@@ -4,6 +4,8 @@ import { useAuth } from '@/lib/api/user/user';
 import { useProfile } from '@/lib/api/user/userProfile';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import ProfileSection from '@/components/buisness/mypage/ProfileSection';
+import ExpandableDrawer from '@/components/common/ExpandableDrawer/ExpandableDrawer';
+import UserDrawerTaps from '@/components/buisness/mypage/UserDrawerTaps';
 
 const MyPage = () => {
   const { isLoggedIn, nickname, profileImage } = useAuth();
@@ -41,6 +43,8 @@ const MyPage = () => {
           handleProfileImageChange={handleProfileImageChange}
           handleDeleteAccount={handleDeleteAccount}
         />
+
+        <ExpandableDrawer children={<UserDrawerTaps />} />
 
         {/* 오류 메시지 */}
         {error && <p className="text-red-500 mt-4">{error}</p>}

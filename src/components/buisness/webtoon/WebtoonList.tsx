@@ -1,19 +1,10 @@
 import WebtoonItem from '@/components/buisness/webtoon/WebtoonItem';
-
-interface Webtoon {
-  webtoonId: number;
-  webtoonName: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 interface WebtoonListProps {
-  webtoons: Webtoon[];
+  webtoons: WebtoonDetailDto[];
   isHorizontal?: boolean; // 가로 배치 여부 추가
 }
-
 const WebtoonList: React.FC<WebtoonListProps> = ({
   webtoons,
   isHorizontal = false,

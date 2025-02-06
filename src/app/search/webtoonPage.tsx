@@ -4,22 +4,14 @@ import { useState, useEffect } from 'react';
 import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
 import WebtoonList from '@/components/buisness/webtoon/WebtoonList';
 import { Button } from '@/components/ui/button'; // UI 버튼 추가
-
-interface Webtoon {
-  webtoonId: number;
-  webtoonName: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 interface WebtoonPageProps {
   searchQuery: string;
 }
 
 const WebtoonPage: React.FC<WebtoonPageProps> = ({ searchQuery }) => {
-  const [webtoons, setWebtoons] = useState<Webtoon[]>([]);
+  const [webtoons, setWebtoons] = useState<WebtoonDetailDto[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수
 
