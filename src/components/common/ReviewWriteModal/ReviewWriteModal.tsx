@@ -4,14 +4,8 @@ import { useRouter } from 'next/navigation';
 import WebtoonItem from '@/components/common/Webtoon/WebtoonItem';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
-interface Webtoon {
-  webtoonId: number;
-  webtoonName: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
+
 interface WriteReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +16,7 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
 }) => {
   const router = useRouter();
   const [searchText, setSearchText] = useState('');
-  const [webtoons, setWebtoons] = useState<Webtoon[]>([]);
+  const [webtoons, setWebtoons] = useState<WebtoonDetailDto[]>([]);
   const [loading, setLoading] = useState(false);
   const handleSearch = async () => {
     if (!searchText.trim()) return;
