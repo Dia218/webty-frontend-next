@@ -1,13 +1,22 @@
 import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const FeedReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
   review,
 }) => {
   const [showSpoiler, setShowSpoiler] = useState(false);
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    router.push(`/review-detail/${review.reviewId}`);
+  };
 
   return (
-    <div className="border p-4 rounded-lg shadow-md flex justify-between items-start">
+    <div
+      className="border p-4 rounded-lg shadow-md flex justify-between items-start cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      onClick={handleNavigate} // 클릭 시 라우터 작동
+    >
       {/* 왼쪽 컨텐츠 */}
       <div className="flex-1">
         {/* 웹툰 ID & 조회수/댓글 */}
@@ -32,7 +41,10 @@ const FeedReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
           <div className="bg-red-100 text-red-500 p-2 rounded mt-2 flex items-center justify-between">
             <span>⚠️ 이 리뷰에는 스포일러가 포함되어 있습니다.</span>
             <button
-              onClick={() => setShowSpoiler(true)}
+              onClick={(e) => {
+                e.stopPropagation(); // 클릭 이벤트 전파 방지
+                setShowSpoiler(true);
+              }}
               className="text-blue-500 underline text-sm"
             >
               보기
