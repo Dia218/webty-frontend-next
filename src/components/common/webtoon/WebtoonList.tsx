@@ -1,4 +1,4 @@
-import WebtoonItem from '@/components/buisness/webtoon/WebtoonItem';
+import WebtoonItem from '@/components/common/Webtoon/WebtoonItem';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 interface WebtoonListProps {

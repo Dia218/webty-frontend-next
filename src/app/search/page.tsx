@@ -4,9 +4,12 @@ import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
-const WebtoonPage = dynamic(() => import('@/app/search/webtoonPage'), {
-  ssr: false,
-});
+const WebtoonPage = dynamic(
+  () => import('@/components/buisness/search/webtoonPage'),
+  {
+    ssr: false,
+  }
+);
 
 const SearchPage: React.FC = () => {
   const searchParams = useSearchParams();

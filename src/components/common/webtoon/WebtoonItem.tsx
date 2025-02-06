@@ -2,17 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
-interface Webtoon {
-  webtoonId: number;
-  webtoonName: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
-
-const WebtoonItem: React.FC<{ webtoon: Webtoon }> = ({ webtoon }) => {
+const WebtoonItem: React.FC<{ webtoon: WebtoonDetailDto }> = ({ webtoon }) => {
   const router = useRouter();
 
   const handleNavigate = () => {
