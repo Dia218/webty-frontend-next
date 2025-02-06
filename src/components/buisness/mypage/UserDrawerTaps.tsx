@@ -6,7 +6,7 @@ import {
   GhostTabsTrigger,
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
-import WebtoonList from '../webtoon/WebtoonList';
+import WebtoonList from '../../common/webtoon/WebtoonList';
 import { useEffect, useState } from 'react';
 import { getFavoriteWebtoonList } from '@/lib/api/webtoon/favorite';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
