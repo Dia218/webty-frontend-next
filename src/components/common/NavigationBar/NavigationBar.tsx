@@ -8,6 +8,7 @@ import './NavigationBar.css';
 import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
 import { usePathname } from 'next/navigation';
 import { HIDDEN_ELEMENTS } from './hiddenElements';
+import WriteReviewModal from '@/components/common/ReviewWriteModal/ReviewWriteModal';
 
 const NavigationBar: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -20,6 +21,8 @@ const NavigationBar: React.FC = () => {
       router.push(`/search?query=${encodeURIComponent(searchText)}`); // 검색 페이지로 이동
     }
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between">
@@ -48,9 +51,9 @@ const NavigationBar: React.FC = () => {
           pathname.startsWith(route)
         ) &&
           isLoggedIn && (
-            <Link href="/write">
-              <button className="write-btn">글 작성</button>
-            </Link>
+            <button onClick={() => setIsModalOpen(true)} className="write-btn">
+              글 작성
+            </button>
           )}
 
         {!HIDDEN_ELEMENTS.mypageButton.some((route) =>
@@ -62,15 +65,13 @@ const NavigationBar: React.FC = () => {
             </Link>
           )}
 
-        {!HIDDEN_ELEMENTS.logo.includes(pathname) && (
-          <div className="nav-logo">
-            <p>logo</p>
-          </div>
-        )}
-
         {/* 로그인 / 로그아웃 모달 */}
         <LogInOutDialog />
       </div>
+      <WriteReviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </nav>
   );
 };
