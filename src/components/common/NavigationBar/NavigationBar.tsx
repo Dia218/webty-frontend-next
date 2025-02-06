@@ -44,23 +44,29 @@ const NavigationBar: React.FC = () => {
 
       {/* 버튼 그룹 */}
       <div className="nav-buttons">
-        {!HIDDEN_ELEMENTS.writeButton.includes(pathname) && isLoggedIn && (
-          <Link href="/write">
-            <button className="write-btn">글 작성</button>
-          </Link>
-        )}
+        {!HIDDEN_ELEMENTS.writeButton.some((route) =>
+          pathname.startsWith(route)
+        ) &&
+          isLoggedIn && (
+            <Link href="/write">
+              <button className="write-btn">글 작성</button>
+            </Link>
+          )}
 
-        {!HIDDEN_ELEMENTS.mypageButton.includes(pathname) && isLoggedIn && (
-          <Link href="/mypage">
-            <button>마이페이지</button>
-          </Link>
-        )}
+        {!HIDDEN_ELEMENTS.mypageButton.some((route) =>
+          pathname.startsWith(route)
+        ) &&
+          isLoggedIn && (
+            <Link href="/mypage">
+              <button>마이페이지</button>
+            </Link>
+          )}
 
-      {!HIDDEN_ELEMENTS.logo.includes(pathname) && (
-        <div className="nav-logo">
-          <p>logo</p>
-        </div>
-      )}
+        {!HIDDEN_ELEMENTS.logo.includes(pathname) && (
+          <div className="nav-logo">
+            <p>logo</p>
+          </div>
+        )}
 
         {/* 로그인 / 로그아웃 모달 */}
         <LogInOutDialog />
