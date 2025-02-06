@@ -10,6 +10,7 @@ export interface FeedReviewResponseDto {
   viewCount: number;
   spoilerStatus: 'TRUE' | 'FALSE';
   webtoonId: number;
+  webtoonName: string;
   thumbnailUrl: string;
   imageUrls: string[];
   commentCount: number;
