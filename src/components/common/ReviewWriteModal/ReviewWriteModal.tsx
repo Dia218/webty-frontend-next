@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import WebtoonItem from '@/components/common/Webtoon/WebtoonItem';
+import WebtoonItem from '@/components/common/webtoon/WebtoonItem';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
@@ -62,7 +62,9 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
                   className="mt-2 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
                   onClick={() =>
                     router.push(
-                      `여기에_원하시는_경로로_매핑_하세요!!/review/${webtoon.webtoonId}`
+                      `/review?webtoonId=${webtoon.webtoonId}&webtoonName=${encodeURIComponent(
+                        webtoon.webtoonName
+                      )}`
                     )
                   }
                 >
