@@ -1,8 +1,8 @@
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
+const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
   review,
 }) => {
   const [showSpoiler, setShowSpoiler] = useState(false);

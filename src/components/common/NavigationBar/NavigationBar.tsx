@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // 페이지 이동을 위해 추가
-import { useAuth } from '@/lib/api/user/user';
+import { useAuth } from '@/lib/api/security/useAuth';
 import './NavigationBar.css';
 import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
 import { usePathname } from 'next/navigation';

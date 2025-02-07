@@ -4,7 +4,7 @@ interface Review {
   reviewId: number;
   title: string;
   content: string;
-  userDataResponse: {
+  UserDataResponseDto: {
     nickname: string;
     profileImage: string;
   };
