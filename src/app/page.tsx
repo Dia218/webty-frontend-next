@@ -1,15 +1,15 @@
-import NavigationBar from "@/components/common/NavigationBar/NavigationBar";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
-  return (
-    <div>
-      <NavigationBar />
-      <main className="p-4">
-        <h1 className="text-2xl font-bold">Welcome to My App</h1>
-        <p className="mt-2">
-          This is the main content area. You can add your page content here.
-        </p>
-      </main>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // 페이지가 로드되면 바로 ProductListPage로 리디렉션
+    router.push('/feed');
+  }, [router]);
+
+  return null; // 이 페이지는 리디렉션만 처리하고 아무것도 렌더링하지 않음
 }
