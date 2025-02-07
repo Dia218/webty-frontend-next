@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { ReviewDetailResponse } from '@/lib/types/review/ReviewDetailResponseDto';
+
 export const createReview = async (
   data: ReviewRequestDto
 ): Promise<number | null> => {
@@ -43,4 +46,13 @@ export const createReview = async (
     console.error('리뷰 작성 중 오류 발생:', error);
     return null;
   }
+};
+
+export const fetchReviewDetails = async (
+  reviewId: string
+): Promise<ReviewDetailResponse> => {
+  const response = await axios.get<ReviewDetailResponse>(
+    `http://localhost:8080/reviews/${reviewId}`
+  );
+  return response.data;
 };

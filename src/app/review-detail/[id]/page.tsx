@@ -1,4 +1,4 @@
-import { fetchReviewDetails } from '@/lib/api/review/reviewDetails';
+import { fetchReviewDetails } from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 export default async function Page({ params }: { params: { id?: string } }) {
