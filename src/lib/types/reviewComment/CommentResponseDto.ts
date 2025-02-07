@@ -7,6 +7,6 @@ export interface CommentResponseDto {
   createdAt: string; // LocalDateTime → ISO 8601 문자열
   modifiedAt: string;
   depth: number;
-  childComments: CommentResponseDto[];
   mentions: string[];
+  childComments: CommentResponseDto[];
 }
