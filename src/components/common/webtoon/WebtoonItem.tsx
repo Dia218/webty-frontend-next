@@ -42,7 +42,7 @@ const WebtoonItem: React.FC<{ webtoon: WebtoonDetailDto }> = ({ webtoon }) => {
             {webtoon.authors}
           </p>
           <p className="text-sm md:text-base text-gray-500">
-            {webtoon.finished ? '완결' : '진행 중'}
+            {webtoon.finished ? '완결' : '연재중'}
           </p>
         </div>
 
