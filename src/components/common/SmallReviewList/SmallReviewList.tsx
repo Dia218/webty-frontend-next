@@ -1,4 +1,4 @@
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { FeedReviewResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import SmallReviewItem from '@/components/common/SmallReviewList/SmallReviewItem';
 
 export const SmallReviewList: React.FC<{

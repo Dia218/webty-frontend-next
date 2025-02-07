@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { FeedReviewResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 // Props 타입 정의
 interface LargeReviewItemProps {
   reviewId: number;

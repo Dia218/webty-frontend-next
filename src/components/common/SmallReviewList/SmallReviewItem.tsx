@@ -1,8 +1,8 @@
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
+const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
   review,
 }) => {
   const [showSpoiler, setShowSpoiler] = useState(false);
@@ -57,12 +57,12 @@ const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
         {/* 유저 정보 */}
         <div className="flex items-center mt-2">
           <img
-            src={`${review.UserDataResponseDto.profileImage}`}
-            alt={review.UserDataResponseDto.nickname}
+            src={`${review.userDataResponse.profileImage}`}
+            alt={review.userDataResponse.nickname}
             className="w-8 h-8 rounded-full mr-2 object-cover"
           />
           <span className="text-sm font-medium">
-            {review.UserDataResponseDto.nickname}
+            {review.userDataResponse.nickname}
           </span>
         </div>
       </div>
