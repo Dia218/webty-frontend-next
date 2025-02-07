@@ -70,7 +70,9 @@ const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
       {/* 오른쪽 이미지 (가로 배치) */}
       {(review.spoilerStatus === 'FALSE' || showSpoiler) &&
         review.imageUrls?.length > 0 && (
-          <div className="grid grid-cols-2 gap-2">
+          <div
+            className={`grid ${review.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}
+          >
             {review.imageUrls.slice(0, 2).map((url, index) => (
               <img
                 key={index}
