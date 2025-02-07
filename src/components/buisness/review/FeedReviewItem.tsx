@@ -3,22 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-
+import { Review } from '@/lib/types/ReviewDto'
 // Props 타입 정의
 interface FeedReviewItemProps {
   reviewId: number;
-}
-
-interface Review {
-  reviewId: number;
-  title: string;
-  content: string;
-  userDataResponse: {
-    nickname: string;
-    profileImage: string;
-  };
-  thumbnailUrl: string;
-  imageUrls: string[];
 }
 
 const FeedReviewItem: React.FC<FeedReviewItemProps> = ({ reviewId }) => {
