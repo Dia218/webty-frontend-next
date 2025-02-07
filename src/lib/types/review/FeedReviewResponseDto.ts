@@ -1,6 +1,6 @@
 export interface FeedReviewResponseDto {
   reviewId: number;
-  userDataResponse: {
+  UserDataResponseDto: {
     id: number;
     nickname: string;
     profileImage: string;

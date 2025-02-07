@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import CommentForm from './CommentForm';
+import CommentForm from './CommentArea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
 

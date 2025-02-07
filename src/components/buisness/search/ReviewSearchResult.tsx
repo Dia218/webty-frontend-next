@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchReviewsByTitle } from '@/lib/api/search/feedReviewSearch';
 import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
 import { Button } from '@/components/ui/button';
-import { SmallReviewList } from '@/components/common/Review/FeedReviewList';
+import { SmallReviewList } from '@/components/common/SmallReviewList/SmallReviewList';
 
 interface ReviewPageProps {
   searchQuery: string;

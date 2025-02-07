@@ -1,7 +1,7 @@
-import { UserDataResponse } from '@/lib/types/user/UserDataResponse';
+import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 
 export interface CommentResponseDto {
-  user: UserDataResponse;
+  user: UserDataResponseDto;
   commentId: number;
   content: string;
   createdAt: string; // LocalDateTime → ISO 8601 문자열

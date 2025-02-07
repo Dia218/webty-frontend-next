@@ -57,12 +57,12 @@ const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
         {/* 유저 정보 */}
         <div className="flex items-center mt-2">
           <img
-            src={`${review.userDataResponse.profileImage}`}
-            alt={review.userDataResponse.nickname}
+            src={`${review.UserDataResponseDto.profileImage}`}
+            alt={review.UserDataResponseDto.nickname}
             className="w-8 h-8 rounded-full mr-2 object-cover"
           />
           <span className="text-sm font-medium">
-            {review.userDataResponse.nickname}
+            {review.UserDataResponseDto.nickname}
           </span>
         </div>
       </div>
