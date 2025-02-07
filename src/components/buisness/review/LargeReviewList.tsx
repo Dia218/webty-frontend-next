@@ -1,24 +1,19 @@
-import FeedReviewItem from './LargeReviewItem';
+import { useRouter } from 'next/router';
+import { Card } from '@/components/ui/card';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto'; // 수정된 인터페이스 임포트
+import LargeReviewItem from './LargeReviewItem';
 
-interface Review {
-  reviewId: number;
-  title: string;
-  content: string;
-  userDataResponse: {
-    nickname: string;
-    profileImage: string;
-  };
-  thumbnailUrl: string;
-  imageUrls: string[];
+// 리뷰 리스트 컴포넌트 (페이지네이션에 맞게 수정)
+interface LargeReviewListProps {
+  reviews: ReviewItemResponseDto[]; // ReviewDto -> ReviewItemResponseDto로 변경
 }
 
-const LargeReviewList: React.FC<Review> = ({}) => {
+export const LargeReviewList: React.FC<LargeReviewListProps> = ({ reviews }) => {
   return (
-    <div>
-      <FeedReviewItem reviewId={1} />
-      <FeedReviewItem reviewId={2} />
+    <div className="grid grid-cols-1 gap-4">
+      {reviews.map((review) => (
+        <LargeReviewItem key={review.reviewId} review={review} />
+      ))}
     </div>
   );
 };
-
-export default LargeReviewList;
