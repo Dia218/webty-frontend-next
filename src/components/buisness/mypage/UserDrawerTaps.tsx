@@ -6,10 +6,10 @@ import {
   GhostTabsTrigger,
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
-import WebtoonList from '@/components/common/Webtoon/WebtoonList';
 import { useEffect, useState } from 'react';
 import { getFavoriteWebtoonList } from '@/lib/api/webtoon/favorite';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
+import WebtoonList from '@/components/common/webtoon/WebtoonList';
 
 const UserDrawerTaps = () => {
   const [favoriteWebtoons, setFavoriteWebtoons] = useState<WebtoonDetailDto[]>(
