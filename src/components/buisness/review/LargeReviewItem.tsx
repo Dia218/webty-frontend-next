@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Review } from '@/lib/types/ReviewDto'
 // Props 타입 정의
-interface FeedReviewItemProps {
+interface LargeReviewItemProps {
   reviewId: number;
 }
 
-const FeedReviewItem: React.FC<FeedReviewItemProps> = ({ reviewId }) => {
+const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ reviewId }) => {
   const [review, setReview] = useState<Review | null>(null);
   const router = useRouter();
 
@@ -59,4 +59,4 @@ const FeedReviewItem: React.FC<FeedReviewItemProps> = ({ reviewId }) => {
 );
 };
 
-export default FeedReviewItem;
+export default LargeReviewItem;
