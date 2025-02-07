@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchReviewsByTitle } from '@/lib/api/search/feedReviewSearch';
 import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
 import { Button } from '@/components/ui/button';
-import ReviewList from '@/components/common/Review/FeedReviewList';
+import { SmallReviewList } from '@/components/common/Review/FeedReviewList';
 
 interface ReviewPageProps {
   searchQuery: string;
@@ -32,7 +32,7 @@ const ReviewPage: React.FC<ReviewPageProps> = ({ searchQuery }) => {
       <h1 className="text-xl font-bold mb-4">리뷰 검색 결과</h1>
       {reviews.length > 0 ? (
         <>
-          <ReviewList reviews={reviews} />
+          <SmallReviewList reviews={reviews} />
           {/* 페이지네이션 버튼 */}
           <div className="flex justify-between mt-4">
             <Button

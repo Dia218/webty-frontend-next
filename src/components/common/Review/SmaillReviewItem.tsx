@@ -2,7 +2,7 @@ import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const FeedReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
+const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
   review,
 }) => {
   const [showSpoiler, setShowSpoiler] = useState(false);
@@ -68,20 +68,22 @@ const FeedReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
       </div>
 
       {/* 오른쪽 이미지 (가로 배치) */}
-      {review.imageUrls?.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
-          {review.imageUrls.slice(0, 2).map((url, index) => (
-            <img
-              key={index}
-              src={url}
-              alt={`추가 이미지 ${index + 1}`}
-              className="w-40 h-40 object-cover rounded" // ✅ 가로 배치 & 크기 조정
-            />
-          ))}
-        </div>
-      )}
+      {review.spoilerStatus === 'FALSE' || showSpoiler
+        ? review.imageUrls?.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {review.imageUrls.slice(0, 2).map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`추가 이미지 ${index + 1}`}
+                  className="w-40 h-40 object-cover rounded" // ✅ 가로 배치 & 크기 조정
+                />
+              ))}
+            </div>
+          )
+        : null}
     </div>
   );
 };
 
-export default FeedReviewItem;
+export default SmallReviewItem;
