@@ -18,18 +18,11 @@ const WebtoonItem: React.FC<{ webtoon: WebtoonDetailDto }> = ({ webtoon }) => {
     >
       {/* 썸네일 */}
       <div className="w-full sm:w-1/3 flex-shrink-0">
-        <a
-          href={webtoon.webtoonLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()} // 부모 요소 클릭 방지
-        >
-          <img
-            src={webtoon.thumbnailUrl}
-            alt={webtoon.webtoonName}
-            className="w-full h-full object-cover aspect-[3/4] rounded-t-lg sm:rounded-l-lg"
-          />
-        </a>
+        <img
+          src={webtoon.thumbnailUrl}
+          alt={webtoon.webtoonName}
+          className="w-full h-full object-cover aspect-[3/4] rounded-t-lg sm:rounded-l-lg"
+        />
       </div>
 
       {/* 웹툰 정보 */}
