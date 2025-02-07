@@ -7,8 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import ReviewDialog from '@/components/common/reviewDialog/ReviewDialog';
-import InputAlert from '@/components/common/reviewDialog/InputAlertDialog';
+import ReviewDialog from '@/components/common/ReviewDialog/ReviewDialog';
+import InputAlert from '@/components/common/ReviewDialog/InputAlertDialog';
 import { useRouter } from 'next/navigation';
 
 interface ReviewFormProps {
