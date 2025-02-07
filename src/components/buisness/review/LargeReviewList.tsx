@@ -1,18 +1,12 @@
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import FeedReviewItem from './LargeReviewItem';
+import { FC } from 'react';
 
-interface Review {
-  reviewId: number;
-  title: string;
-  content: string;
-  UserDataResponseDto: {
-    nickname: string;
-    profileImage: string;
-  };
-  thumbnailUrl: string;
-  imageUrls: string[];
+interface LargeReviewListProps {
+  reviews: ReviewItemResponseDto[];
 }
 
-const LargeReviewList: React.FC<Review> = ({}) => {
+const LargeReviewList: FC<LargeReviewListProps> = ({ reviews }) => {
   return (
     <div>
       <FeedReviewItem reviewId={1} />

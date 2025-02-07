@@ -1,112 +1,90 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
+import { PageDto } from '@/lib/types/common/PageDto';
 
-interface CommentRequest {
-  content: string;
-}
-
-interface CommentResponse {
-  id: number;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface PageDto<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
-}
-
-const useReviewComments = (
-  reviewId: number,
-  page: number = 0,
-  size: number = 10
-) => {
-  const [comments, setComments] = useState<CommentResponse[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchComments = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.get(`/api/reviews/${reviewId}/comments`, {
-        params: { page, size },
-      });
-      setComments(response.data.content);
-    } catch (err) {
-      setError('Failed to fetch comments');
-    } finally {
-      setLoading(false);
-    }
-  }, [reviewId, page, size]);
+export const useReviewComments = (reviewId: number) => {
+  const [comments, setComments] = useState<CommentResponseDto[]>([]);
+  const [newComment, setNewComment] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editedComment, setEditedComment] = useState<string>('');
 
   useEffect(() => {
-    fetchComments();
-  }, [fetchComments]);
+    const fetchComments = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get<PageDto<CommentResponseDto>>(
+          `/api/reviews/${reviewId}/comments`
+        );
+        setComments(response.data.content);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const createComment = async (request: CommentRequest) => {
+    fetchComments();
+  }, [reviewId]);
+
+  const handleCreateComment = async () => {
+    if (newComment.trim() === '') return;
+
     try {
-      const response = await axios.post(
+      const response = await axios.post<CommentResponseDto>(
         `/api/reviews/${reviewId}/comments`,
-        request
+        { content: newComment }
       );
-      setComments((prevComments) => [
-        ...prevComments,
-        {
-          id: response.data,
-          content: request.content,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ]);
-    } catch (err) {
-      setError('Failed to create comment');
+      setComments([...comments, response.data]);
+      setNewComment('');
+    } catch (error) {
+      console.error('Error creating comment:', error);
     }
   };
 
-  const updateComment = async (commentId: number, request: CommentRequest) => {
+  const handleUpdateComment = async (commentId: number) => {
+    if (editedComment.trim() === '') return;
+
     try {
-      const response = await axios.put(
-        `/api/reviews/comments/${commentId}`,
-        request
+      const response = await axios.put<CommentResponseDto>(
+        `/api/reviews/${reviewId}/comments/${commentId}`,
+        { content: editedComment }
       );
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === commentId
-            ? { ...comment, content: request.content }
-            : comment
+      setComments(
+        comments.map((comment) =>
+          comment.commentId === commentId ? response.data : comment
         )
       );
-    } catch (err) {
-      setError('Failed to update comment');
+      setEditingCommentId(null);
+      setEditedComment('');
+    } catch (error) {
+      console.error('Error updating comment:', error);
     }
   };
 
-  const deleteComment = async (commentId: number) => {
+  const handleDeleteComment = async (commentId: number) => {
     try {
-      await axios.delete(`/api/reviews/comments/${commentId}`);
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
+      await axios.delete(`/api/reviews/${reviewId}/comments/${commentId}`);
+      setComments(
+        comments.filter((comment) => comment.commentId !== commentId)
       );
-    } catch (err) {
-      setError('Failed to delete comment');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
     }
   };
 
   return {
     comments,
-    loading,
-    error,
-    fetchComments,
-    createComment,
-    updateComment,
-    deleteComment,
+    newComment,
+    setNewComment,
+    isLoading,
+    editingCommentId,
+    setEditingCommentId,
+    editedComment,
+    setEditedComment,
+    handleCreateComment,
+    handleUpdateComment,
+    handleDeleteComment,
   };
 };
-
-export default useReviewComments;
