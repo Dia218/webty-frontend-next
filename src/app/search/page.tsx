@@ -5,7 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 const WebtoonPage = dynamic(
-  () => import('@/components/buisness/search/webtoonPage'),
+  () => import('@/components/buisness/search/WebtoonSearchResult'),
+  {
+    ssr: false,
+  }
+);
+
+const ReviewPage = dynamic(
+  () => import('@/components/buisness/search/ReviewSearchResult'),
   {
     ssr: false,
   }
@@ -21,8 +28,10 @@ const SearchPage: React.FC = () => {
       <NavigationBar />
 
       <div className="flex flex-1">
-        {/* 왼쪽 영역 (비워둠) */}
-        <div className="w-2/3 p-4 border-r border-gray-300"></div>
+        {/* 왼쪽 리뷰 리스트 */}
+        <div className="w-2/3 p-4 border-r border-gray-300">
+          <ReviewPage searchQuery={searchQuery} />
+        </div>
 
         {/* 오른쪽 웹툰 리스트 */}
         <div className="w-1/3 p-4 overflow-auto">

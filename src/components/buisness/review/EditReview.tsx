@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import ReviewForm from '@/components/common/reviewForm/ReviewForm';
+import ReviewForm from '@/components/common/ReviewForm/ReviewForm';
 import { createReview } from '@/lib/api/review/review';
 
 interface ReviewWritePageProps {

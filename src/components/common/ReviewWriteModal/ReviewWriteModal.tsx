@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import WebtoonItem from '@/components/common/webtoon/WebtoonItem';
+import WebtoonItem from '@/components/common/WebtoonList/WebtoonItem';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
