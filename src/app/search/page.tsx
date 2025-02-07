@@ -5,14 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 const WebtoonPage = dynamic(
-  () => import('@/components/buisness/search/WebtoonPage'),
+  () => import('@/components/buisness/search/webtoonSearchResult'),
   {
     ssr: false,
   }
 );
 
 const ReviewPage = dynamic(
-  () => import('@/components/buisness/search/FeedReviewSearchPage'),
+  () => import('@/components/buisness/search/ReviewSearchResult'),
   {
     ssr: false,
   }
