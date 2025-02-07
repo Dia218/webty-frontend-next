@@ -33,7 +33,9 @@ export const useAuth = () => {
   }, []);
 
   const handleLogin = (): void => {
-    window.location.href = `${socialLoginForKaKaoUrl}?redirectUrl=${redirectUrlAfterSocialLogin}`;
+    const currentUrl = window.location.href; // 현재 URL 저장
+    localStorage.setItem('lastVisitedPage', currentUrl);
+    window.location.href = socialLoginForKaKaoUrl;
   };
 
   const handleLogout = (): void => {
