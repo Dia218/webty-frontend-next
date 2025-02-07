@@ -1,3 +1,5 @@
+import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
+
 export const createReview = async (
   data: ReviewRequestDto
 ): Promise<number | null> => {
