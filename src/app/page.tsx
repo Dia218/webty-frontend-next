@@ -1,5 +1,5 @@
 import NavigationBar from "@/components/common/NavigationBar/NavigationBar";
-import FeedReviewItem from "@/components/buisness/review/FeedReviewItem";
+import FeedReviewList from "@/components/buisness/review/FeedReviewItem";
 
 export default function Home() {
   return (
@@ -10,14 +10,7 @@ export default function Home() {
         <p className="mt-2">
           This is the main content area. You can add your page content here.
         </p>
-      </main>
-      <div className="p-2">
-      <FeedReviewItem />
-      </div>
-      <div className="p-2">
-      <FeedReviewItem />
-      </div>
-    
+      </main>      
     </div>
   );
 }
