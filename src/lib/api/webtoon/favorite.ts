@@ -20,21 +20,6 @@ export const addFavoriteWebtoon = async (webtoonId: string) => {
   }
 };
 
-export const checkFavoriteWebtoon = async (webtoonId: string) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:8080/favorite/${webtoonId}`,
-      {
-        withCredentials: true, // 쿠키 인증 추가
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error('관심 웹툰 여부 확인 실패:', error);
-    return false;
-  }
-};
-
 export const deleteFavoriteWebtoon = async (webtoonId: string) => {
   try {
     const response = await axios.delete(
@@ -44,6 +29,33 @@ export const deleteFavoriteWebtoon = async (webtoonId: string) => {
       }
     );
     return response.status === 200;
+  } catch (error) {
+    console.error('관심 웹툰 여부 확인 실패:', error);
+    return false;
+  }
+};
+
+export const getFavoriteWebtoonList = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8080/favorite/list`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('관심 웹툰 목록 가져오기 실패:', error);
+    return [];
+  }
+};
+
+export const checkFavoriteWebtoon = async (webtoonId: string) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/favorite/${webtoonId}`,
+      {
+        withCredentials: true, // 쿠키 인증 추가
+      }
+    );
+    return response.data;
   } catch (error) {
     console.error('관심 웹툰 여부 확인 실패:', error);
     return false;

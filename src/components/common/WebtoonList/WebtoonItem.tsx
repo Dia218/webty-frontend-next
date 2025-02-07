@@ -2,17 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
-interface Webtoon {
-  webtoonId: number;
-  webtoonName: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
-
-const WebtoonItem: React.FC<{ webtoon: Webtoon }> = ({ webtoon }) => {
+const WebtoonItem: React.FC<{ webtoon: WebtoonDetailDto }> = ({ webtoon }) => {
   const router = useRouter();
 
   const handleNavigate = () => {
@@ -50,7 +42,7 @@ const WebtoonItem: React.FC<{ webtoon: Webtoon }> = ({ webtoon }) => {
             {webtoon.authors}
           </p>
           <p className="text-sm md:text-base text-gray-500">
-            {webtoon.finished ? '완결' : '진행 중'}
+            {webtoon.finished ? '완결' : '연재중'}
           </p>
         </div>
 
