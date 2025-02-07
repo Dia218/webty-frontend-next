@@ -18,7 +18,7 @@ const FeedPage = () => {
   return (
     <>
       <NavigationBar /> {/* 네비게이션 바 */}
-      <LargeReviewList reviews={reviews} /> {/* ReviewList */}
+      <LargeReviewList /> {/* ReviewList */}
       {/* VotingList */}
     </>
   );

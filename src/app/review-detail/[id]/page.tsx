@@ -1,3 +1,5 @@
+"use client";
+
 import fetchReviewById from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import { useEffect, useState } from 'react';

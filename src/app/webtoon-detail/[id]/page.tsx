@@ -1,3 +1,5 @@
+'use client';
+
 import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
 import WebtoonDetail from '@/components/buisness/webtoonDetail/WebtoonInfo';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
