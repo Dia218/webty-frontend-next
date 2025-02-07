@@ -13,7 +13,9 @@ export default async function Page({ params }: { params: { id?: string } }) {
 
     return (
       <>
-        <NavigationBar /> {/* 네비게이션 바 추가 */}
+        <NavigationBar />
+
+        {/* 이 위치에 만드신 컴포넌트를 넣어주세요!! */}
         <div> {review.title} </div>
         <div> {review.content} </div>
       </>
