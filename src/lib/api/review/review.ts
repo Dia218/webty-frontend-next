@@ -25,6 +25,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
         '/reviews',
         { params: { page, size } }
       );
+      console.log(response.data);
       setReviews(response.data.content);
     } catch (err) {
       setError('Failed to fetch reviews');
