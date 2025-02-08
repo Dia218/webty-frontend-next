@@ -10,9 +10,10 @@ interface LargeReviewListProps {
 
 export const LargeReviewList: React.FC<LargeReviewListProps> = ({ reviews }) => {
   return (
-    <div className="grid grid-cols-1 gap-4">
+    <div className="grid grid-cols-1 gap-3 mt-3">
       {reviews.map((review) => (
-        <LargeReviewItem key={review.reviewId} review={review} />
+        <LargeReviewItem key={review.reviewId} review={review} 
+         />
       ))}
     </div>
   );

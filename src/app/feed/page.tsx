@@ -49,22 +49,28 @@ const FeedPage = () => {
       <LargeReviewList reviews={reviews} />
 
       {/* 페이지네이션 버튼 */}
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-center mt-4 items-center mb-4">
+
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
           disabled={currentPage === 0} // 첫 번째 페이지에서 이전 버튼 비활성화
+          className="bg-gray-400 text-white hover:bg-gray-400 disabled:bg-gray-300 disabled:text-gray-600"
         >
-          이전
+          &lt; {/* < 기호 */}
         </Button>
-        <span className="text-sm">
+
+        <span className="text-sm mx-[150px] " >
           {currentPage + 1} / {totalPages}
         </span>
+
         <Button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
           disabled={currentPage >= totalPages - 1}
+          className="bg-gray-400 text-white hover:bg-gray-400 disabled:bg-gray-300 disabled:text-gray-600"
         >
-          다음
+          &gt; {/* > 기호 */}
         </Button>
+
       </div>
     </>
   );
