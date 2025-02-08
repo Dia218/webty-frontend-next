@@ -22,7 +22,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
     setError(null);
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        '/reviews',
+        `http://localhost:8080/reviews`,
         { params: { page, size } }
       );
       console.log(response.data);
@@ -40,12 +40,13 @@ const useReviews = (page: number = 0, size: number = 10) => {
 
   // Id로 상세 조회
   const fetchReviewById = async (
-    reviewId: string
+    reviewId: number
   ): Promise<ReviewDetailResponseDto | undefined> => {
     try {
       const response = await axios.get<ReviewDetailResponseDto>(
-        `/reviews/${reviewId}`
+        `http://localhost:8080/reviews/${reviewId}`
       );
+      console.log('상세조회 API 호출');
       return response.data;
     } catch (err) {
       setError('Failed to fetch review details');
@@ -56,7 +57,12 @@ const useReviews = (page: number = 0, size: number = 10) => {
   //작성한 게시글 목록 조회
   const fetchUserReviews = async () => {
     try {
-      const response = await axios.get<ReviewItemResponseDto[]>('/reviews/me');
+      const response = await axios.get<ReviewItemResponseDto[]>(
+        'http://localhost:8080/reviews/me',
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     } catch (err) {
       setError('Failed to fetch user reviews');
@@ -113,16 +119,28 @@ const useReviews = (page: number = 0, size: number = 10) => {
     // FormData 생성
     const formData = new FormData();
 
+    const reviewRequest = {
+      webtoonId,
+      title,
+      content,
+      spoilerStatus,
+    };
+
     // JSON 데이터 추가
     formData.append(
-      'reviewRequestDto',
-      new Blob([JSON.stringify(reviewRequestDto)], { type: 'application/json' })
+      'reviewRequest',
+      new Blob([JSON.stringify(reviewRequest)], { type: 'application/json' })
     );
 
     // 이미지 파일 추가
-    reviewRequestDto.images?.forEach((image) =>
-      formData.append('images', image)
-    );
+    if (images) {
+      images.forEach((image) => {
+        formData.append('images', image);
+      });
+    }
+    // reviewRequestDto.images?.forEach((image) =>
+    //   formData.append('images', image)
+    // );
 
     try {
       const response = await fetch('http://localhost:8080/reviews/create', {
@@ -157,6 +175,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
     try {
       await axios.put(`/reviews/put/${reviewId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       });
       fetchReviews();
     } catch (err) {
@@ -167,7 +186,9 @@ const useReviews = (page: number = 0, size: number = 10) => {
   // 게시글 삭제
   const deleteReview = async (reviewId: number) => {
     try {
-      await axios.delete(`/reviews/delete/${reviewId}`);
+      await axios.delete(`/reviews/delete/${reviewId}`, {
+        withCredentials: true,
+      });
       setReviews((prevReviews) =>
         prevReviews.filter((review) => review.reviewId !== reviewId)
       );

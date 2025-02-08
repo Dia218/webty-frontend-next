@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import useReviews from '@/lib/api/review/review';
 import ReviewForm from '@/components/common/ReviewForm/ReviewForm';
-import createReview from '@/lib/api/review/review';
 import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
 
 interface ReviewWritePageProps {
@@ -15,15 +15,15 @@ const ReviewWritePage: React.FC<ReviewWritePageProps> = ({
   webtoonId,
 }) => {
   const router = useRouter();
+  const { createReview } = useReviews();
 
-  // 리뷰 작성 API 호출 함수
   const handleCreateReview = async (reviewRequestDto: ReviewRequestDto) => {
-    const { title, content, spoilerStatus, images } = reviewRequestDto;
-    const reviewId = await createReview();
-
-    if (reviewId) {
+    const reviewId = await createReview(reviewRequestDto);
+    if (reviewId !== null) {
+      console.log('리뷰 작성 성공! ID:', reviewId);
       return reviewId;
     }
+    console.error('리뷰 작성 실패');
     return null;
   };
 

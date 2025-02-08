@@ -15,7 +15,7 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
   }
 
   const handleNavigate = () => {
-    router.push(`http://localhost:8080/review-detail/${review.reviewId}`);
+    router.push(`http://localhost:3000/review-detail/${review.reviewId}`);
   };
 
   return (

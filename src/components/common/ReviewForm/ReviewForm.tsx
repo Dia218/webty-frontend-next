@@ -10,20 +10,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ReviewDialog from '@/components/common/ReviewDialog/ReviewDialog';
 import InputAlert from '@/components/common/ReviewDialog/InputAlertDialog';
 import { useRouter } from 'next/navigation';
+import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
 
 interface ReviewFormProps {
   mode: 'write' | 'edit'; // 작성 or 수정 모드 구분
   webtoonName: string;
   webtoonId: number;
-  initialTitle?: string; // 기존 제목 (수정 시 필요)
-  initialContent?: string; // 기존 내용 (수정 시 필요)
-  initialImages?: File[]; // 기존 업로드된 이미지 (수정 시 필요)
-  onSubmit: (
-    title: string,
-    content: string,
-    spoilerStatus: boolean,
-    images: File[]
-  ) => Promise<number | null>;
+  initialTitle?: string;
+  initialContent?: string;
+  initialImages?: File[];
+  initialSpoilerStatus?: boolean;
+  onSubmit: (reviewRequestDto: ReviewRequestDto) => Promise<number | null>;
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({
@@ -33,11 +30,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   initialTitle = '',
   initialContent = '',
   initialImages = [],
+  initialSpoilerStatus = false,
   onSubmit,
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
-  const [spoilerStatus, setSpoilerStatus] = useState(false);
+  const [spoilerStatus, setSpoilerStatus] = useState(initialSpoilerStatus);
   const [images, setImages] = useState<File[]>(initialImages);
   const router = useRouter();
 
@@ -51,14 +49,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const [inputAlertOpen, setInputAlertOpen] = useState(false);
   const [inputAlertMessage, setInputAlertMessage] = useState('');
 
-  // 수정 모드일 경우 기존 데이터를 상태에 반영
   useEffect(() => {
-    if (mode == 'edit') {
+    if (mode === 'edit') {
       setTitle(initialTitle);
       setContent(initialContent);
       setImages(initialImages);
+      setSpoilerStatus(initialSpoilerStatus);
     }
-  }, [initialTitle, initialContent, initialImages]);
+  }, [initialTitle, initialContent, initialImages, initialSpoilerStatus]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -84,7 +82,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       return;
     }
 
-    const reviewId = await onSubmit(title, content, spoilerStatus, images);
+    const reviewRequestDto: ReviewRequestDto = {
+      title,
+      content,
+      webtoonId,
+      spoilerStatus: spoilerStatus ? 'TRUE' : 'FALSE',
+      images,
+    };
+
+    const reviewId = await onSubmit(reviewRequestDto);
 
     if (reviewId) {
       setAlertTitle(mode === 'write' ? '리뷰 작성 완료' : '리뷰 수정 완료');
@@ -94,7 +100,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           : '리뷰가 성공적으로 수정되었습니다!'
       );
       setOnConfirmAction(() => () => {
-        router.push(`/review-detail/${reviewId}`); // reviewDetail 화면
+        router.push(`/review-detail/${reviewId}`);
       });
     } else {
       setAlertTitle(mode === 'write' ? '리뷰 작성 실패' : '리뷰 수정 실패');
@@ -112,7 +118,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     <Card className="w-full max-w-[90vw] max-h-[95vh] overflow-y-auto p-10 shadow-xl">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-center">
-          <span className="text-4xl">"{webtoonName}" </span>{' '}
+          <span className="text-4xl">"{webtoonName}" </span>
           {mode === 'write' ? '리뷰 작성' : '리뷰 수정'}
         </CardTitle>
       </CardHeader>
@@ -159,6 +165,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               onCheckedChange={setSpoilerStatus}
             />
           </div>
+
           {/* 파일 업로드 */}
           <div>
             <Label htmlFor="images" className="text-lg mb-2 block">

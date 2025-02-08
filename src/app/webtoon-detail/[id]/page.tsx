@@ -4,6 +4,8 @@ import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
 import WebtoonDetail from '@/components/buisness/webtoonDetail/WebtoonInfo';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
+
+
 export default async function Page({ params }: { params: { id?: string } }) {
   const { id } = await params;
 

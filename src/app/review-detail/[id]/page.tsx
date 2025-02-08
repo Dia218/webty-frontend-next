@@ -1,17 +1,20 @@
-"use client";
+'use client';
 
-import fetchReviewById from '@/lib/api/review/review';
+import useReviews from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation'; // useParams 사용
 
-export default async function Page({ params }: { params: { id?: string } }) {
-  const { id } = await params;
+export default function Page() {
+  const params = useParams(); //  Next.js에서 동적 라우트 가져오기
+  const id = params?.id;
+  const { fetchReviewById } = useReviews();
 
   if (!id) {
     return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
   }
-  const reviewId = Number(id);
 
+  const reviewId = Number(id);
   const [review, setReview] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +22,7 @@ export default async function Page({ params }: { params: { id?: string } }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const reviewData = await fetchReviewById(reviewId); // 데이터 fetch
+        const reviewData = await fetchReviewById(reviewId);
         setReview(reviewData);
       } catch (err) {
         setError('리뷰 데이터를 불러오는데 실패했습니다.');
@@ -42,7 +45,6 @@ export default async function Page({ params }: { params: { id?: string } }) {
   return (
     <>
       <NavigationBar />
-      {/* 이 위치에 만드신 컴포넌트를 넣어주세요!! */}
       <div>{review?.title}</div>
       <div>{review?.content}</div>
     </>
