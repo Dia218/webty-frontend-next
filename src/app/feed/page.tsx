@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { LargeReviewList } from '@/components/buisness/review/LargeReviewList';
+import { LargeReviewList } from '@/components/common/LargeReview/LargeReviewList';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { PageDto } from '@/lib/types/common/PageDto';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
@@ -20,7 +20,9 @@ const FeedPage = () => {
   const fetchReviews = async () => {
     setLoading(true); // 데이터 로딩 시작
     try {
-      const res = await fetch(`http://localhost:8080/reviews?page=${currentPage}`);
+      const res = await fetch(
+        `http://localhost:8080/reviews?page=${currentPage}`
+      );
       if (!res.ok) throw new Error('서버 응답 오류');
 
       const data: PageDto<ReviewItemResponseDto> = await res.json();
@@ -35,9 +37,7 @@ const FeedPage = () => {
 
   // 페이지가 변경될 때마다 리뷰 데이터를 다시 fetch
   useEffect(() => {
-    
-      fetchReviews(); // 클라이언트에서만 fetchReviews 호출
-    
+    fetchReviews(); // 클라이언트에서만 fetchReviews 호출
   }, [currentPage]); // 클라이언트에서만 실행되도록
 
   if (loading) return <div className="text-center p-4">로딩 중...</div>;
@@ -50,7 +50,6 @@ const FeedPage = () => {
 
       {/* 페이지네이션 버튼 */}
       <div className="flex justify-center mt-4 items-center mb-4">
-
         <Button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
           disabled={currentPage === 0} // 첫 번째 페이지에서 이전 버튼 비활성화
@@ -59,18 +58,19 @@ const FeedPage = () => {
           &lt; {/* < 기호 */}
         </Button>
 
-        <span className="text-sm mx-[150px] " >
+        <span className="text-sm mx-[150px] ">
           {currentPage + 1} / {totalPages}
         </span>
 
         <Button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))
+          }
           disabled={currentPage >= totalPages - 1}
           className="bg-gray-400 text-white hover:bg-gray-400 disabled:bg-gray-300 disabled:text-gray-600"
         >
           &gt; {/* > 기호 */}
         </Button>
-
       </div>
     </>
   );
