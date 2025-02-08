@@ -33,18 +33,28 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
 
   return (
     <Card
-      className="flex mx-2 cursor-pointer border border-gray-300 rounded-lg bg-white p-5"
+      className="flex mx-3 cursor-pointer border border-gray-300 rounded-lg bg-white p-4"
       onClick={handleNavigate}
     >
       <div className="flex flex-col flex-1 justify-between ">
-        <div className="flex items-center mb-2" >
-           <img  src={review.userDataResponse.profileImage}
-                className=" border border-gray-300 w-[28px] h-[28px] rounded-full object-cover"
-             />
-           <span className="mx-2 text-xs text-gray-500">{ review.userDataResponse.nickname}</span>
-        </div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-1 ">{review.title}</h2>
-        <p className="text-sm text-gray-600 line-clamp-1 ">{review.content}</p>
+         {/*  위쪽부분(유저 이미지, 이름, 조회수, 댓글) */}
+         <div className="flex items-center mb-2 justify-between" >
+              {/*  유저 이미지, 이름 */}
+             <div className="flex items-center">
+               <img  src={review.userDataResponse.profileImage}
+                  className=" border border-gray-300 w-[28px] h-[28px] rounded-full object-cover"
+                />
+               <p className="mx-2 text-[15px] text-gray-500">{ review.userDataResponse.nickname}</p>
+            </div>
+             {/* 조회수, 댓글 */}
+             <div className="flex space-x-2 mx-2">
+               <p className="mx-2 text-xs text-gray-500">조회수: {review.viewCount}</p>
+               <p className="mx-2 text-xs text-gray-500">댓글: {review.commentCount}</p>
+             </div>
+         </div>
+
+         <h2 className="text-lg font-semibold text-gray-800 mb-1 ">{review.title}</h2>
+         <p className="text-sm text-gray-600 line-clamp-1 ">{review.content}</p>
         
 
         <div className="flex flex-row space-x-2 mt-2">
@@ -55,7 +65,7 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
                  key={index}
                  src={url}
                  alt={`리뷰 이미지 ${index + 1}`}
-                 className="border border-gray-300 w-[120px] h-[120px] object-cover"
+                 className="border border-gray-300 w-[200px] h-[150px] object-cover"
                 />
               ))
             ) : (
