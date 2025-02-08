@@ -1,4 +1,4 @@
-export interface ReviewDetailResponse {
+export interface ReviewDetailResponseDto {
   reviewId: number;
   userDataResponse: {
     id: number;
