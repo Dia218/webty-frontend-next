@@ -1,193 +1,164 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import CommentForm from './CommentArea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from 'react';
+import { CommentAvatar, CommentAvatarFallback, CommentAvatarImage } from '@/components/ui/comment-avatar';
+import { Button } from '@/components/ui/button';
+import { formatDate } from '@/lib/utils/formatDate';
+import CommentArea from './CommentArea';
+import NestedCommentItem from './NestedCommentItem';
+import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
+import { CommentContainer, CommentNestedContainer } from '@/components/ui/comment-container';
+import { CommentHeader, CommentAuthor, CommentTime } from '@/components/ui/comment-header';
+import { CommentContent, CommentMention } from '@/components/ui/comment-content';
 
 interface CommentItemProps {
   comment: CommentResponseDto;
-  onReply: (parentId: number) => void;
+  currentUserId: number;
+  existingUsers?: UserDataResponseDto[];
   onEdit: (commentId: number, content: string) => void;
   onDelete: (commentId: number) => void;
-  onSubmitReply: (content: string, parentId: number) => void;
-  currentNickname: string;
-  existingNicknames: string[];
-  isTestMode?: boolean;
+  onReply?: (content: string, parentId: number) => void;
 }
 
-export default function CommentItem({
+const CommentItem = ({
   comment,
-  onReply,
+  currentUserId,
+  existingUsers = [],
   onEdit,
   onDelete,
-  onSubmitReply,
-  currentNickname,
-  existingNicknames,
-  isTestMode = false,
-}: CommentItemProps) {
+  onReply
+}: CommentItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(comment.content);
   const [isReplying, setIsReplying] = useState(false);
-  const [formattedCreatedAt, setFormattedCreatedAt] = useState('');
-  const [formattedModifiedAt, setFormattedModifiedAt] = useState('');
 
-  useEffect(() => {
-    setEditContent(comment.content);
-  }, [comment.content]);
-
-  const isAuthor = comment.user.nickname === currentNickname;
-
-  useEffect(() => {
-    // 클라이언트 사이드에서만 날짜 포맷팅 실행
-    setFormattedCreatedAt(formatDate(comment.createdAt));
-    if (comment.modifiedAt) {
-      setFormattedModifiedAt(formatDate(comment.modifiedAt));
-    }
-  }, [comment.createdAt, comment.modifiedAt]);
-
-  const handleEdit = () => {
-    if (!isAuthor) {
-      alert('자신이 작성한 댓글만 수정할 수 있습니다.');
-      return;
-    }
-    if (!editContent.trim()) {
-      alert('내용을 입력해주세요.');
-      return;
-    }
-    onEdit(comment.commentId, editContent);
-    setIsEditing(false);
+  // 기본값 설정
+  const defaultUser: UserDataResponseDto = {
+    id: 0,
+    nickname: '알 수 없음',
+    profileImage: '/default-profile.png'
   };
 
-  const handleReply = () => {
-    setIsReplying(!isReplying);
-    if (!isReplying) {
-      onReply(comment.commentId);
-    }
+  const defaultComment: CommentResponseDto = {
+    commentId: 0,
+    content: '',
+    createdAt: new Date().toISOString(),
+    modifiedAt: new Date().toISOString(),
+    user: defaultUser,
+    depth: 0,
+    mentions: [],
+    childComments: []
   };
 
-  const handleSubmitReply = (content: string) => {
-    onSubmitReply(content, comment.commentId);
-    setIsReplying(false);
-  };
+  // 안전한 comment 객체 생성
+  const safeComment = comment || defaultComment;
+  const user = safeComment.user || defaultUser;
 
-  const handleDelete = () => {
-    if (!isAuthor) {
-      alert('자신이 작성한 댓글만 삭제할 수 있습니다.');
-      return;
-    }
-    onDelete(comment.commentId);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const renderContent = (text: string) => {
-    const parts = text.split(/(@[가-힣\s]+)/g);
-
+  const renderContent = (content: string = '') => {
+    if (!content) return null;
+    
+    const parts = content.split(/(@[^\s]+(?:\s+[^\s]+)*\u200B)/g);
     return parts.map((part, index) => {
       if (part.startsWith('@')) {
-        const mentionedNickname = part.slice(1).trim();
+        const nickname = part.slice(1).replace('\u200B', '').trim();
+        const isMentioned = safeComment.mentions?.includes(nickname);
+        
         return (
-          <span
+          <CommentMention
             key={index}
-            className={
-              existingNicknames.includes(mentionedNickname)
-                ? 'text-blue-600 font-semibold'
-                : 'text-gray-500'
-            }
+            isMentioned={isMentioned}
           >
-            {part}
-          </span>
+            {part.replace('\u200B', '')}
+          </CommentMention>
         );
       }
       return <span key={index}>{part}</span>;
     });
   };
 
-  const isModified = comment.createdAt !== comment.modifiedAt;
+  const handleEdit = (newContent: string) => {
+    onEdit(safeComment.commentId, newContent);
+    setIsEditing(false);
+  };
+
+  const handleReply = (content: string) => {
+    if (onReply) {
+      onReply(content, safeComment.commentId);
+      setIsReplying(false);
+    }
+  };
+
+  // 날짜 포맷팅
+  const formattedDate = formatDate(safeComment.createdAt);
+  const isModified = safeComment.modifiedAt && safeComment.modifiedAt !== safeComment.createdAt;
+  const modifiedDate = isModified ? formatDate(safeComment.modifiedAt) : null;
 
   return (
-    <div className="relative">
-      <div
-        className={`mb-1 rounded-lg bg-gray-50 p-4 ${
-          comment.depth === 0 ? 'ml-16 border-l-2 border-gray-200' : ''
-        }`}
-      >
-        <div className="mb-4">
-          <div className="flex items-start gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage
-                src={comment.user.profileImage || '/default-profile.png'}
-                alt={comment.user.nickname}
+    <div className="space-y-4">
+      <CommentContainer>
+        <div className="flex gap-4">
+          <div className="flex-shrink-0">
+            <CommentAvatar className="h-12 w-12">
+              <CommentAvatarImage 
+                src={user.profileImage || "/default-profile.png"} 
+                alt={user.nickname} 
+                className="object-cover"
               />
-              <AvatarFallback className="text-lg">
-                {comment.user.nickname[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex items-start justify-between">
-                <span className="text-lg font-semibold">
-                  {comment.user.nickname}
-                </span>
-                <div className="text-right text-sm text-gray-500">
-                  <div>작성: {formattedCreatedAt}</div>
-                  {isModified && <div>수정: {formattedModifiedAt}</div>}
+              <CommentAvatarFallback>{user.nickname[0]}</CommentAvatarFallback>
+            </CommentAvatar>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col">
+              <CommentHeader>
+                <div className="flex items-center gap-2">
+                  <CommentAuthor>{user.nickname}</CommentAuthor>
+                  <CommentTime dateTime={safeComment.createdAt}>{formattedDate}</CommentTime>
+                  {isModified && (
+                    <span className="text-xs text-gray-400">(수정됨)</span>
+                  )}
                 </div>
-              </div>
+              </CommentHeader>
+
               {isEditing ? (
-                <div className="mt-2 space-y-2">
-                  <CommentForm
-                    onSubmit={handleEdit}
-                    onCancel={() => setIsEditing(false)}
-                    initialValue={editContent}
-                    placeholder="댓글을 수정하세요..."
-                    existingNicknames={existingNicknames}
-                  />
-                </div>
+                <CommentArea
+                  onSubmit={handleEdit}
+                  onCancel={() => setIsEditing(false)}
+                  initialContent={safeComment.content}
+                  existingUsers={existingUsers}
+                />
               ) : (
                 <>
-                  <div className="mt-2 text-base">
-                    {renderContent(comment.content)}
-                    {isModified && (
-                      <span className="ml-2 text-gray-500">(수정됨)</span>
-                    )}
-                  </div>
-                  {comment.mentions.length > 0 && (
-                    <div className="mt-2 text-sm text-gray-500">
-                      멘션된 사용자: {comment.mentions.join(', ')}
-                    </div>
-                  )}
-                  <div className="mt-3 flex gap-2 text-sm text-gray-500">
-                    {comment.depth === 0 && (
-                      <button
-                        onClick={handleReply}
-                        className="hover:text-blue-500"
+                  <CommentContent>
+                    {renderContent(safeComment.content)}
+                  </CommentContent>
+                  <div className="space-x-2 mt-2">
+                    {onReply && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsReplying(!isReplying)}
                       >
                         답글
-                      </button>
+                      </Button>
                     )}
-                    {isAuthor && (
+                    {currentUserId === user.id && (
                       <>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => setIsEditing(true)}
-                          className="hover:text-blue-500"
                         >
                           수정
-                        </button>
-                        <button
-                          onClick={handleDelete}
-                          className="hover:text-red-500"
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onDelete(safeComment.commentId)}
+                          className="text-red-500 hover:text-red-600"
                         >
                           삭제
-                        </button>
+                        </Button>
                       </>
                     )}
                   </div>
@@ -196,33 +167,35 @@ export default function CommentItem({
             </div>
           </div>
         </div>
-      </div>
+      </CommentContainer>
 
       {isReplying && (
-        <div className="mb-1 ml-16">
-          <CommentForm
-            onSubmit={handleSubmitReply}
+        <CommentNestedContainer>
+          <CommentArea
+            onSubmit={handleReply}
             onCancel={() => setIsReplying(false)}
             placeholder="답글을 입력하세요..."
-            isReply
-            existingNicknames={existingNicknames}
+            existingUsers={existingUsers}
           />
-        </div>
+        </CommentNestedContainer>
       )}
 
-      {comment.childComments?.map((childComments: CommentResponseDto) => (
-        <CommentItem
-          key={childComments.commentId}
-          comment={childComments}
-          onReply={onReply}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          onSubmitReply={onSubmitReply}
-          currentNickname={currentNickname}
-          existingNicknames={existingNicknames}
-          isTestMode={isTestMode}
-        />
-      ))}
+      {safeComment.childComments && safeComment.childComments.length > 0 && (
+        <CommentNestedContainer>
+          {safeComment.childComments.map((reply) => (
+            <NestedCommentItem
+              key={reply.commentId}
+              comment={reply}
+              currentUserId={currentUserId}
+              existingUsers={existingUsers}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </CommentNestedContainer>
+      )}
     </div>
   );
-}
+};
+
+export default CommentItem;
