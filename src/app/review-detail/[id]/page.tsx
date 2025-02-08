@@ -1,5 +1,4 @@
-import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
-import WebtoonDetail from '@/components/buisness/webtoonDetail/WebtoonInfo';
+import { fetchReviewDetails } from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 export default async function Page({ params }: { params: { id?: string } }) {
@@ -10,18 +9,21 @@ export default async function Page({ params }: { params: { id?: string } }) {
   }
 
   try {
-    const webtoon = await fetchWebtoonById(id);
+    const review = await fetchReviewDetails(id);
 
     return (
       <>
-        <NavigationBar /> {/* 네비게이션 바 추가 */}
-        <WebtoonDetail webtoon={webtoon} />
+        <NavigationBar />
+
+        {/* 이 위치에 만드신 컴포넌트를 넣어주세요!! */}
+        <div> {review.title} </div>
+        <div> {review.content} </div>
       </>
     );
   } catch (error) {
     return (
       <div className="text-center text-red-500">
-        웹툰 데이터를 불러오는데 실패했습니다.
+        리뷰 데이터를 불러오는데 실패했습니다.
       </div>
     );
   }

@@ -1,4 +1,4 @@
-interface ReviewRequestDto {
+export interface ReviewRequestDto {
   title: string;
   content: string;
   webtoonId: number; // Long 타입

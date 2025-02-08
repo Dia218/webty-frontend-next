@@ -1,8 +1,8 @@
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
-import SmallReviewItem from '@/components/common/Review/SmaillReviewItem';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
+import SmallReviewItem from '@/components/common/SmallReviewList/SmallReviewItem';
 
 export const SmallReviewList: React.FC<{
-  reviews: FeedReviewResponseDto[];
+  reviews: ReviewItemResponseDto[];
 }> = ({ reviews }) => {
   return (
     <div className="grid grid-cols-1 gap-4">

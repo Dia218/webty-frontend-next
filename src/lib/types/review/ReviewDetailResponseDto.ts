@@ -1,4 +1,4 @@
-export interface FeedReviewResponseDto {
+export interface ReviewDetailResponse {
   reviewId: number;
   userDataResponse: {
     id: number;
@@ -9,9 +9,15 @@ export interface FeedReviewResponseDto {
   title: string;
   viewCount: number;
   spoilerStatus: 'TRUE' | 'FALSE';
-  webtoonId: number;
-  webtoonName: string;
   thumbnailUrl: string;
   imageUrls: string[];
-  commentCount: number;
+  commentResponses: {
+    content: any[];
+    currentPage: number;
+    totalPages: number;
+    totalElements: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    last: boolean;
+  };
 }

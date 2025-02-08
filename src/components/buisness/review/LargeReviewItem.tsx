@@ -2,17 +2,33 @@
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
+// Props 타입 정의
 
-// 각 리뷰 아이템에 대한 컴포넌트
 interface LargeReviewItemProps {
   review: ReviewItemResponseDto; // ReviewDto -> ReviewItemResponseDto로 변경
 }
 
 const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
+
+  // const [FeedReviewResponseDto, setFeedReviewResponseDto] =
+  //   useState<FeedReviewResponseDto | null>(null);
   const router = useRouter();
 
+  // useEffect(() => {
+  //   fetch(`http://localhost:8080/review-detail/${reviewId}`)
+  //     .then((res) => res.json())
+  //     .then((data) => setFeedReviewResponseDto(data))
+  //     .catch((err) =>
+  //       console.error('리뷰 데이터를 가져오는 중 오류 발생:', err)
+  //     );
+  // }, [reviewId]);
+
+  // if (!FeedReviewResponseDto) {
+  //   return <div className="text-center p-4">리뷰를 불러오는 중...</div>;
+  // }
+
   const handleNavigate = () => {
-    router.push(`/reviews/${review.reviewId}`);
+    router.push(`/review-detail/${review.reviewId}`);
   };
 
   return (
