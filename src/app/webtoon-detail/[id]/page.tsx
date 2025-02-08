@@ -1,32 +1,50 @@
 'use client';
 
-import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
+import { use, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { fetchWebtoonById, WebtoonDTO } from '@/lib/api/webtoon/webtoon';
 import WebtoonDetail from '@/components/buisness/webtoonDetail/WebtoonInfo';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
+import WebtoonDrawerTaps from '@/components/buisness/webtoonDetail/WebtoonDrawerTaps';
+import ExpandableDrawer from '@/components/common/ExpandableDrawer/ExpandableDrawer';
 
+export default function Page({ params }: { params: Promise<{ id?: string }> }) {
+  const { id } = use(params); // use()로 params 언랩
+  const router = useRouter();
+  const [webtoon, setWebtoon] = useState<WebtoonDTO | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!id) {
+      setError('잘못된 요청입니다.');
+      return;
+    }
 
-export default async function Page({ params }: { params: { id?: string } }) {
-  const { id } = await params;
+    const fetchWebtoon = async () => {
+      try {
+        const data = await fetchWebtoonById(id);
+        setWebtoon(data);
+      } catch (err) {
+        setError('웹툰 데이터를 불러오는데 실패했습니다.');
+      }
+    };
 
-  if (!id) {
-    return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
+    fetchWebtoon();
+  }, [id]);
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
-  try {
-    const webtoon = await fetchWebtoonById(id);
-
-    return (
-      <>
-        <NavigationBar /> {/* 네비게이션 바 추가 */}
-        <WebtoonDetail webtoon={webtoon} />
-      </>
-    );
-  } catch (error) {
-    return (
-      <div className="text-center text-red-500">
-        웹툰 데이터를 불러오는데 실패했습니다.
-      </div>
-    );
+  if (!webtoon) {
+    return <div className="text-center text-gray-500">로딩 중...</div>;
   }
+
+  return (
+    <>
+      <NavigationBar />
+      <WebtoonDetail webtoon={webtoon} />
+      <ExpandableDrawer children={<WebtoonDrawerTaps />} />
+    </>
+  );
 }
