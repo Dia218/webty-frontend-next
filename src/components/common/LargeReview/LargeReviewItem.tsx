@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
+import { useState } from 'react';
 // Props 타입 정의
 
 interface LargeReviewItemProps {
@@ -9,23 +10,9 @@ interface LargeReviewItemProps {
 }
 
 const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
-
-  // const [FeedReviewResponseDto, setFeedReviewResponseDto] =
-  //   useState<FeedReviewResponseDto | null>(null);
+  const [showSpoiler, setShowSpoiler] = useState(false);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   fetch(`http://localhost:8080/review-detail/${reviewId}`)
-  //     .then((res) => res.json())
-  //     .then((data) => setFeedReviewResponseDto(data))
-  //     .catch((err) =>
-  //       console.error('리뷰 데이터를 가져오는 중 오류 발생:', err)
-  //     );
-  // }, [reviewId]);
-
-  // if (!FeedReviewResponseDto) {
-  //   return <div className="text-center p-4">리뷰를 불러오는 중...</div>;
-  // }
 
   const handleNavigate = () => {
     router.push(`/review-detail/${review.reviewId}`);
@@ -53,8 +40,29 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
              </div>
          </div>
 
-         <h2 className="text-lg font-semibold text-gray-800 mb-1 ">{review.title}</h2>
+         <h2 className="text-lg font-semibold text-gray-800 mb-1 flex items-center ">
+          {review.title}
+          {review.spoilerStatus === 'TRUE' && (
+            <span className="text-red-500 text-sm">🚨 [스포일러]</span>
+          )}
+          </h2>
+         
+          {review.spoilerStatus === 'TRUE' && !showSpoiler ? (
+          <div className="bg-red-100 text-red-500 p-2 rounded mt-2 mr-2 flex items-center justify-between">
+            <span>⚠️ 이 리뷰에는 스포일러가 포함되어 있습니다.</span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // 클릭 이벤트 전파 방지
+                setShowSpoiler(true);
+              }}
+              className="text-blue-500 underline text-sm"
+            >
+              보기
+            </button>
+           </div>
+        ) : (
          <p className="text-sm text-gray-600 line-clamp-1 ">{review.content}</p>
+         )}
         
 
         <div className="flex flex-row space-x-2 mt-2">
