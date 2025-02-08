@@ -31,19 +31,22 @@ const NavigationBar: React.FC = () => {
         <Link href="/">WEBTY</Link>
       </div>
 
-      {/* 검색창 */}
-      {!HIDDEN_ELEMENTS.search.includes(pathname) && (
-        <div className="search-box">
+       {/* 검색창 */}
+       {!HIDDEN_ELEMENTS.search.includes(pathname) && (
+        <div className="search-box flex w-1/2 ">
           <input
             type="text"
             placeholder="검색어를 입력하세요"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // 엔터 키 검색
+            className="flex-1 w-4/5 mx-2 h-full px-2 "
           />
-          <button onClick={handleSearch}>🔍</button>
+          <button onClick={handleSearch}
+          >🔍</button>
         </div>
       )}
+
 
       {/* 버튼 그룹 */}
       <div className="nav-buttons">
