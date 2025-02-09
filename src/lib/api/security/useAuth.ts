@@ -5,7 +5,7 @@ const redirectUrlAfterSocialLogin = 'http://localhost:3000';
 const socialLogoutUrl = `http://localhost:8080/logout`;
 
 export const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [nickname, setNickname] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 

@@ -6,12 +6,24 @@ import {
   LikeButton,
   DislikeButton,
 } from '@/components/common/RecommendButton/RecommendButton';
+import {
+  recommendHate,
+  recommendLike,
+  removeRecommendHate,
+  removeRecommendLike,
+} from '@/lib/api/review/recommend';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
+  recommendationStatus: { likes: boolean; hates: boolean } | null;
+  isLoggedIn: boolean;
 }
 
-const ReviewDetail: React.FC<ReviewDetailProps> = ({ review }) => {
+const ReviewDetail: React.FC<ReviewDetailProps> = ({
+  review,
+  recommendationStatus,
+  isLoggedIn,
+}) => {
   const { updateReview, deleteReview } = useReviews();
 
   const handleDelete = async () => {
@@ -35,16 +47,16 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ review }) => {
           조회수 : {review.viewCount}
         </div>
         <LikeButton
-          isLoggedIn={true}
-          isInitialActive={false}
-          onActivate={() => console.log('👍 추천 추가!')}
-          onDeactivate={() => console.log('👍 추천 취소!')}
+          isLoggedIn={isLoggedIn}
+          isInitialActive={recommendationStatus?.likes || false}
+          onActivate={() => recommendLike(review.reviewId)}
+          onDeactivate={() => removeRecommendLike(review.reviewId)}
         />
         <DislikeButton
-          isLoggedIn={true}
-          isInitialActive={false}
-          onActivate={() => console.log('👎 비추천 추가!')}
-          onDeactivate={() => console.log('👎 비추천 취소!')}
+          isLoggedIn={isLoggedIn}
+          isInitialActive={recommendationStatus?.hates || false}
+          onActivate={() => recommendHate(review.reviewId)}
+          onDeactivate={() => removeRecommendHate(review.reviewId)}
         />
       </div>
     </>
