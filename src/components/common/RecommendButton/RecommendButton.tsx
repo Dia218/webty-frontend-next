@@ -3,13 +3,15 @@ import React, { useState, useEffect } from 'react';
 interface ButtonProps {
   isInitialActive?: boolean;
   isLoggedIn: boolean;
-  onClick: () => void;
+  onActivate: () => void; // 활성화 시 실행할 함수
+  onDeactivate: () => void; // 비활성화 시 실행할 함수
 }
 
 export const LikeButton: React.FC<ButtonProps> = ({
   isInitialActive = false,
   isLoggedIn,
-  onClick,
+  onActivate,
+  onDeactivate,
 }) => {
   const [isActive, setIsActive] = useState(isInitialActive);
 
@@ -19,8 +21,14 @@ export const LikeButton: React.FC<ButtonProps> = ({
 
   const handleClick = async () => {
     if (!isLoggedIn) return;
+
     setIsActive((prev) => !prev);
-    await onClick();
+
+    if (isActive) {
+      await onDeactivate(); // 👍 취소
+    } else {
+      await onActivate(); // 👍 활성화
+    }
   };
 
   return (
@@ -43,7 +51,8 @@ export const LikeButton: React.FC<ButtonProps> = ({
 export const DislikeButton: React.FC<ButtonProps> = ({
   isInitialActive = false,
   isLoggedIn,
-  onClick,
+  onActivate,
+  onDeactivate,
 }) => {
   const [isActive, setIsActive] = useState(isInitialActive);
 
@@ -53,8 +62,14 @@ export const DislikeButton: React.FC<ButtonProps> = ({
 
   const handleClick = async () => {
     if (!isLoggedIn) return;
+
     setIsActive((prev) => !prev);
-    await onClick();
+
+    if (isActive) {
+      await onDeactivate(); // 👎 취소
+    } else {
+      await onActivate(); // 👎 활성화
+    }
   };
 
   return (

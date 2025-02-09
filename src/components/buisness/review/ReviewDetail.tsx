@@ -2,6 +2,10 @@ import React from 'react';
 import { ReviewDetailResponseDto } from '@/lib/types/review/ReviewDetailResponseDto';
 import useReviews from '@/lib/api/review/review';
 import UpdateDeleteButtons from '@/components/common/UpdateDeleteButtons/UpdateDeleteButtons';
+import {
+  LikeButton,
+  DislikeButton,
+} from '@/components/common/RecommendButton/RecommendButton';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
@@ -27,9 +31,21 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ review }) => {
     <>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
         <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
-        <div className="px-3 py-1 bg-white text-black">
+        <div className="px-3 py-3 bg-white text-black">
           조회수 : {review.viewCount}
         </div>
+        <LikeButton
+          isLoggedIn={true}
+          isInitialActive={false}
+          onActivate={() => console.log('👍 추천 추가!')}
+          onDeactivate={() => console.log('👍 추천 취소!')}
+        />
+        <DislikeButton
+          isLoggedIn={true}
+          isInitialActive={false}
+          onActivate={() => console.log('👎 비추천 추가!')}
+          onDeactivate={() => console.log('👎 비추천 취소!')}
+        />
       </div>
     </>
   );
