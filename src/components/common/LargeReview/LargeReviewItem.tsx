@@ -40,6 +40,9 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
               조회수: {review.viewCount}
             </p>
             <p className="mx-2 text-xs text-gray-500">
+              추천수: {review.recommendCount}
+            </p>
+            <p className="mx-2 text-xs text-gray-500">
               댓글: {review.commentCount}
             </p>
           </div>
@@ -73,7 +76,9 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
 
         <div className="flex flex-row space-x-2 mt-2">
           {/* 이미지가 있으면 이미지들을 표시 */}
-          {review.imageUrls && review.imageUrls.length > 0 ? (
+          {(review.spoilerStatus === 'FALSE' || showSpoiler) &&
+          review.imageUrls &&
+          review.imageUrls.length > 0 ? (
             review.imageUrls.map((url, index) => (
               <img
                 key={index}
