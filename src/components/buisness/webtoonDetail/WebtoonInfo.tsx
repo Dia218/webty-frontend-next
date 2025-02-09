@@ -12,19 +12,10 @@ import {
   deleteFavoriteWebtoon,
 } from '@/lib/api/webtoon/favorite';
 import { useAuth } from '@/lib/api/security/useAuth';
-
-interface WebtoonDTO {
-  webtoonId: string;
-  webtoonName: string;
-  platform: string;
-  webtoonLink: string;
-  thumbnailUrl: string;
-  authors: string;
-  finished: boolean;
-}
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 interface WebtoonDetailProps {
-  webtoon: WebtoonDTO;
+  webtoon: WebtoonDetailDto;
 }
 
 export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
@@ -37,7 +28,7 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
       if (isLoggedIn) {
-        const isFav = await checkFavoriteWebtoon(webtoon.webtoonId);
+        const isFav = await checkFavoriteWebtoon(webtoon.webtoonId.toString());
         setIsFavorite(isFav);
       } else {
         setIsFavorite(false); // 로그인되지 않은 경우, 기본값인 false로 설정
@@ -62,10 +53,10 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
     try {
       let success = false;
       if (isFavorite) {
-        success = await deleteFavoriteWebtoon(webtoon.webtoonId);
+        success = await deleteFavoriteWebtoon(webtoon.webtoonId.toString());
         setDialogMessage('관심 웹툰이 삭제되었습니다.');
       } else {
-        success = await addFavoriteWebtoon(webtoon.webtoonId);
+        success = await addFavoriteWebtoon(webtoon.webtoonId.toString());
         setDialogMessage('관심 웹툰으로 등록되었습니다.');
       }
 
