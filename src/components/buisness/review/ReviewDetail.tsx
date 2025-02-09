@@ -1,37 +1,44 @@
+'use client';
+
 import React from 'react';
 import { ReviewDetailResponseDto } from '@/lib/types/review/ReviewDetailResponseDto';
 import useReviews from '@/lib/api/review/review';
 import UpdateDeleteButtons from '@/components/common/UpdateDeleteButtons/UpdateDeleteButtons';
+import { useRouter } from 'next/navigation';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
 }
 
 const ReviewDetail: React.FC<ReviewDetailProps> = ({ review }) => {
-  const { updateReview, deleteReview } = useReviews();
+  const { deleteReview } = useReviews();
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
-      await deleteReview(review.reviewId); // 삭제 요청 실행
+      await deleteReview(review.reviewId);
       alert('게시글이 삭제되었습니다.');
+      router.push('/feed');
     } catch (error) {
       alert('삭제에 실패했습니다.');
     }
   };
 
   const handleUpdate = () => {
-    alert('수정 기능은 아직 구현되지 않았습니다.'); // 수정 폼으로 이동하던가 해야할것 같습니다
+    // review 객체를 sessionStorage에 저장
+    sessionStorage.setItem('reviewData', JSON.stringify(review));
+
+    // reviewId만 URL을 통해 전달
+    router.push(`/review-update/${review.reviewId}`);
   };
 
   return (
-    <>
-      <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
-        <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
-        <div className="px-3 py-1 bg-white text-black">
-          조회수 : {review.viewCount}
-        </div>
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
+      <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
+      <div className="px-3 py-1 bg-white text-black">
+        조회수 : {review.viewCount}
       </div>
-    </>
+    </div>
   );
 };
 
