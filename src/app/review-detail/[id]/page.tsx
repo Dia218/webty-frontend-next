@@ -46,6 +46,7 @@ export default function Page() {
   return (
     <>
       <NavigationBar />
+      <div style={{ height: '20px' }} />
       <ReviewDetail review={review} />
     </>
   );

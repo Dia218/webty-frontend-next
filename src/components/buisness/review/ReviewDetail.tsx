@@ -24,12 +24,14 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({ review }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
-      <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
-      <div className="px-3 py-1 bg-white text-black">
-        조회수 : {review.viewCount}
+    <>
+      <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
+        <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
+        <div className="px-3 py-1 bg-white text-black">
+          조회수 : {review.viewCount}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
