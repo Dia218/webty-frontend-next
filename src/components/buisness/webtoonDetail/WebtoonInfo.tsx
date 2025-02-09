@@ -125,7 +125,7 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
               className="inline-flex items-center justify-center text-lg px-4 py-2 mb-4"
               style={{ minWidth: 'auto', width: 'fit-content' }}
             >
-              {webtoon.finished ? '연재 완료' : '연재 중'}
+              {webtoon.finished ? '완결' : '연재 중'}
             </Badge>
             <p className="text-xl font-semibold mb-4">
               플랫폼: {webtoon.platform}
