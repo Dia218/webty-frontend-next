@@ -17,12 +17,14 @@ interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
   recommendationStatus: { likes: boolean; hates: boolean } | null;
   isLoggedIn: boolean;
+  nickname: string | null;
 }
 
 const ReviewDetail: React.FC<ReviewDetailProps> = ({
   review,
   recommendationStatus,
   isLoggedIn,
+  nickname,
 }) => {
   const { updateReview, deleteReview } = useReviews();
 
@@ -42,7 +44,12 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
   return (
     <>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
-        <UpdateDeleteButtons onUpdate={handleUpdate} onDelete={handleDelete} />
+        {nickname === review.userDataResponse.nickname && (
+          <UpdateDeleteButtons
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+          />
+        )}
         <div className="px-3 py-3 bg-white text-black">
           조회수 : {review.viewCount}
         </div>
