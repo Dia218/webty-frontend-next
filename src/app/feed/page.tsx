@@ -1,6 +1,6 @@
 'use client';
 
-import LargeReviewList from '@/components/buisness/review/LargeReviewList';
+import FeedReview from '@/components/buisness/review/FeedReview';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import useReviews from '@/lib/api/review/review';
 import { useEffect } from 'react';
@@ -18,7 +18,7 @@ const FeedPage = () => {
   return (
     <>
       <NavigationBar /> {/* 네비게이션 바 */}
-      <LargeReviewList /> {/* ReviewList */}
+      <FeedReview /> {/* ReviewList */}
       {/* VotingList */}
     </>
   );
