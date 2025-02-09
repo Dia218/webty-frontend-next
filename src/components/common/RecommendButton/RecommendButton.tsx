@@ -4,14 +4,12 @@ interface ButtonProps {
   isInitialActive?: boolean;
   isLoggedIn: boolean;
   onClick: () => void;
-  count?: number; // 선택적 숫자 값
 }
 
 export const LikeButton: React.FC<ButtonProps> = ({
   isInitialActive = false,
   isLoggedIn,
   onClick,
-  count = 0, // 기본값 0
 }) => {
   const [isActive, setIsActive] = useState(isInitialActive);
 
@@ -38,7 +36,6 @@ export const LikeButton: React.FC<ButtonProps> = ({
       >
         👍
       </button>
-      <span className="ml-2 text-lg font-semibold">{count}</span>
     </div>
   );
 };
@@ -47,7 +44,6 @@ export const DislikeButton: React.FC<ButtonProps> = ({
   isInitialActive = false,
   isLoggedIn,
   onClick,
-  count = 0,
 }) => {
   const [isActive, setIsActive] = useState(isInitialActive);
 
@@ -74,7 +70,6 @@ export const DislikeButton: React.FC<ButtonProps> = ({
       >
         👎
       </button>
-      <span className="ml-2 text-lg font-semibold">{count}</span>
     </div>
   );
 };
