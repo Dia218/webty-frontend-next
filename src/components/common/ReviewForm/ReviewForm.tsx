@@ -85,7 +85,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       content,
       webtoonId,
       spoilerStatus: spoilerStatus ? 'TRUE' : 'FALSE',
-      images: uploadedFiles, // 새로 업로드한 파일만 전송
+      images: uploadedFiles, // 기존 이미지 + 새로 업로드한 이미지
     };
 
     const reviewId = await onSubmit(reviewRequestDto);
@@ -227,7 +227,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
         {/* 제출 버튼 */}
         <div className="flex justify-end mt-8">
-          <Button onClick={handleSubmit}>
+          <Button onClick={handleSubmit} className="px-6 py-2 text-lg">
             {mode === 'write' ? '리뷰 작성' : '리뷰 수정'}
           </Button>
         </div>
