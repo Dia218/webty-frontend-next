@@ -4,6 +4,7 @@ import useReviews from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation'; // useParams 사용
+import ReviewDetail from '@/components/buisness/review/ReviewDetail';
 
 export default function Page() {
   const params = useParams(); //  Next.js에서 동적 라우트 가져오기
@@ -48,8 +49,8 @@ export default function Page() {
   return (
     <>
       <NavigationBar />
-      <div>{review?.title}</div>
-      <div>{review?.content}</div>
+      <div style={{ height: '20px' }} />
+      <ReviewDetail review={review} />
     </>
   );
 }
