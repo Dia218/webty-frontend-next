@@ -24,6 +24,7 @@ const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
           <p>웹툰명: {review.webtoonName}</p>
           <div className="flex space-x-2">
             <p>조회수: {review.viewCount}</p>
+            <p>추천수: {review.recommendCount}</p>
             <p>댓글: {review.commentCount}</p>
           </div>
         </div>

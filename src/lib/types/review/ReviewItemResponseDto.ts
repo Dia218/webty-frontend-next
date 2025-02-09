@@ -12,4 +12,5 @@ export interface ReviewItemResponseDto {
   thumbnailUrl: string;
   imageUrls: string[];
   commentCount: number;
+  recommendCount: number;
 }

@@ -2,7 +2,7 @@
 
 import useReviews from '@/lib/api/review/review';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation'; // useParams 사용
 
 export default function Page() {
@@ -18,8 +18,11 @@ export default function Page() {
   const [review, setReview] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef<boolean>(false); // 중복방지
 
   useEffect(() => {
+    if (hasFetched.current) return; // ✅ 이미 요청했으면 실행하지 않음
+    hasFetched.current = true; // ✅ 요청 완료 상태로 변경
     const fetchData = async () => {
       try {
         const reviewData = await fetchReviewById(reviewId);

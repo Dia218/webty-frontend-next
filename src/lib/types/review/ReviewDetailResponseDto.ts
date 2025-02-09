@@ -20,4 +20,10 @@ export interface ReviewDetailResponseDto {
     hasPrevious: boolean;
     last: boolean;
   };
+  createdAt: string;
+  updatedAt: string | null;
+  recommendCount: {
+    hates: number;
+    likes: number;
+  };
 }
