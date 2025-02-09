@@ -186,7 +186,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   // 게시글 삭제
   const deleteReview = async (reviewId: number) => {
     try {
-      await axios.delete(`/reviews/delete/${reviewId}`, {
+      await axios.delete(`http://localhost:8080/reviews/delete/${reviewId}`, {
         withCredentials: true,
       });
       setReviews((prevReviews) =>
