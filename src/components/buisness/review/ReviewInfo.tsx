@@ -19,9 +19,9 @@ const ReviewInfo: React.FC<ReviewInfoProps> = ({
 }) => {
   return (
     <div className="flex flex-col space-y-2 p-4 bg-gray-100 rounded-lg shadow">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center">
         {showButtons && <div>{actionButtons}</div>}
-        <p className="text-gray-600">조회수: {viewCount}</p>
+        <p className="text-gray-600 ml-auto">조회수: {viewCount}</p>
       </div>
       <p className="text-gray-600">
         작성일자: {new Date(createdAt).toLocaleString()}
