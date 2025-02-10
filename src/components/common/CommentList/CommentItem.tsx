@@ -5,20 +5,22 @@ import { CommentAvatar, CommentAvatarFallback, CommentAvatarImage } from '@/comp
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils/formatDate';
 import CommentArea from './CommentArea';
-import NestedCommentItem from './NestedCommentItem';
 import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
-import { CommentContainer, CommentNestedContainer } from '@/components/ui/comment-container';
-import { CommentHeader, CommentAuthor, CommentTime } from '@/components/ui/comment-header';
-import { CommentContent, CommentMention } from '@/components/ui/comment-content';
+import { CommentContainer } from '@/components/ui/comment-container';
+import { CommentHeader } from '@/components/ui/comment-header';
+import { CommentContent } from '@/components/ui/comment-content';
+import { useReviewComments } from '@/lib/api/reviewComment/reviewComment';
+import { useAuth } from '@/lib/api/security/useAuth';
+import { CommentRequestDto } from '@/lib/types/reviewComment/CommentRequestDto';
 
 interface CommentItemProps {
   comment: CommentResponseDto;
   currentUserId: number;
   existingUsers?: UserDataResponseDto[];
-  onEdit: (commentId: number, content: string) => void;
+  onEdit:(commentId: number, commentRequestDto: CommentRequestDto) => Promise<void>;
   onDelete: (commentId: number) => void;
-  onReply?: (content: string, parentId: number) => void;
+  onReply?: (commentRequestDto: CommentRequestDto) => Promise<void>;
 }
 
 const CommentItem = ({
@@ -54,28 +56,6 @@ const CommentItem = ({
   const safeComment = comment || defaultComment;
   const user = safeComment.user || defaultUser;
 
-  const renderContent = (content: string = '') => {
-    if (!content) return null;
-    
-    const parts = content.split(/(@[^\s]+(?:\s+[^\s]+)*\u200B)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('@')) {
-        const nickname = part.slice(1).replace('\u200B', '').trim();
-        const isMentioned = safeComment.mentions?.includes(nickname);
-        
-        return (
-          <CommentMention
-            key={index}
-            isMentioned={isMentioned}
-          >
-            {part.replace('\u200B', '')}
-          </CommentMention>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
-  };
-
   const handleEdit = (newContent: string) => {
     onEdit(safeComment.commentId, newContent);
     setIsEditing(false);
@@ -83,6 +63,7 @@ const CommentItem = ({
 
   const handleReply = (content: string) => {
     if (onReply) {
+        console.log('parent id:', safeComment.commentId)
       onReply(content, safeComment.commentId);
       setIsReplying(false);
     }
@@ -91,7 +72,6 @@ const CommentItem = ({
   // 날짜 포맷팅
   const formattedDate = formatDate(safeComment.createdAt);
   const isModified = safeComment.modifiedAt && safeComment.modifiedAt !== safeComment.createdAt;
-  const modifiedDate = isModified ? formatDate(safeComment.modifiedAt) : null;
 
   return (
     <div className="space-y-4">
@@ -110,15 +90,10 @@ const CommentItem = ({
 
           <div className="flex-1 min-w-0">
             <div className="flex flex-col">
-              <CommentHeader>
-                <div className="flex items-center gap-2">
-                  <CommentAuthor>{user.nickname}</CommentAuthor>
-                  <CommentTime dateTime={safeComment.createdAt}>{formattedDate}</CommentTime>
-                  {isModified && (
-                    <span className="text-xs text-gray-400">(수정됨)</span>
-                  )}
-                </div>
-              </CommentHeader>
+              <CommentHeader
+                author={user.nickname}
+                timestamp={new Date(safeComment.createdAt)}
+              />
 
               {isEditing ? (
                 <CommentArea
@@ -130,7 +105,7 @@ const CommentItem = ({
               ) : (
                 <>
                   <CommentContent>
-                    {renderContent(safeComment.content)}
+                    {safeComment.content}
                   </CommentContent>
                   <div className="space-x-2 mt-2">
                     {onReply && (
@@ -170,29 +145,14 @@ const CommentItem = ({
       </CommentContainer>
 
       {isReplying && (
-        <CommentNestedContainer>
+        <div className="ml-12">
           <CommentArea
             onSubmit={handleReply}
             onCancel={() => setIsReplying(false)}
             placeholder="답글을 입력하세요..."
             existingUsers={existingUsers}
           />
-        </CommentNestedContainer>
-      )}
-
-      {safeComment.childComments && safeComment.childComments.length > 0 && (
-        <CommentNestedContainer>
-          {safeComment.childComments.map((reply) => (
-            <NestedCommentItem
-              key={reply.commentId}
-              comment={reply}
-              currentUserId={currentUserId}
-              existingUsers={existingUsers}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))}
-        </CommentNestedContainer>
+        </div>
       )}
     </div>
   );

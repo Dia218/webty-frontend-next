@@ -3,5 +3,5 @@ export interface ReviewRequestDto {
   content: string;
   webtoonId: number; // Long 타입
   spoilerStatus: string;
-  images: File[]; // 이미지 배열
+  images?: File[]; // 이미지 배열
 }

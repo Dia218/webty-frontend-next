@@ -1,8 +1,8 @@
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
+const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
   review,
 }) => {
   const [showSpoiler, setShowSpoiler] = useState(false);
@@ -24,6 +24,7 @@ const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
           <p>웹툰명: {review.webtoonName}</p>
           <div className="flex space-x-2">
             <p>조회수: {review.viewCount}</p>
+            <p>추천수: {review.recommendCount}</p>
             <p>댓글: {review.commentCount}</p>
           </div>
         </div>
@@ -57,12 +58,12 @@ const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
         {/* 유저 정보 */}
         <div className="flex items-center mt-2">
           <img
-            src={`${review.UserDataResponseDto.profileImage}`}
-            alt={review.UserDataResponseDto.nickname}
+            src={`${review.userDataResponse.profileImage}`}
+            alt={review.userDataResponse.nickname}
             className="w-8 h-8 rounded-full mr-2 object-cover"
           />
           <span className="text-sm font-medium">
-            {review.UserDataResponseDto.nickname}
+            {review.userDataResponse.nickname}
           </span>
         </div>
       </div>
@@ -70,7 +71,9 @@ const SmallReviewItem: React.FC<{ review: FeedReviewResponseDto }> = ({
       {/* 오른쪽 이미지 (가로 배치) */}
       {(review.spoilerStatus === 'FALSE' || showSpoiler) &&
         review.imageUrls?.length > 0 && (
-          <div className="grid grid-cols-2 gap-2">
+          <div
+            className={`grid ${review.imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2`}
+          >
             {review.imageUrls.slice(0, 2).map((url, index) => (
               <img
                 key={index}

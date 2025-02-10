@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { fetchReviewsByTitle } from '@/lib/api/search/feedReviewSearch';
-import { FeedReviewResponseDto } from '@/lib/types/review/FeedReviewResponseDto';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { Button } from '@/components/ui/button';
 import { SmallReviewList } from '@/components/common/SmallReviewList/SmallReviewList';
 
@@ -11,13 +11,14 @@ interface ReviewPageProps {
 }
 
 const ReviewPage: React.FC<ReviewPageProps> = ({ searchQuery }) => {
-  const [reviews, setReviews] = useState<FeedReviewResponseDto[]>([]);
+  const [reviews, setReviews] = useState<ReviewItemResponseDto[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     if (searchQuery.trim() !== '') {
       fetchReviewsByTitle(currentPage, { title: searchQuery }).then((data) => {
+        console.log('API 응답 데이터:', data);
         if (data) {
           setReviews(data.content);
           setCurrentPage(data.currentPage);

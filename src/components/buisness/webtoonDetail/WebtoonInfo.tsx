@@ -11,6 +11,7 @@ import {
   checkFavoriteWebtoon,
   deleteFavoriteWebtoon,
 } from '@/lib/api/webtoon/favorite';
+import { useAuth } from '@/lib/api/security/useAuth';
 
 interface WebtoonDTO {
   webtoonId: string;
@@ -27,6 +28,7 @@ interface WebtoonDetailProps {
 }
 
 export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
+  const { isLoggedIn } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -34,12 +36,24 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
-      const isFav = await checkFavoriteWebtoon(webtoon.webtoonId);
-      setIsFavorite(isFav);
+      if (isLoggedIn) {
+        const isFav = await checkFavoriteWebtoon(webtoon.webtoonId);
+        setIsFavorite(isFav);
+      } else {
+        setIsFavorite(false); // 로그인되지 않은 경우, 기본값인 false로 설정
+      }
     };
 
     fetchFavoriteStatus();
-  }, [webtoon.webtoonId]);
+  }, [isLoggedIn, webtoon.webtoonId]);
+
+  const handleFavoriteClick = () => {
+    if (!isLoggedIn) {
+      alert('로그인해주세요');
+      return;
+    }
+    handleFavoriteToggle();
+  };
 
   const handleFavoriteToggle = async () => {
     if (loading) return;
@@ -87,7 +101,7 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
             />
             {/* 관심 웹툰 하트 버튼 */}
             <button
-              onClick={handleFavoriteToggle}
+              onClick={handleFavoriteClick}
               disabled={loading}
               className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md"
             >
@@ -111,7 +125,7 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
               className="inline-flex items-center justify-center text-lg px-4 py-2 mb-4"
               style={{ minWidth: 'auto', width: 'fit-content' }}
             >
-              {webtoon.finished ? '연재 완료' : '연재 중'}
+              {webtoon.finished ? '완결' : '연재 중'}
             </Badge>
             <p className="text-xl font-semibold mb-4">
               플랫폼: {webtoon.platform}

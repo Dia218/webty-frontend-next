@@ -4,14 +4,24 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
-import { MentionSuggestions } from './MentionSuggestions';  
+import { MentionSuggestions } from './MentionSuggestions';
+import { CommentRequestDto } from '@/lib/types/reviewComment/CommentRequestDto';
 
-interface CommentAreaProps {
-  onSubmit: (content: string) => void;
+export interface CommentAreaProps {
+  onSubmit?: (commentRequestDto: CommentRequestDto) => Promise<void>
   onCancel?: () => void;
   initialContent?: string;
   placeholder?: string;
-  existingUsers: UserDataResponseDto[];
+  existingUsers?: UserDataResponseDto[];
+  reviewId?: number;
+  parentCommentId?: number;
+  isThreadView?: boolean;
+}
+
+interface MentionSuggestion {
+  users: UserDataResponseDto[];
+  startPosition: number;
+  query: string;
 }
 
 const CommentArea = ({
@@ -19,25 +29,27 @@ const CommentArea = ({
   onCancel,
   initialContent = '',
   placeholder = '댓글을 입력하세요...',
-  existingUsers
+  existingUsers = [],
+  reviewId,
+  parentCommentId,
+  isThreadView = false
 }: CommentAreaProps) => {
   const [content, setContent] = useState(initialContent);
-  const [suggestions, setSuggestions] = useState<UserDataResponseDto[]>([]);
-  const [mentionStartIndex, setMentionStartIndex] = useState<number>(-1);
+  const [mentionSuggestion, setMentionSuggestion] = useState<MentionSuggestion | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (initialContent) {
-      setContent(initialContent);
-    }
-  }, [initialContent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (content.trim()) {
-      onSubmit(content.trim());
+      if (onSubmit) {
+        onSubmit({
+          content: content,
+          parentCommentId: parentCommentId ?? 0,
+          mentions: []
+        });
+      }
       setContent('');
-      setSuggestions([]);
+      setMentionSuggestion(null);
     }
   };
 
@@ -46,33 +58,50 @@ const CommentArea = ({
     setContent(newContent);
 
     // 멘션 제안 처리
-    const lastAtIndex = newContent.lastIndexOf('@');
-    if (lastAtIndex !== -1) {
-      const query = newContent.slice(lastAtIndex + 1).split(/[\s\n]/)[0].toLowerCase();
-      if (query) {
-        const filtered = existingUsers.filter(user => 
-          user.nickname.toLowerCase().includes(query)
-        );
-        setSuggestions(filtered);
-        setMentionStartIndex(lastAtIndex);
+    const cursorPosition = e.target.selectionStart;
+    const textBeforeCursor = newContent.slice(0, cursorPosition);
+    const mentionMatch = textBeforeCursor.match(/@(\S*)$/);
+
+    if (mentionMatch) {
+      const query = mentionMatch[1].toLowerCase();
+      const startPosition = cursorPosition - (mentionMatch[0].length - 1);
+      
+      // 사용자 목록 필터링
+      const filteredUsers = existingUsers.filter(user => 
+        user.nickname.toLowerCase().includes(query)
+      );
+
+      if (filteredUsers.length > 0) {
+        setMentionSuggestion({
+          users: filteredUsers,
+          startPosition,
+          query
+        });
       } else {
-        setSuggestions([]);
+        setMentionSuggestion(null);
       }
     } else {
-      setSuggestions([]);
+      setMentionSuggestion(null);
     }
   };
 
   const handleSuggestionClick = (user: UserDataResponseDto) => {
-    if (mentionStartIndex !== -1) {
-      const before = content.slice(0, mentionStartIndex);
-      const after = content.slice(mentionStartIndex).split(/[\s\n]/);
-      after[0] = `@${user.nickname}`;
-      setContent(before + after.join(' '));
-      setSuggestions([]);
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-      }
+    if (!mentionSuggestion) return;
+
+    const beforeMention = content.slice(0, mentionSuggestion.startPosition - 1);
+    const afterMention = content.slice(
+      mentionSuggestion.startPosition + mentionSuggestion.query.length
+    );
+    
+    // 멘션 텍스트 생성 (제로 위드 스페이스로 멘션 구분)
+    const mentionText = `@${user.nickname}\u200B `;
+    const newContent = `${beforeMention}${mentionText}${afterMention}`;
+    
+    setContent(newContent);
+    setMentionSuggestion(null);
+
+    if (textareaRef.current) {
+      textareaRef.current.focus();
     }
   };
 
@@ -86,9 +115,9 @@ const CommentArea = ({
           placeholder={placeholder}
           className="w-full min-h-[100px] resize-y"
         />
-        {suggestions.length > 0 && (
+        {mentionSuggestion && mentionSuggestion.users.length > 0 && (
           <MentionSuggestions
-            users={suggestions}
+            users={mentionSuggestion.users}
             onSelect={handleSuggestionClick}
             position={{
               top: textareaRef.current?.getBoundingClientRect().bottom ?? 0,
@@ -98,21 +127,20 @@ const CommentArea = ({
         )}
       </div>
       <div className="flex justify-end gap-2">
-        {onCancel && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-          >
-            취소
-          </Button>
-        )}
         <Button
           type="submit"
           disabled={!content.trim()}
         >
           등록
         </Button>
+        {onCancel && (
+          <Button
+            type="reset"
+            onClick={onCancel}
+          >
+            취소
+          </Button>
+        )}
       </div>
     </form>
   );

@@ -8,8 +8,8 @@ import CommentArea from './CommentArea';
 import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
 import { CommentContainer } from '@/components/ui/comment-container';
-import { CommentHeader, CommentAuthor, CommentTime } from '@/components/ui/comment-header';
-import { CommentContent, CommentMention } from '@/components/ui/comment-content';
+import { CommentHeader } from '@/components/ui/comment-header';
+import { CommentContent } from '@/components/ui/comment-content';
 
 interface NestedCommentItemProps {
   comment: CommentResponseDto;
@@ -28,30 +28,23 @@ const NestedCommentItem = ({
 }: NestedCommentItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const renderContent = (content: string) => {
-    const parts = content.split(/(@[^\s]+(?:\s+[^\s]+)*\u200B)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('@')) {
-        const nickname = part.slice(1).replace('\u200B', '').trim();
-        const isMentioned = comment.mentions?.includes(nickname);
-        
-        return (
-          <CommentMention
-            key={index}
-            isMentioned={isMentioned}
-          >
-            {part.replace('\u200B', '')}
-          </CommentMention>
-        );
-      }
-      return <span key={index}>{part}</span>;
-    });
+  // 기본값 설정
+  const defaultUser: UserDataResponseDto = {
+    id: 0,
+    nickname: '알 수 없음',
+    profileImage: '/default-profile.png'
   };
+
+  const user = comment.user || defaultUser;
 
   const handleEdit = (newContent: string) => {
     onEdit(comment.commentId, newContent);
     setIsEditing(false);
   };
+
+  // 날짜 포맷팅
+  const formattedDate = formatDate(comment.createdAt);
+  const isModified = comment.modifiedAt && comment.modifiedAt !== comment.createdAt;
 
   return (
     <CommentContainer className="bg-gray-50">
@@ -59,27 +52,20 @@ const NestedCommentItem = ({
         <div className="flex-shrink-0">
           <CommentAvatar className="h-10 w-10">
             <CommentAvatarImage 
-              src={comment.user.profileImage || "/default-profile.png"} 
-              alt={comment.user.nickname} 
+              src={user.profileImage || "/default-profile.png"} 
+              alt={user.nickname} 
               className="object-cover"
             />
-            <CommentAvatarFallback>{comment.user.nickname[0]}</CommentAvatarFallback>
+            <CommentAvatarFallback>{user.nickname[0]}</CommentAvatarFallback>
           </CommentAvatar>
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex flex-col">
-            <CommentHeader>
-              <div className="flex items-center gap-2">
-                <CommentAuthor>{comment.user.nickname}</CommentAuthor>
-                <CommentTime dateTime={comment.createdAt}>
-                  {formatDate(comment.createdAt)}
-                </CommentTime>
-                {comment.modifiedAt && comment.modifiedAt !== comment.createdAt && (
-                  <span className="text-xs text-gray-400">(수정됨)</span>
-                )}
-              </div>
-            </CommentHeader>
+            <CommentHeader
+              author={user.nickname}
+              timestamp={new Date(comment.createdAt)}
+            />
 
             {isEditing ? (
               <CommentArea
@@ -91,9 +77,9 @@ const NestedCommentItem = ({
             ) : (
               <>
                 <CommentContent>
-                  {renderContent(comment.content)}
+                  {comment.content}
                 </CommentContent>
-                {currentUserId === comment.user.id && (
+                {currentUserId === user.id && (
                   <div className="space-x-2 mt-2">
                     <Button
                       variant="ghost"

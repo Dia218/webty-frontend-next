@@ -5,9 +5,7 @@ const redirectUrlAfterSocialLogin = 'http://localhost:3000';
 const socialLogoutUrl = `http://localhost:8080/logout`;
 
 export const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState<string | null>(null);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     fetch('http://localhost:8080/user/info', {
@@ -20,20 +18,16 @@ export const useAuth = () => {
         }
         throw new Error('Not logged in');
       })
-      .then((data) => {
+      .then(() => {
         setIsLoggedIn(true);
-        setNickname(data.nickname);
-        setProfileImage(data.profileImage);
       })
       .catch(() => {
         setIsLoggedIn(false);
-        setNickname(null);
-        setProfileImage(null);
       });
   }, []);
 
   const handleLogin = (): void => {
-    const currentUrl = window.location.href; // 현재 URL 저장
+    const currentUrl = window.location.href;
     localStorage.setItem('lastVisitedPage', currentUrl);
     window.location.href = socialLoginForKaKaoUrl;
   };
@@ -52,5 +46,5 @@ export const useAuth = () => {
       });
   };
 
-  return { isLoggedIn, nickname, profileImage, handleLogin, handleLogout };
+  return { isLoggedIn, handleLogin, handleLogout };
 };
