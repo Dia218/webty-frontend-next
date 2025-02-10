@@ -6,8 +6,9 @@ import {
   GhostTabsTrigger,
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
+import ResponsiveReviewBox from '@/components/common/ResponsiveReviewBox/ResponsiveReviewBox';
 
-const WebtoonDrawerTaps = () => {
+const WebtoonDrawerTaps: React.FC<{ webtoonId: number }> = ({ webtoonId }) => {
   return (
     <GhostTabs defaultValue="firstTap">
       <GhostTabsList>
@@ -19,7 +20,7 @@ const WebtoonDrawerTaps = () => {
         <p>투표 현황 component가 여기에 들어갑니다.</p>
       </GhostTabsContent>
       <GhostTabsContent value="secondTap">
-        <p>게시글 보기 component가 여기에 들어갑니다.</p>
+        <ResponsiveReviewBox webtoonId={webtoonId} />
       </GhostTabsContent>
     </GhostTabs>
   );
