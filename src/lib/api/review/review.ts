@@ -55,20 +55,17 @@ const useReviews = (page: number = 0, size: number = 10) => {
   };
 
   //작성한 게시글 목록 조회
-  const fetchUserReviews = async () => {
+  const fetchUserReviews = async (page: number) => {
     try {
-      const response = await axios.get<ReviewItemResponseDto[]>(
-        'http://localhost:8080/reviews/me',
-        {
-          withCredentials: true,
-        }
+      const response = await axios.get<PageDto<ReviewItemResponseDto>>(
+        `http://localhost:8080/reviews/me?page=${page}`,
+        { withCredentials: true }
       );
       return response.data;
     } catch (err) {
-      setError('Failed to fetch user reviews');
+      setError('Failed to fetch user reviews:');
     }
   };
-
   // 사용자 리뷰 개수 조회
   const fetchReviewCountByUser = async () => {
     try {

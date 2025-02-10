@@ -1,30 +1,76 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import {
   GhostTabs,
   GhostTabsList,
   GhostTabsTrigger,
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
-import { useEffect, useState } from 'react';
 import { getFavoriteWebtoonList } from '@/lib/api/webtoon/favorite';
+import { fetchRecommendedReviews } from '@/lib/api/review/recommend';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
+import { PageDto } from '@/lib/types/common/PageDto';
+import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import WebtoonList from '@/components/common/WebtoonList/WebtoonList';
-import RecommendedReviewBox from '../../common/RecommendedReviewBox/RecommendedReviewBox';
+import WideReviewBox from '@/components/common/WideReviewBox/WideReviewBox';
+import useReviews from '@/lib/api/review/review';
+
+const initialPageState: PageDto<ReviewItemResponseDto> = {
+  content: [],
+  currentPage: 0,
+  totalPages: 1,
+  totalElements: 0,
+  hasNext: false,
+  hasPrevious: false,
+  isLast: true,
+};
 
 const UserDrawerTaps = ({ loginId }: { loginId: number }) => {
   const [favoriteWebtoons, setFavoriteWebtoons] = useState<WebtoonDetailDto[]>(
     []
   );
+  const [recommendedReviews, setRecommendedReviews] =
+    useState(initialPageState);
+  const [userReviews, setUserReviews] = useState(initialPageState);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [userReviewPage, setUserReviewPage] = useState(0);
+  const { fetchUserReviews } = useReviews();
 
   useEffect(() => {
-    const fetchFavorites = async () => {
-      const data = await getFavoriteWebtoonList();
-      setFavoriteWebtoons(data);
-    };
-
-    fetchFavorites();
+    (async () => {
+      try {
+        const data = await getFavoriteWebtoonList();
+        setFavoriteWebtoons(data);
+      } catch (error) {
+        console.error('Failed to fetch favorite webtoons:', error);
+      }
+    })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchRecommendedReviews(loginId, currentPage);
+        setRecommendedReviews(data ?? initialPageState);
+      } catch (error) {
+        console.error('Failed to fetch recommended reviews:', error);
+        setRecommendedReviews(initialPageState);
+      }
+    })();
+  }, [loginId, currentPage]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchUserReviews(userReviewPage);
+        setUserReviews(data ?? initialPageState);
+      } catch (error) {
+        console.error('Failed to fetch user reviews:', error);
+        setUserReviews(initialPageState);
+      }
+    })();
+  }, [userReviewPage]);
 
   return (
     <GhostTabs defaultValue="firstTap">
@@ -35,13 +81,19 @@ const UserDrawerTaps = ({ loginId }: { loginId: number }) => {
       </GhostTabsList>
 
       <GhostTabsContent value="firstTap">
-        <WebtoonList webtoons={favoriteWebtoons} isHorizontal={true} />
+        <WebtoonList webtoons={favoriteWebtoons} isHorizontal />
       </GhostTabsContent>
       <GhostTabsContent value="secondTap">
-        <p>게시글 보기 component가 여기에 들어갑니다.</p>
+        <WideReviewBox
+          pageData={userReviews}
+          onPageChange={setUserReviewPage}
+        />
       </GhostTabsContent>
       <GhostTabsContent value="thirdTap">
-        <RecommendedReviewBox userId={loginId} />
+        <WideReviewBox
+          pageData={recommendedReviews}
+          onPageChange={setCurrentPage}
+        />
       </GhostTabsContent>
     </GhostTabs>
   );
