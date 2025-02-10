@@ -201,6 +201,25 @@ const useReviews = (page: number = 0, size: number = 10) => {
     }
   };
 
+  // 웹툰 ID에 해당하는 리뷰 조회
+  const getWebtoonReviews = async (
+    webtoonId: number,
+    page: number,
+    size: number = 10
+  ) => {
+    if (!webtoonId) return;
+
+    try {
+      const response = await axios.get<PageDto<ReviewItemResponseDto>>(
+        `http://localhost:8080/reviews/webtoon/${webtoonId}`,
+        { params: { page, size } }
+      );
+      return response.data;
+    } catch (err) {
+      setError('Failed to fetch reviews');
+    }
+  };
+
   return {
     reviews,
     loading,
@@ -214,6 +233,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
     createReview,
     updateReview,
     deleteReview,
+    getWebtoonReviews,
   };
 };
 

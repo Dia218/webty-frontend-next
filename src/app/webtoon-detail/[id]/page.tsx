@@ -14,6 +14,7 @@ export default function Page({ params }: { params: Promise<{ id?: string }> }) {
   const router = useRouter();
   const [webtoon, setWebtoon] = useState<WebtoonDetailDto | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const webtoonId = id ? Number(id) : null;
 
   useEffect(() => {
     if (!id) {
@@ -45,7 +46,9 @@ export default function Page({ params }: { params: Promise<{ id?: string }> }) {
     <>
       <NavigationBar />
       <WebtoonDetail webtoon={webtoon} />
-      <ExpandableDrawer children={<WebtoonDrawerTaps />} />
+      <ExpandableDrawer
+        children={<WebtoonDrawerTaps webtoonId={webtoonId!} />}
+      />
     </>
   );
 }
