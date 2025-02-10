@@ -18,6 +18,7 @@ import {
 import ReviewRecommendationBox from '@/components/buisness/review/ReviewRecommendBox';
 import ReviewInfo from '@/components/buisness/review/ReviewInfo';
 import ReviewContentBox from '@/components/buisness/review/ReviewContentBox';
+import ReviewWebtoonBox from '@/components/common/ReviewWebtoonBox/ReviewWebtoonBox';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
@@ -78,6 +79,15 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
               showButtons={review.userDataResponse.nickname === nickname}
             />
           </div>
+
+          {/* 웹툰 박스 (중간) */}
+          <ReviewWebtoonBox
+            webtoon={{
+              webtoonId: review.webtoonId,
+              webtoonName: review.webtoonName,
+              thumbnailUrl: review.thumbnailUrl,
+            }}
+          />
 
           {/* 추천 박스 (하단) */}
           <div>
