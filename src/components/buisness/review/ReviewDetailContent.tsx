@@ -1,4 +1,9 @@
 import React from 'react';
+import { ReviewDetailResponseDto } from '@/lib/types/review/ReviewDetailResponseDto';
+
+interface ReviewDetailContentProps {
+    data: ReviewDetailResponseDto;
+  }
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -45,6 +50,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: '3%',
     transform: 'translateY(-100%)', 
   },
+  title: {
+    position: 'absolute',
+    top: '11%',
+    left: '3%',
+    transform: 'translateY(-100%)',
+    fontSize: '1.5em',
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  nickname: {
+    position: 'absolute',
+    top: '20%',
+    left: '14%', // circle의 오른쪽에 위치하도록 설정
+    transform: 'translateY(-100%)',
+    fontSize: '1em',
+    color: '#333',
+},
   horizontalLine: {
     position: 'absolute',
     left: '4%',
@@ -54,13 +76,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
 };
 
-const ReviewDetailContent: React.FC = () => {
+const ReviewDetailContent: React.FC<ReviewDetailContentProps> = ({ data }) => {
     return (
       <div style={styles.container}>
         <div style={styles.transparentBox}>
           <div style={styles.darkBox1} />
           <div style={styles.darkBox2} />
           <div style={styles.circle} />
+          {/* circle 위에 title 표시 */}
+          <div style={styles.title}>{data.title}</div>
+          <div style={styles.nickname}>{data.userDataResponse.nickname}</div>
         </div>
         <div style={styles.horizontalLine} />
       </div>

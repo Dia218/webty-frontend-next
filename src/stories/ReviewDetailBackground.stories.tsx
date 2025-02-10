@@ -1,4 +1,3 @@
-import React from 'react'; 
 import { Meta, StoryObj } from '@storybook/react';
 import ReviewDetailBackground from '@/components/buisness/review/ReviewDetailBackground';
 import ReviewDetailContent from '@/components/buisness/review/ReviewDetailContent';
@@ -62,7 +61,7 @@ export const Default: Story = {
     // 상위 컨테이너는 이미 상대 위치를 가진 decorator에서 처리하고 있으므로, 그대로 배경과 컨텐츠를 렌더링
     <>
       <ReviewDetailBackground data={args.data as ReviewDetailResponseDto} />
-      <ReviewDetailContent />
+      <ReviewDetailContent data={args.data as ReviewDetailResponseDto} />
     </>
   ),
 };
