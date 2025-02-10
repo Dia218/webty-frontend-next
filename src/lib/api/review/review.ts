@@ -57,7 +57,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   //작성한 게시글 목록 조회
   const fetchUserReviews = async () => {
     try {
-      const response = await axios.get<ReviewItemResponseDto[]>(
+      const response = await axios.get<PageDto<ReviewItemResponseDto>>(
         'http://localhost:8080/reviews/me',
         {
           withCredentials: true,
