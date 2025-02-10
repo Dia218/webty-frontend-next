@@ -12,7 +12,7 @@ export default function Page() {
   const params = useParams(); //  Next.js에서 동적 라우트 가져오기
   const id = params?.id;
   const { fetchReviewById } = useReviews();
-  const { isLoggedIn, nickname } = useAuth();
+  const { isLoggedIn, loginId } = useAuth();
 
   if (!id) {
     return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
@@ -68,7 +68,7 @@ export default function Page() {
         review={review}
         recommendationStatus={recommendationStatus}
         isLoggedIn={isLoggedIn}
-        nickname={nickname}
+        id={loginId}
       />
     </>
   );
