@@ -58,9 +58,23 @@ export const getRecommendationStatus = async (id: number) => {
 };
 
 export const fetchRecommendedReviews = async (userId: number) => {
-  const response = await fetch(`${API_BASE_URL}/user/${userId}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch reviews');
+  try {
+    const url = `${API_BASE_URL}/user/${userId}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Failed to fetch recommended reviews:', error);
+    throw error;
   }
-  return response.json();
 };

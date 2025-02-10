@@ -15,6 +15,17 @@ export const SmallReviewList: React.FC<{
   );
 };
 
-{
-  /* 나중에 LargeReviewList 합쳐도 됩니다 */
-}
+// 웹툰 게시물 보기에 써보려고 합니다. (백엔드 구현안되서 아직 못써봄)
+export const SmallReviewListTwoCols: React.FC<{
+  reviews: ReviewItemResponseDto[];
+}> = ({ reviews }) => {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {' '}
+      {/* 가로 2개씩 정렬 */}
+      {reviews.map((review) => (
+        <SmallReviewItem key={review.reviewId} review={review} />
+      ))}
+    </div>
+  );
+};
