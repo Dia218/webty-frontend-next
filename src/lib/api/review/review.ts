@@ -170,13 +170,20 @@ const useReviews = (page: number = 0, size: number = 10) => {
       'reviewRequest',
       new Blob([JSON.stringify(request)], { type: 'application/json' })
     );
+
     request.images?.forEach((image) => formData.append('images', image));
 
+    console.log('요청 데이터', formData);
+
     try {
-      await axios.put(`/reviews/put/${reviewId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        withCredentials: true,
-      });
+      await axios.put(
+        `http://localhost:8080/reviews/put/${reviewId}`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          withCredentials: true,
+        }
+      );
       fetchReviews();
     } catch (err) {
       setError('Failed to update review');
