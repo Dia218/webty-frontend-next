@@ -24,14 +24,14 @@ interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
   recommendationStatus: { likes: boolean; hates: boolean } | null;
   isLoggedIn: boolean;
-  nickname: string | null;
+  id: number | null;
 }
 
 const ReviewDetail: React.FC<ReviewDetailProps> = ({
   review,
   recommendationStatus,
   isLoggedIn,
-  nickname,
+  id,
 }) => {
   const { deleteReview } = useReviews();
   const router = useRouter();
@@ -76,7 +76,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
               viewCount={review.viewCount}
               createdAt={review.createdAt}
               updatedAt={review.updatedAt}
-              showButtons={review.userDataResponse.nickname === nickname}
+              showButtons={review.userDataResponse.id === id}
             />
           </div>
 
