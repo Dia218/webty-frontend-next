@@ -6,7 +6,6 @@ const socialLogoutUrl = `http://localhost:8080/logout`;
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [nickname, setNickname] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [loginId, setId] = useState<number | null>(null);
@@ -56,7 +55,9 @@ export const useAuth = () => {
       });
   };
 
+
   return { isLoggedIn, handleLogin, handleLogout };
+
   return {
     isLoggedIn,
     loginId,

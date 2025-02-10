@@ -1,3 +1,4 @@
+
 // 댓글 component
 
 import React, { useState } from 'react';
@@ -29,6 +30,7 @@ const CommentItem = ({ comment, existingUsers }) => {
         </div>
       )}
     </div>
+
   );
 };
 
