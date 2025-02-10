@@ -56,3 +56,11 @@ export const getRecommendationStatus = async (id: number) => {
     throw error;
   }
 };
+
+export const fetchRecommendedReviews = async (userId: number) => {
+  const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch reviews');
+  }
+  return response.json();
+};
