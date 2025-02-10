@@ -63,7 +63,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
       );
       return response.data;
     } catch (err) {
-      console.error('Failed to fetch user reviews:', err);
+      setError('Failed to fetch user reviews:');
     }
   };
   // 사용자 리뷰 개수 조회
