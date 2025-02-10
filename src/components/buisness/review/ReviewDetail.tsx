@@ -17,6 +17,7 @@ import {
 } from '@/lib/api/review/recommend';
 import ReviewRecommendationBox from '@/components/buisness/review/ReviewRecommendBox';
 import ReviewInfo from '@/components/buisness/review/ReviewInfo';
+import ReviewContentBox from '@/components/buisness/review/ReviewContentBox';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
@@ -54,37 +55,52 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
 
   return (
     <>
-      <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
-        <ReviewInfo
-          actionButtons={
-            <UpdateDeleteButtons
-              onUpdate={handleUpdate}
-              onDelete={handleDelete}
+      <div className="w-full max-w-6xl mx-auto p-10 bg-white shadow-lg rounded-lg flex">
+        {/* 왼쪽: 리뷰 콘텐츠 (크게) */}
+        <div className="flex-1 pr-6">
+          <ReviewContentBox review={review} />
+        </div>
+
+        {/* 오른쪽: 정보 + 추천 버튼 (세로 정렬) */}
+        <div className="w-1/3 flex flex-col justify-between">
+          {/* 리뷰 정보 (상단) */}
+          <div className="mb-4">
+            <ReviewInfo
+              actionButtons={
+                <UpdateDeleteButtons
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                />
+              }
+              viewCount={review.viewCount}
+              createdAt={review.createdAt}
+              updatedAt={review.updatedAt}
+              showButtons={review.userDataResponse.nickname === nickname}
             />
-          }
-          viewCount={review.viewCount}
-          createdAt={review.createdAt}
-          updatedAt={review.updatedAt}
-          showButtons={review.userDataResponse.nickname === nickname}
-        />
-        <ReviewRecommendationBox
-          likeButton={
-            <LikeButton
-              isLoggedIn={isLoggedIn}
-              isInitialActive={recommendationStatus?.likes || false}
-              onActivate={() => recommendLike(review.reviewId)}
-              onDeactivate={() => removeRecommendLike(review.reviewId)}
+          </div>
+
+          {/* 추천 박스 (하단) */}
+          <div>
+            <ReviewRecommendationBox
+              likeButton={
+                <LikeButton
+                  isLoggedIn={isLoggedIn}
+                  isInitialActive={recommendationStatus?.likes || false}
+                  onActivate={() => recommendLike(review.reviewId)}
+                  onDeactivate={() => removeRecommendLike(review.reviewId)}
+                />
+              }
+              dislikeButton={
+                <DislikeButton
+                  isLoggedIn={isLoggedIn}
+                  isInitialActive={recommendationStatus?.hates || false}
+                  onActivate={() => recommendHate(review.reviewId)}
+                  onDeactivate={() => removeRecommendHate(review.reviewId)}
+                />
+              }
             />
-          }
-          dislikeButton={
-            <DislikeButton
-              isLoggedIn={isLoggedIn}
-              isInitialActive={recommendationStatus?.hates || false}
-              onActivate={() => recommendHate(review.reviewId)}
-              onDeactivate={() => removeRecommendHate(review.reviewId)}
-            />
-          }
-        />
+          </div>
+        </div>
       </div>
     </>
   );
