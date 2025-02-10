@@ -15,22 +15,21 @@ const ReviewWebtoonBox: React.FC<{ webtoon: WebtoonSummaryDto }> = ({
 
   return (
     <Card
-      className="flex flex-col sm:flex-row w-full min-w-[200px] max-w-[450px] mx-auto cursor-pointer rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105"
+      className="flex flex-col w-full min-w-[200px] max-w-[450px] mx-auto cursor-pointer rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105"
       onClick={handleNavigate}
     >
-      {/* 썸네일 */}
-      <div className="w-full sm:w-1/3 flex-shrink-0">
-        <img
-          src={webtoon.thumbnailUrl}
-          alt={webtoon.webtoonName}
-          className="w-full h-full object-cover aspect-[3/4] rounded-t-lg sm:rounded-l-lg"
-        />
-      </div>
-
-      {/* 웹툰 정보 */}
       <CardContent className="flex flex-1 p-4 flex-col justify-between">
+        {/* 썸네일 */}
+        <div className="w-full flex-shrink-0 flex justify-center items-center">
+          <img
+            src={webtoon.thumbnailUrl}
+            alt={webtoon.webtoonName}
+            className="w-full p-2 object-cover aspect-[3/4] rounded-t-lg sm:rounded-l-lg"
+          />
+        </div>
+        {/* 제목 */}
         <div>
-          <h2 className="text-base md:text-lg font-semibold truncate">
+          <h2 className="text-base p-2 md:text-lg font-semibold">
             {webtoon.webtoonName}
           </h2>
         </div>
