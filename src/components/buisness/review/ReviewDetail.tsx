@@ -15,7 +15,8 @@ import {
   removeRecommendHate,
   removeRecommendLike,
 } from '@/lib/api/review/recommend';
-import ReviewRecommendationBox from '@/components/common/RecommendButton/ReviewRecommendBox';
+import ReviewRecommendationBox from '@/components/buisness/review/ReviewRecommendBox';
+import ReviewInfo from '@/components/buisness/review/ReviewInfo';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
@@ -54,15 +55,18 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
   return (
     <>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg flex items-stretch">
-        {nickname === review.userDataResponse.nickname && (
-          <UpdateDeleteButtons
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
-        )}
-        <div className="px-3 py-3 bg-white text-black">
-          조회수 : {review.viewCount}
-        </div>
+        <ReviewInfo
+          actionButtons={
+            <UpdateDeleteButtons
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+          }
+          viewCount={review.viewCount}
+          createdAt={review.createdAt}
+          updatedAt={review.updatedAt}
+          showButtons={review.userDataResponse.nickname === nickname}
+        />
         <ReviewRecommendationBox
           likeButton={
             <LikeButton
