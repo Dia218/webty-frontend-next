@@ -1,7 +1,7 @@
 import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
+import { CommentRequestDto } from '@/lib/types/reviewComment/CommentRequestDto';
 import CommentItem from './CommentItem';
-import NestedCommentItem from './NestedCommentItem';
 
 interface CommentListProps {
   reviewId: number;
@@ -13,9 +13,9 @@ interface CommentListProps {
   isEnabled: boolean;
   comments: CommentResponseDto[];
   currentUserId: number;
-  onEdit: (commentId: number, content: string) => void;
-  onDelete: (commentId: number) => void;
-  onReply: (content: string, parentId: number) => void;
+  onEdit: (commentId: number, commentRequestDto: CommentRequestDto) => Promise<void>;
+  onDelete: (commentId: number) => Promise<void>;
+  onReply: (commentRequestDto: CommentRequestDto) => Promise<void>;
   existingUsers?: UserDataResponseDto[];
   error?: string | null;
   isLoading?: boolean;
@@ -50,71 +50,41 @@ const CommentList = ({
     return <div className="text-center text-gray-500">아직 댓글이 없습니다.</div>;
   }
 
-  // 댓글을 시간순으로 정렬
-  const sortedComments = [...comments].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-
-  // 댓글 트리 구조 생성
-  const commentTree: CommentResponseDto[] = [];
+  // ✅ 댓글을 부모-자식 트리 구조로 정리
   const commentMap = new Map<number, CommentResponseDto>();
+  const rootComments: CommentResponseDto[] = [];
 
-  // 모든 댓글을 맵에 저장
-  sortedComments.forEach(comment => {
+  // 모든 댓글을 맵에 저장하고, `childComments` 초기화
+  comments.forEach((comment) => {
     commentMap.set(comment.commentId, { ...comment, childComments: [] });
   });
 
-  // 트리 구조 구성
-  sortedComments.forEach(comment => {
-    const commentWithChildren = commentMap.get(comment.commentId)!;
-    
-    if (comment.depth === 0) {
-      // 최상위 댓글
-      commentTree.push(commentWithChildren);
+  // `parentId`를 기반으로 대댓글을 부모 댓글의 `childComments`에 추가
+  comments.forEach((comment) => {
+    if (!comment.parentId || comment.parentId === 0) {
+      // ✅ 루트 댓글
+      rootComments.push(commentMap.get(comment.commentId)!);
     } else {
-      // 대댓글인 경우, 부모 댓글 찾기
-      const parentComment = sortedComments.find(
-        potential => potential.depth === 0 && 
-        comment.content.includes(`@${potential.user.nickname}`) &&
-        new Date(potential.createdAt).getTime() < new Date(comment.createdAt).getTime()
-      );
-
+      // ✅ 대댓글 → `parentId`가 있는 경우 부모 댓글의 `childComments`에 추가
+      const parentComment = commentMap.get(comment.parentId);
       if (parentComment) {
-        const parent = commentMap.get(parentComment.commentId);
-        if (parent) {
-          parent.childComments = [...parent.childComments, commentWithChildren];
-        }
+        parentComment.childComments.push(commentMap.get(comment.commentId)!);
       }
     }
   });
 
   return (
     <div className="space-y-6">
-      {commentTree.map((comment) => (
-        <div key={comment.commentId} className="space-y-3">
-          <CommentItem
-            comment={comment}
-            currentUserId={currentUserId}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onReply={onReply}
-            existingUsers={existingUsers}
-          />
-          {comment.childComments.length > 0 && (
-            <div className="ml-12 space-y-3">
-              {comment.childComments.map((reply) => (
-                <NestedCommentItem
-                  key={reply.commentId}
-                  comment={reply}
-                  currentUserId={currentUserId}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  existingUsers={existingUsers}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+      {rootComments.map((comment) => (
+        <CommentItem
+          key={comment.commentId}
+          comment={comment}
+          currentUserId={currentUserId}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onReply={onReply}
+          existingUsers={existingUsers}
+        />
       ))}
     </div>
   );

@@ -1,12 +1,6 @@
 import React from 'react';
 
-export interface AuthError {
-  message: string;
-  code?: string;
-  status?: number;
-}
-
-export interface ErrorMessageProps {
+interface ErrorMessageProps {
   message: string;
   className?: string;
 }
@@ -62,4 +56,4 @@ export function withErrorBoundary<P extends object>(
       </ErrorBoundary>
     );
   };
-} 
+}

@@ -10,13 +10,14 @@ import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto
 import { CommentContainer } from '@/components/ui/comment-container';
 import { CommentHeader } from '@/components/ui/comment-header';
 import { CommentContent } from '@/components/ui/comment-content';
+import { CommentRequestDto } from '@/lib/types/reviewComment/CommentRequestDto';
 
 interface NestedCommentItemProps {
   comment: CommentResponseDto;
   currentUserId: number;
   existingUsers?: UserDataResponseDto[];
-  onEdit: (commentId: number, content: string) => void;
-  onDelete: (commentId: number) => void;
+  onEdit: (commentId: number, commentRequestDto: CommentRequestDto) => Promise<void>;
+  onDelete: (commentId: number) => Promise<void>;
 }
 
 const NestedCommentItem = ({
@@ -37,9 +38,26 @@ const NestedCommentItem = ({
 
   const user = comment.user || defaultUser;
 
-  const handleEdit = (newContent: string) => {
-    onEdit(comment.commentId, newContent);
-    setIsEditing(false);
+  const handleEdit = async (commentRequestDto: CommentRequestDto) => {
+    try {
+      // 멘션된 사용자들의 닉네임 추출
+      const mentionedUsers = extractMentionsFromContent(commentRequestDto.content);
+      
+      await onEdit(comment.commentId, {
+        content: commentRequestDto.content,
+        parentCommentId: comment.parentId || 0,
+        mentions: mentionedUsers
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('댓글 수정 중 오류 발생:', error);
+    }
+  };
+
+  // 멘션된 사용자 추출 함수
+  const extractMentionsFromContent = (content: string): string[] => {
+    const mentions = content.match(/@(\S+)/g) || [];
+    return mentions.map(mention => mention.slice(1));
   };
 
   // 날짜 포맷팅
@@ -65,6 +83,7 @@ const NestedCommentItem = ({
             <CommentHeader
               author={user.nickname}
               timestamp={new Date(comment.createdAt)}
+              isModified={isModified || false}
             />
 
             {isEditing ? (
@@ -73,6 +92,7 @@ const NestedCommentItem = ({
                 onCancel={() => setIsEditing(false)}
                 initialContent={comment.content}
                 existingUsers={existingUsers}
+                parentCommentId={comment.parentId}
               />
             ) : (
               <>

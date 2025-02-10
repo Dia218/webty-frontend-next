@@ -38,24 +38,37 @@ const CommentArea = ({
   const [mentionSuggestion, setMentionSuggestion] = useState<MentionSuggestion | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (content.trim()) {
       if (onSubmit) {
-        onSubmit({
-          content: content,
+        const commentRequestDto: CommentRequestDto = {
+          content: content.trim(),
           parentCommentId: parentCommentId ?? 0,
-          mentions: []
-        });
+          mentions: extractMentions(content)
+        };
+        await onSubmit(commentRequestDto);
       }
       setContent('');
       setMentionSuggestion(null);
     }
   };
 
+  const extractMentions = (text: string): string[] => {
+    const mentions = text.match(/@(\S+)/g) || [];
+    return mentions.map(mention => mention.slice(1));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     setContent(newContent);
+
+    // 현재 입력 상태를 CommentRequestDto 형식으로 관리
+    const currentComment: CommentRequestDto = {
+      content: newContent,
+      parentCommentId: parentCommentId ?? 0,
+      mentions: extractMentions(newContent)
+    };
 
     // 멘션 제안 처리
     const cursorPosition = e.target.selectionStart;
@@ -66,9 +79,11 @@ const CommentArea = ({
       const query = mentionMatch[1].toLowerCase();
       const startPosition = cursorPosition - (mentionMatch[0].length - 1);
       
-      // 사용자 목록 필터링
+      // 현재 입력된 멘션을 제외한 사용자 목록 필터링
+      const currentMentions = new Set(currentComment.mentions);
       const filteredUsers = existingUsers.filter(user => 
-        user.nickname.toLowerCase().includes(query)
+        user.nickname.toLowerCase().includes(query) && 
+        !currentMentions.has(user.nickname)
       );
 
       if (filteredUsers.length > 0) {
@@ -97,6 +112,7 @@ const CommentArea = ({
     const mentionText = `@${user.nickname}\u200B `;
     const newContent = `${beforeMention}${mentionText}${afterMention}`;
     
+    // 새로운 content를 CommentRequestDto 형식으로 업데이트
     setContent(newContent);
     setMentionSuggestion(null);
 
