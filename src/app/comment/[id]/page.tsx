@@ -22,6 +22,7 @@ export default function ReviewCommentsPage() {
   const [review, setReview] = useState<ReviewDetailResponseDto | null>(null);
   const [isReviewLoading, setIsReviewLoading] = useState(true);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number>(0);
   
   const { fetchReviewById } = useReviews();
   const {
@@ -35,8 +36,21 @@ export default function ReviewCommentsPage() {
   useEffect(() => {
     if (isLoggedIn) {
       refetchUserInfo();
+      fetch('http://localhost:8080/user/info', {
+        credentials: 'include'
+      })
+      .then(response => response.json())
+      .then(data => {
+        setCurrentUserId(data.id);
+      })
+      .catch(error => {
+        console.error('사용자 ID 조회 실패:', error);
+        setCurrentUserId(0);
+      });
+    } else {
+      setCurrentUserId(0);
     }
-  }, [isLoggedIn, refetchUserInfo]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const loadReview = async () => {
@@ -157,14 +171,15 @@ export default function ReviewCommentsPage() {
 
           <CommentList
             reviewId={Number(reviewId)}
-            currentUser={{ id: 0, nickname: nickname || '', profileImage }}
+            currentUser={{ id: currentUserId, nickname: nickname || '', profileImage }}
             isEnabled={isEnabled}
             comments={comments}
-            currentUserId={0}
+            currentUserId={currentUserId}
             onEdit={handleUpdateComment}
             onDelete={handleDeleteComment}
             onReply={handleCreateComment}
             isLoading={isCommentsLoading}
+            existingUsers={comments.map(comment => comment.user)}
           />
         </div>
       )}
