@@ -94,22 +94,22 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
             <ReviewRecommendationBox
               likeButton={
                 <LikeButton
+                  initialCount={review.recommendCount.likes}
                   isLoggedIn={isLoggedIn}
                   isInitialActive={recommendationStatus?.likes || false}
                   onActivate={() => recommendLike(review.reviewId)}
                   onDeactivate={() => removeRecommendLike(review.reviewId)}
                 />
               }
-              likeCount={review.recommendCount.likes}
               dislikeButton={
                 <DislikeButton
+                  initialCount={review.recommendCount.hates}
                   isLoggedIn={isLoggedIn}
                   isInitialActive={recommendationStatus?.hates || false}
                   onActivate={() => recommendHate(review.reviewId)}
                   onDeactivate={() => removeRecommendHate(review.reviewId)}
                 />
               }
-              hateCount={review.recommendCount.hates}
             />
           </div>
         </div>
