@@ -21,6 +21,7 @@ interface ReviewFormProps {
   initialImages?: string[]; // 기존 이미지 URL 목록
   initialSpoilerStatus?: boolean;
   onSubmit: (reviewRequestDto: ReviewRequestDto) => Promise<number | null>;
+  onDeleteImage?: (deletedImageUrl: string) => void;
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({
@@ -32,12 +33,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   initialImages = [],
   initialSpoilerStatus = false,
   onSubmit,
+  onDeleteImage,
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [spoilerStatus, setSpoilerStatus] = useState(initialSpoilerStatus);
   const [imageUrls, setImageUrls] = useState<string[]>(initialImages); // 기존 이미지
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // 새로 업로드한 파일
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제된 기존 이미지 저장
   const router = useRouter();
 
   // 다이얼로그 상태
@@ -64,7 +67,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
   // 기존 이미지 삭제
   const handleRemoveImageUrl = (index: number) => {
+    const deletedImageUrl = imageUrls[index];
     setImageUrls(imageUrls.filter((_, i) => i !== index));
+    setDeletedImages((prev) => [...prev, deletedImageUrl]);
+
+    // 부모 컴포넌트에 삭제된 이미지 정보 전달 (ReviewUpdate에서 사용)
+    if (onDeleteImage) {
+      onDeleteImage(deletedImageUrl);
+    }
   };
 
   const handleSubmit = async () => {
