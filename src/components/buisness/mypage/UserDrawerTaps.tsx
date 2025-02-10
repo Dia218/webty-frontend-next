@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { getFavoriteWebtoonList } from '@/lib/api/webtoon/favorite';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 import WebtoonList from '@/components/common/WebtoonList/WebtoonList';
-import RecommendedReviewBox from './RecommendedReviewBox';
+import RecommendedReviewBox from '../../common/RecommendedReviewBox/RecommendedReviewBox';
 
 const UserDrawerTaps = ({ loginId }: { loginId: number }) => {
   const [favoriteWebtoons, setFavoriteWebtoons] = useState<WebtoonDetailDto[]>(
