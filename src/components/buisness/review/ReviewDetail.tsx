@@ -100,6 +100,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
                   onDeactivate={() => removeRecommendLike(review.reviewId)}
                 />
               }
+              likeCount={review.recommendCount.likes}
               dislikeButton={
                 <DislikeButton
                   isLoggedIn={isLoggedIn}
@@ -108,6 +109,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
                   onDeactivate={() => removeRecommendHate(review.reviewId)}
                 />
               }
+              hateCount={review.recommendCount.hates}
             />
           </div>
         </div>
