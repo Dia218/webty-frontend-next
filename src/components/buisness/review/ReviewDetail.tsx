@@ -15,6 +15,7 @@ import {
   removeRecommendHate,
   removeRecommendLike,
 } from '@/lib/api/review/recommend';
+import ReviewRecommendationBox from '@/components/common/RecommendButton/ReviewRecommendBox';
 
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
@@ -62,17 +63,23 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
         <div className="px-3 py-3 bg-white text-black">
           조회수 : {review.viewCount}
         </div>
-        <LikeButton
-          isLoggedIn={isLoggedIn}
-          isInitialActive={recommendationStatus?.likes || false}
-          onActivate={() => recommendLike(review.reviewId)}
-          onDeactivate={() => removeRecommendLike(review.reviewId)}
-        />
-        <DislikeButton
-          isLoggedIn={isLoggedIn}
-          isInitialActive={recommendationStatus?.hates || false}
-          onActivate={() => recommendHate(review.reviewId)}
-          onDeactivate={() => removeRecommendHate(review.reviewId)}
+        <ReviewRecommendationBox
+          likeButton={
+            <LikeButton
+              isLoggedIn={isLoggedIn}
+              isInitialActive={recommendationStatus?.likes || false}
+              onActivate={() => recommendLike(review.reviewId)}
+              onDeactivate={() => removeRecommendLike(review.reviewId)}
+            />
+          }
+          dislikeButton={
+            <DislikeButton
+              isLoggedIn={isLoggedIn}
+              isInitialActive={recommendationStatus?.hates || false}
+              onActivate={() => recommendHate(review.reviewId)}
+              onDeactivate={() => removeRecommendHate(review.reviewId)}
+            />
+          }
         />
       </div>
     </>
