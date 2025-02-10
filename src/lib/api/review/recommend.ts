@@ -57,9 +57,9 @@ export const getRecommendationStatus = async (id: number) => {
   }
 };
 
-export const fetchRecommendedReviews = async (userId: number) => {
+export const fetchRecommendedReviews = async (userId: number, page: number) => {
   try {
-    const url = `${API_BASE_URL}/user/${userId}`;
+    const url = `${API_BASE_URL}/user/${userId}?page=${page}`;
     const response = await fetch(url, {
       method: 'GET',
       credentials: 'include',
