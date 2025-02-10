@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,14 +13,15 @@ import { useRouter } from 'next/navigation';
 import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
 
 interface ReviewFormProps {
-  mode: 'write' | 'edit'; // 작성 or 수정 모드 구분
+  mode: 'write' | 'edit';
   webtoonName: string;
   webtoonId: number;
   initialTitle?: string;
   initialContent?: string;
-  initialImages?: File[];
+  initialImages?: string[]; // 기존 이미지 URL 목록
   initialSpoilerStatus?: boolean;
   onSubmit: (reviewRequestDto: ReviewRequestDto) => Promise<number | null>;
+  onDeleteImage?: (deletedImageUrl: string) => void;
 }
 
 const ReviewForm: React.FC<ReviewFormProps> = ({
@@ -32,11 +33,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   initialImages = [],
   initialSpoilerStatus = false,
   onSubmit,
+  onDeleteImage,
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [spoilerStatus, setSpoilerStatus] = useState(initialSpoilerStatus);
-  const [images, setImages] = useState<File[]>(initialImages);
+  const [imageUrls, setImageUrls] = useState<string[]>(initialImages); // 기존 이미지
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]); // 새로 업로드한 파일
+  const [deletedImages, setDeletedImages] = useState<string[]>([]); // 삭제된 기존 이미지 저장
   const router = useRouter();
 
   // 다이얼로그 상태
@@ -49,24 +53,28 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const [inputAlertOpen, setInputAlertOpen] = useState(false);
   const [inputAlertMessage, setInputAlertMessage] = useState('');
 
-  useEffect(() => {
-    if (mode === 'edit') {
-      setTitle(initialTitle);
-      setContent(initialContent);
-      setImages(initialImages);
-      setSpoilerStatus(initialSpoilerStatus);
-    }
-  }, [initialTitle, initialContent, initialImages, initialSpoilerStatus]);
-
+  // 파일 추가
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setImages((prevImages) => [...prevImages, ...newFiles]);
+      setUploadedFiles([...uploadedFiles, ...Array.from(e.target.files)]);
     }
   };
 
+  // 업로드한 파일 삭제
   const handleRemoveFile = (index: number) => {
-    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setUploadedFiles(uploadedFiles.filter((_, i) => i !== index));
+  };
+
+  // 기존 이미지 삭제
+  const handleRemoveImageUrl = (index: number) => {
+    const deletedImageUrl = imageUrls[index];
+    setImageUrls(imageUrls.filter((_, i) => i !== index));
+    setDeletedImages((prev) => [...prev, deletedImageUrl]);
+
+    // 부모 컴포넌트에 삭제된 이미지 정보 전달 (ReviewUpdate에서 사용)
+    if (onDeleteImage) {
+      onDeleteImage(deletedImageUrl);
+    }
   };
 
   const handleSubmit = async () => {
@@ -87,7 +95,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       content,
       webtoonId,
       spoilerStatus: spoilerStatus ? 'TRUE' : 'FALSE',
-      images,
+      images: uploadedFiles, // 기존 이미지 + 새로 업로드한 이미지
     };
 
     const reviewId = await onSubmit(reviewRequestDto);
@@ -135,7 +143,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full"
-              style={{ fontSize: '1.14rem' }}
             />
           </div>
 
@@ -166,52 +173,41 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             />
           </div>
 
+          {/* 기존 이미지 미리보기 및 삭제 */}
+          {imageUrls.length > 0 && (
+            <div>
+              <Label className="text-lg mb-2 block">기존 이미지</Label>
+              <div className="flex flex-wrap gap-2">
+                {imageUrls.map((url, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={url}
+                      alt="기존 이미지"
+                      className="w-24 h-24 object-cover rounded"
+                    />
+                    <button
+                      onClick={() => handleRemoveImageUrl(index)}
+                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 파일 업로드 */}
           <div>
             <Label htmlFor="images" className="text-lg mb-2 block">
               이미지 업로드
             </Label>
-            <div className="flex items-center gap-4">
-              {/* 파일 선택 버튼 */}
-              <Button
-                type="button"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                onClick={() => document.getElementById('images')?.click()}
-              >
-                파일 선택
-              </Button>
-
-              {/* 파일 리스트 */}
-              <div className="flex flex-col gap-1 w-full">
-                {images.length > 0 && (
-                  <span className="text-sm text-gray-500">
-                    {images.length}개의 파일이 선택되었습니다.
-                  </span>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  {images.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 bg-gray-200 px-2 py-1 rounded"
-                    >
-                      <span className="truncate text-sm text-gray-700">
-                        {file.name.length > 20
-                          ? `${file.name.slice(0, 20)}...`
-                          : file.name}
-                      </span>
-                      <button
-                        onClick={() => handleRemoveFile(index)}
-                        className="text-red-500 hover:text-red-700 text-sm font-bold"
-                      >
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 숨겨진 파일 선택 Input */}
+            <Button
+              type="button"
+              onClick={() => document.getElementById('images')?.click()}
+            >
+              파일 선택
+            </Button>
             <Input
               id="images"
               type="file"
@@ -219,6 +215,23 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               onChange={handleFileChange}
               className="hidden"
             />
+
+            {/* 업로드한 파일 리스트 */}
+            {uploadedFiles.length > 0 && (
+              <div className="mt-2">
+                {uploadedFiles.map((file, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span>{file.name}</span>
+                    <button
+                      onClick={() => handleRemoveFile(index)}
+                      className="text-red-500"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

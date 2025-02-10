@@ -24,8 +24,19 @@ const FeedReview: React.FC = () => {
 
       const data: PageDto<ReviewItemResponseDto> = await res.json();
 
-      // 기존 리뷰에 추가
-      setReviews((prev) => [...prev, ...data.content]);
+      // 기존 리뷰 + 새로운 리뷰 → 중복 제거
+      setReviews((prev) => {
+        const allReviews = [...prev, ...data.content];
+
+        // 중복된 reviewId를 제거하기 위해 Map 사용
+        const uniqueReviews = Array.from(
+          new Map(
+            allReviews.map((review) => [review.reviewId, review])
+          ).values()
+        );
+
+        return uniqueReviews;
+      });
 
       setIsLastPage(page >= data.totalPages - 1); // 마지막 페이지 여부 업데이트
     } catch (err) {

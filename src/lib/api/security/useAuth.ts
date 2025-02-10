@@ -6,6 +6,10 @@ const socialLogoutUrl = `http://localhost:8080/logout`;
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [nickname, setNickname] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loginId, setId] = useState<number | null>(null);
 
   useEffect(() => {
     fetch('http://localhost:8080/user/info', {
@@ -20,9 +24,15 @@ export const useAuth = () => {
       })
       .then(() => {
         setIsLoggedIn(true);
+        setId(data.id);
+        setNickname(data.nickname);
+        setProfileImage(data.profileImage);
       })
       .catch(() => {
         setIsLoggedIn(false);
+        setId(null);
+        setNickname(null);
+        setProfileImage(null);
       });
   }, []);
 
@@ -47,4 +57,12 @@ export const useAuth = () => {
   };
 
   return { isLoggedIn, handleLogin, handleLogout };
+  return {
+    isLoggedIn,
+    loginId,
+    nickname,
+    profileImage,
+    handleLogin,
+    handleLogout,
+  };
 };

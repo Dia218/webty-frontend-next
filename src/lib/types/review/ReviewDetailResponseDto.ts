@@ -5,6 +5,8 @@ export interface ReviewDetailResponseDto {
     nickname: string;
     profileImage: string;
   };
+  webtoonId: number;
+  webtoonName: string;
   content: string;
   title: string;
   viewCount: number;

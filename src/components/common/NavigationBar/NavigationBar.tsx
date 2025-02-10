@@ -56,14 +56,11 @@ const NavigationBar: React.FC = () => {
             </button>
           )}
 
-        {!HIDDEN_ELEMENTS.mypageButton.some((route) =>
-          pathname.startsWith(route)
-        ) &&
-          isLoggedIn && (
-            <Link href="/mypage">
-              <button>마이페이지</button>
-            </Link>
-          )}
+        {isLoggedIn && (
+          <Link href="/mypage">
+            <button>마이페이지</button>
+          </Link>
+        )}
 
         {/* 로그인 / 로그아웃 모달 */}
         <LogInOutDialog />

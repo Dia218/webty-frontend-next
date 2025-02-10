@@ -2,16 +2,17 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWebtoonById, WebtoonDTO } from '@/lib/api/webtoon/webtoon';
+import { fetchWebtoonById } from '@/lib/api/webtoon/webtoon';
 import WebtoonDetail from '@/components/buisness/webtoonDetail/WebtoonInfo';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import WebtoonDrawerTaps from '@/components/buisness/webtoonDetail/WebtoonDrawerTaps';
 import ExpandableDrawer from '@/components/common/ExpandableDrawer/ExpandableDrawer';
+import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 export default function Page({ params }: { params: Promise<{ id?: string }> }) {
   const { id } = use(params); // use()로 params 언랩
   const router = useRouter();
-  const [webtoon, setWebtoon] = useState<WebtoonDTO | null>(null);
+  const [webtoon, setWebtoon] = useState<WebtoonDetailDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

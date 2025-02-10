@@ -1,92 +1,48 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import CommentItem from './CommentItem';
-import { mockUsers, baseComment, editedComment } from './TestDataForStorybook';
+// CommentItem.stories.tsx
+import { Meta, StoryFn } from '@storybook/react'; // Story -> StoryFn으로 변경
+import CommentItem, { CommentItemProps } from './CommentItem';
+import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
 
-const meta = {
-  title: 'Components/CommentList/CommentItem',
+export default {
+  title: 'Components/CommentItem',
   component: CommentItem,
-  parameters: {
-    layout: 'centered',
-    backgrounds: {
-      default: 'light',
-    },
+} as Meta;
+
+const Template: StoryFn<CommentItemProps> = (args) => <CommentItem {...args} />; // Story -> StoryFn으로 변경
+
+const sampleComment: CommentResponseDto = {
+  commentId: 1,
+  content: 'This is a comment.',
+  user: {
+    // 'author' 대신 'user'로 수정
+    id: 1, // id나 다른 필요한 필드를 넣어주세요
+    nickname: 'User1',
+    profileImage: 'user1@example.com', // 예시로 추가한 필드
   },
-  tags: ['autodocs'],
-  argTypes: {
-    comment: {
-      control: 'object',
-      description: '댓글 데이터'
+  createdAt: '2025-02-10T00:00:00Z',
+  modifiedAt: '2025-02-10T00:00:00Z',
+  depth: 0,
+  mentions: [],
+  childComments: [
+    {
+      commentId: 2,
+      content: 'This is a reply.',
+      user: {
+        // 'author' 대신 'user'로 수정
+        id: 2,
+        nickname: 'User2',
+        profileImage: 'user2@example.com', // 예시로 추가한 필드
+      },
+      createdAt: '2025-02-10T00:00:00Z',
+      modifiedAt: '2025-02-10T00:00:00Z',
+      depth: 1,
+      mentions: [],
+      childComments: [],
     },
-    currentUserId: {
-      control: 'number',
-      description: '현재 로그인한 사용자의 ID'
-    },
-    existingUsers: {
-      control: 'object',
-      description: '멘션 가능한 사용자 목록'
-    },
-    onEdit: {
-      action: 'edited'
-    },
-    onDelete: {
-      action: 'deleted'
-    },
-    onReply: {
-      action: 'replied'
-    }
-  },
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-3xl p-4">
-        <Story />
-      </div>
-    ),
   ],
-} satisfies Meta<typeof CommentItem>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-const defaultHandlers = {
-  onEdit: (commentId: number, content: string) => {
-    console.log('Edit comment:', commentId, content);
-  },
-  onDelete: (commentId: number) => {
-    console.log('Delete comment:', commentId);
-  },
-  onReply: (content: string, parentId: number) => {
-    console.log('Reply to comment:', content, parentId);
-  }
 };
 
-export const Default: Story = {
-  args: {
-    comment: baseComment,
-    currentUserId: mockUsers[0].id,
-    existingUsers: mockUsers,
-    ...defaultHandlers
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '기본 댓글 컴포넌트입니다.'
-      }
-    }
-  }
-};
-
-export const WithEditedComment: Story = {
-  args: {
-    comment: editedComment,
-    currentUserId: mockUsers[0].id,
-    existingUsers: mockUsers,
-    ...defaultHandlers
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '수정된 댓글을 보여주는 컴포넌트입니다.'
-      }
-    }
-  }
+export const Default = Template.bind({});
+Default.args = {
+  comment: sampleComment,
 };

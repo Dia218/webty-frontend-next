@@ -8,7 +8,7 @@ import ExpandableDrawer from '@/components/common/ExpandableDrawer/ExpandableDra
 import UserDrawerTaps from '@/components/buisness/mypage/UserDrawerTaps';
 
 const MyPage = () => {
-  const { isLoggedIn, nickname, profileImage } = useAuth();
+  const { isLoggedIn, loginId, nickname, profileImage } = useAuth();
   const {
     handleNicknameChange,
     handleProfileImageChange,
@@ -44,7 +44,9 @@ const MyPage = () => {
           handleDeleteAccount={handleDeleteAccount}
         />
 
-        <ExpandableDrawer children={<UserDrawerTaps />} />
+        <ExpandableDrawer
+          children={<UserDrawerTaps loginId={loginId as number} />}
+        />
 
         {/* 오류 메시지 */}
         {error && <p className="text-red-500 mt-4">{error}</p>}
