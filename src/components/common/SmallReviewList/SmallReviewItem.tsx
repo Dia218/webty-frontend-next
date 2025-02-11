@@ -21,7 +21,7 @@ const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
       <div className="flex-1">
         {/* 웹툰 ID & 조회수/댓글 */}
         <div className="flex justify-between items-center text-xs text-gray-400">
-          <p>웹툰명: {review.webtoonName}</p>
+          <p>웹툰명: {review.webtoon.webtoonName}</p>
           <div className="flex space-x-2">
             <p>조회수: {review.viewCount}</p>
             <p>추천수: {review.recommendCount}</p>

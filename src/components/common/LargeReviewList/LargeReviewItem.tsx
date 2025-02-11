@@ -96,7 +96,7 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
 
       <div className="flex flex-row m-0">
         <img
-          src={review.thumbnailUrl}
+          src={review.webtoon.thumbnailUrl}
           alt="웹툰 썸네일"
           className="w-[150px] h-[calc(100%-16px)] object-cover "
         />

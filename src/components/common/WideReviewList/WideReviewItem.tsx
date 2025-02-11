@@ -67,10 +67,12 @@ const WideReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
 
       {/* 오른쪽 영역 (3) */}
       <div className="w-3/12 flex flex-col items-center">
-        <p className="text-sm text-gray-600 mb-2">{review.webtoonName}</p>
+        <p className="text-sm text-gray-600 mb-2">
+          {review.webtoon.webtoonName}
+        </p>
         <img
-          src={review.thumbnailUrl}
-          alt={review.webtoonName}
+          src={review.webtoon.thumbnailUrl}
+          alt={review.webtoon.webtoonName}
           className="w-24 h-24 object-cover rounded"
         />
       </div>
