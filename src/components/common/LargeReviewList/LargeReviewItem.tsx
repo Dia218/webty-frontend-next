@@ -75,10 +75,8 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
         )}
 
         <div className="flex flex-row space-x-2 mt-2">
-          {/* 이미지가 있으면 이미지들을 표시 */}
           {(review.spoilerStatus === 'FALSE' || showSpoiler) &&
-          review.imageUrls &&
-          review.imageUrls.length > 0 ? (
+            review.imageUrls?.length > 0 &&
             review.imageUrls.map((url, index) => (
               <img
                 key={index}
@@ -86,10 +84,7 @@ const LargeReviewItem: React.FC<LargeReviewItemProps> = ({ review }) => {
                 alt={`리뷰 이미지 ${index + 1}`}
                 className="border border-gray-300 w-[200px] h-[150px] object-cover"
               />
-            ))
-          ) : (
-            <span className="text-xs text-gray-500">이미지가 없습니다.</span>
-          )}
+            ))}
         </div>
         <div></div>
       </div>

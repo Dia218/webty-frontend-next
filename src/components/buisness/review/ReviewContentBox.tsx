@@ -30,14 +30,15 @@ const ReviewContentBox: React.FC<ReviewContentBoxProps> = ({ review }) => {
 
       {/* 이미지 리스트 */}
       {review.imageUrls.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
           {review.imageUrls.map((url, index) => (
-            <img
-              key={index}
-              src={url}
-              alt={`리뷰 이미지 ${index + 1}`}
-              className="w-full h-auto rounded-md"
-            />
+            <div key={index} className="flex justify-center items-center">
+              <img
+                src={url}
+                alt={`리뷰 이미지 ${index + 1}`}
+                className="w-auto h-auto max-w-[300px] max-h-[225px] object-contain rounded-md"
+              />
+            </div>
           ))}
         </div>
       )}
