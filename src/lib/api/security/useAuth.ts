@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const socialLoginForKaKaoUrl = `http://localhost:8080/oauth2/authorization/kakao`;
 const redirectUrlAfterSocialLogin = 'http://localhost:3000';
 const socialLogoutUrl = `http://localhost:8080/logout`;
 
 export const useAuth = () => {
+
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [nickname, setNickname] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -33,6 +35,7 @@ export const useAuth = () => {
         setNickname(null);
         setProfileImage(null);
       });
+
   }, []);
 
   const handleLogin = (): void => {
@@ -41,18 +44,16 @@ export const useAuth = () => {
     window.location.href = socialLoginForKaKaoUrl;
   };
 
-  const handleLogout = (): void => {
-    fetch(socialLogoutUrl, {
-      method: 'GET',
-      credentials: 'include',
-    })
-      .then(() => {
-        setIsLoggedIn(false);
-        window.location.href = redirectUrlAfterSocialLogin;
-      })
-      .catch((error) => {
-        console.error('Logout error:', error);
+  const handleLogout = async (): Promise<void> => {
+    try {
+      await axios.get(socialLogoutUrl, {
+        withCredentials: true
       });
+      setIsLoggedIn(false);
+      window.location.href = redirectUrlAfterSocialLogin;
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
   };
 
   return {
@@ -63,4 +64,5 @@ export const useAuth = () => {
     handleLogin,
     handleLogout,
   };
+
 };

@@ -81,7 +81,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   const fetchReviewsSortedByViewCount = async () => {
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        '/reviews/view-count-desc',
+        'http://localhost:8080/reviews/view-count-desc',
         {
           params: { page, size },
         }
@@ -93,15 +93,18 @@ const useReviews = (page: number = 0, size: number = 10) => {
   };
 
   // 리뷰 검색
-  const searchReviews = async (title: string) => {
+  const searchReviews = async (title: string, page: number) => {
+    if (!title) return null; // 빈 검색어 방지
+
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        '/reviews/search',
+        'http://localhost:8080/reviews/search',
         {
           params: { page, size, title },
         }
       );
-      return response.data.content;
+
+      return response.data; // 전체 데이터 반환
     } catch (err) {
       setError('Failed to search reviews');
     }
