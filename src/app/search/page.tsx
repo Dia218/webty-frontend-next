@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 
 const WebtoonPage = dynamic(
-  () => import('@/components/buisness/search/webtoonSearchResult'),
+  () => import('@/components/buisness/search/WebtoonSearchResult'),
   {
     ssr: false,
   }

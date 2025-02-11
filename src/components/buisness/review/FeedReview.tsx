@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { LargeReviewList } from '@/components/common/LargeReview/LargeReviewList';
+import { LargeReviewList } from '@/components/common/LargeReviewList/LargeReviewList';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { PageDto } from '@/lib/types/common/PageDto';
 
