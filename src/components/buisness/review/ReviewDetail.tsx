@@ -81,13 +81,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
           </div>
 
           {/* 웹툰 박스 (중간) */}
-          <ReviewWebtoonBox
-            webtoon={{
-              webtoonId: review.webtoonId,
-              webtoonName: review.webtoonName,
-              thumbnailUrl: review.thumbnailUrl,
-            }}
-          />
+          <ReviewWebtoonBox webtoon={review.webtoon} />
 
           {/* 추천 박스 (하단) */}
           <div>

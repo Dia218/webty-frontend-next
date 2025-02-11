@@ -1,4 +1,5 @@
 import { UserDataResponseDto } from '../user/UserDataResponseDto';
+import { WebtoonSummaryDto } from '../webtoon/WebtoonSummaryDto';
 
 export interface ReviewItemResponseDto {
   reviewId: number;
@@ -7,9 +8,7 @@ export interface ReviewItemResponseDto {
   title: string;
   viewCount: number;
   spoilerStatus: 'TRUE' | 'FALSE';
-  webtoonId: number;
-  webtoonName: string;
-  thumbnailUrl: string;
+  webtoon: WebtoonSummaryDto;
   imageUrls: string[];
   commentCount: number;
   recommendCount: number;

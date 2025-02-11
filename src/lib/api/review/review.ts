@@ -47,6 +47,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
         `http://localhost:8080/reviews/${reviewId}`
       );
       console.log('상세조회 API 호출');
+      console.log(response.data);
       return response.data;
     } catch (err) {
       setError('Failed to fetch review details');

@@ -78,8 +78,8 @@ const ReviewUpdate = () => {
     <div className="flex justify-center items-center min-h-[90vh] w-full bg-gray-100">
       <ReviewForm
         mode="edit"
-        webtoonName={review.webtoonName}
-        webtoonId={review.webtoonId}
+        webtoonName={review.webtoon.webtoonName}
+        webtoonId={review.webtoon.webtoonId}
         initialTitle={review.title}
         initialContent={review.content}
         initialImages={review.imageUrls ?? []}

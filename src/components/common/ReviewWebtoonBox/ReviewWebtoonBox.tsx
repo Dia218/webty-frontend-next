@@ -21,7 +21,7 @@ const ReviewWebtoonBox: React.FC<{ webtoon: WebtoonSummaryDto }> = ({
       <CardContent className="flex flex-1 p-4 flex-col justify-between">
         {/* 썸네일 */}
         <div className="w-full flex-shrink-0 flex justify-center items-center">
-          <img
+          <img  
             src={webtoon.thumbnailUrl}
             alt={webtoon.webtoonName}
             className="w-full p-2 object-cover aspect-[3/4] rounded-t-lg sm:rounded-l-lg"
