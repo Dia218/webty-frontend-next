@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import WebtoonItem from '@/components/common/WebtoonList/WebtoonItem';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
+import { fetchWebtoons } from '@/lib/api/webtoon/webtoon';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
 interface WriteReviewModalProps {
@@ -25,12 +25,14 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
     if (!searchText.trim()) return;
 
     setLoading(true);
-    const result = await fetchWebtoons(newPage, { webtoonName: searchText });
+    const result = await fetchWebtoons(newPage, 10, {
+      webtoonName: searchText,
+    });
 
     if (result && result.content) {
       setWebtoons(result.content);
       setPage(newPage);
-      setHasMore(!result.last); // 마지막 페이지 판별
+      setHasMore(!result.isLast); // 마지막 페이지 판별
     } else {
       setWebtoons([]);
       setHasMore(false);

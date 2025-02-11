@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchWebtoons } from '@/lib/api/search/webtoonSearch';
+import { fetchWebtoons } from '@/lib/api/webtoon/webtoon';
 import WebtoonList from '@/components/common/WebtoonList/WebtoonList';
 import { Button } from '@/components/ui/button'; // UI 버튼 추가
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
@@ -17,13 +17,15 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({ searchQuery }) => {
 
   useEffect(() => {
     if (searchQuery.trim() !== '') {
-      fetchWebtoons(currentPage, { webtoonName: searchQuery }).then((data) => {
-        if (data) {
-          setWebtoons(data.content);
-          setCurrentPage(data.currentPage); // 현재 페이지 업데이트
-          setTotalPages(data.totalPages); // 전체 페이지 업데이트
+      fetchWebtoons(currentPage, 10, { webtoonName: searchQuery }).then(
+        (data) => {
+          if (data) {
+            setWebtoons(data.content);
+            setCurrentPage(data.currentPage); // 현재 페이지 업데이트
+            setTotalPages(data.totalPages); // 전체 페이지 업데이트
+          }
         }
-      });
+      );
     }
   }, [searchQuery, currentPage]);
 
