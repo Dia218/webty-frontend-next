@@ -5,12 +5,12 @@ import useReviews from '@/lib/api/review/review';
 import ReviewForm from '@/components/common/ReviewForm/ReviewForm';
 import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
 
-interface ReviewWritePageProps {
+interface EditReviewPageProps {
   webtoonName: string; // 검색한 웹툰 이름
   webtoonId: number; // 검색한 웹툰 ID
 }
 
-const ReviewWritePage: React.FC<ReviewWritePageProps> = ({
+const EditReviewPage: React.FC<EditReviewPageProps> = ({
   webtoonName,
   webtoonId,
 }) => {
@@ -39,4 +39,4 @@ const ReviewWritePage: React.FC<ReviewWritePageProps> = ({
   );
 };
 
-export default ReviewWritePage;
+export default EditReviewPage;
