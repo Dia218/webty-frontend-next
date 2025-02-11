@@ -224,7 +224,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   // 게시글 스포일러 요청
   const spoilerReview = async (reviewId: number) => {
     try {
-      await axios.delete(`http://localhost:8080/reviews/spoiler/${reviewId}`);
+      await axios.patch(`http://localhost:8080/reviews/spoiler/${reviewId}`);
     } catch (err: any) {
       setError('리뷰를 스포일러 등록하는데 실패했습니다.');
     }
