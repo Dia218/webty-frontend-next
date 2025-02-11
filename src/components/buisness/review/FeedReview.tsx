@@ -9,7 +9,7 @@ const FeedReview: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // totalPages 상태 추가
   const [isLastPage, setIsLastPage] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
@@ -23,6 +23,8 @@ const FeedReview: React.FC = () => {
       if (!res.ok) throw new Error('서버 응답 오류');
 
       const data: PageDto<ReviewItemResponseDto> = await res.json();
+
+      setTotalPages(data.totalPages);
 
       // 기존 리뷰 + 새로운 리뷰 → 중복 제거
       setReviews((prev) => {
@@ -48,8 +50,10 @@ const FeedReview: React.FC = () => {
 
   // 페이지 변경 시 데이터 가져오기
   useEffect(() => {
-    fetchReviews(currentPage);
-  }, [currentPage]);
+    if (currentPage < totalPages) {
+      fetchReviews(currentPage);
+    }
+  }, [currentPage, totalPages]);
 
   // IntersectionObserver 설정
   useEffect(() => {
@@ -58,12 +62,16 @@ const FeedReview: React.FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
-          setCurrentPage((prev) => (isLastPage ? prev : prev + 1));
+          setCurrentPage((prev) => {
+            if (prev + 1 < totalPages) {
+              return prev + 1; // 다음 페이지 요청
+            }
+            return prev; // 마지막 페이지면 변경 안 함
+          });
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.8 }
     );
-
     const currentRef = observerRef.current;
     observer.observe(currentRef);
 
