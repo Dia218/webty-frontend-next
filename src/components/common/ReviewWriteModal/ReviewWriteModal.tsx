@@ -80,7 +80,7 @@ const WriteReviewModal: React.FC<WriteReviewModalProps> = ({
                   className="mt-2 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
                   onClick={() =>
                     router.push(
-                      `/review?webtoonId=${webtoon.webtoonId}&webtoonName=${encodeURIComponent(
+                      `/review-write?webtoonId=${webtoon.webtoonId}&webtoonName=${encodeURIComponent(
                         webtoon.webtoonName
                       )}`
                     )

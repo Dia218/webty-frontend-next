@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
+import { Suspense } from 'react';
 
 const WebtoonPage = dynamic(
   () => import('@/components/buisness/search/webtoonSearchResult'),
@@ -42,4 +43,11 @@ const SearchPage: React.FC = () => {
   );
 };
 
-export default SearchPage;
+// ✅ 최상위 `export default`에 `Suspense` 적용
+export default function SearchPageWithSuspense() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SearchPage />
+    </Suspense>
+  );
+}
