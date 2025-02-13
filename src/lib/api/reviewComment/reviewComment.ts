@@ -23,7 +23,7 @@ export const useReviewComments = (reviewId: number) => {
     setError(null);
     try {
       const response = await axios.get<PageDto<CommentResponseDto>>(
-        `${API_BASE_URL}/api/reviews/${reviewId}/comments`,
+        `${API_BASE_URL}/reviews/${reviewId}/comments`,
         { 
           params: { page, size },
           withCredentials: true,
@@ -56,7 +56,7 @@ export const useReviewComments = (reviewId: number) => {
 
     try {
       const response = await axios.post<CommentResponseDto>(
-        `${API_BASE_URL}/api/reviews/${reviewId}/comments`,
+        `${API_BASE_URL}/reviews/${reviewId}/comments`,
         {
           content: commentRequestDto.content.trim(),
           parentCommentId: commentRequestDto.parentCommentId || null,
@@ -95,7 +95,7 @@ export const useReviewComments = (reviewId: number) => {
 
     try {
       const response = await axios.put<CommentResponseDto>(
-        `${API_BASE_URL}/api/reviews/${reviewId}/comments/${commentId}`,
+        `${API_BASE_URL}/reviews/${reviewId}/comments/${commentId}`,
         commentRequestDto,
         { 
           withCredentials: true,
@@ -122,7 +122,7 @@ export const useReviewComments = (reviewId: number) => {
   const handleDeleteComment = useCallback(async (commentId: number) => {
     try {
       await axios.delete(
-        `${API_BASE_URL}/api/reviews/${reviewId}/comments/${commentId}`,
+        `${API_BASE_URL}/reviews/${reviewId}/comments/${commentId}`,
         { 
           withCredentials: true,
           headers: {

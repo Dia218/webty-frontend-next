@@ -6,7 +6,7 @@ export interface CommentResponseDto {
   content: string;
   createdAt: string; // LocalDateTime → ISO 8601 문자열
   modifiedAt: string;
-  parentId: number;
+  parentId: number | null;
   mentions: string[];
   childComments: CommentResponseDto[];
 }
