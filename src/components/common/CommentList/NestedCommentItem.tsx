@@ -17,6 +17,7 @@ interface NestedCommentItemProps {
   existingUsers?: UserDataResponseDto[];
   onEdit: (commentId: number, commentRequestDto: CommentRequestDto) => Promise<CommentResponseDto | null>;
   onDelete: (commentId: number) => Promise<void>;
+  isLoggedIn: boolean;
 }
 
 const NestedCommentItem = ({
@@ -24,7 +25,8 @@ const NestedCommentItem = ({
   currentUserId,
   existingUsers = [],
   onEdit,
-  onDelete
+  onDelete,
+  isLoggedIn
 }: NestedCommentItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -88,22 +90,26 @@ const NestedCommentItem = ({
                   mentions={comment.mentions || []} 
                 />
                 <div className="flex items-center space-x-2 mt-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsEditing(true)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    수정
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleDelete}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    삭제
-                  </Button>
+                  {isLoggedIn && comment.user.id === currentUserId && (
+                    <>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsEditing(true)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        수정
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleDelete}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        삭제
+                      </Button>
+                    </>
+                  )}
                 </div>
               </>
             )}

@@ -19,6 +19,7 @@ interface CommentItemProps {
   onEdit: (commentId: number, commentRequestDto: CommentRequestDto) => Promise<CommentResponseDto | null>;
   onDelete: (commentId: number) => Promise<void>;
   onReply?: (commentRequestDto: CommentRequestDto) => Promise<CommentResponseDto | null>;
+  isLoggedIn: boolean;
 }
 
 const CommentItem = ({
@@ -27,7 +28,8 @@ const CommentItem = ({
   existingUsers = [],
   onEdit,
   onDelete,
-  onReply
+  onReply,
+  isLoggedIn
 }: CommentItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
@@ -100,13 +102,13 @@ const CommentItem = ({
                     existingUsers={existingUsers}
                     parentCommentId={comment.parentId}
                   />
-                ) : (
+                ) : ( 
                   <>
                     <CommentContent 
                       content={comment.content} 
                       mentions={comment.mentions || []} 
                     />
-                    <div className="flex items-center space-x-2 mt-2">
+                    {isLoggedIn?<div className="flex items-center space-x-2 mt-2">
                       <Button 
                         variant="ghost" 
                         size="sm" 
@@ -131,7 +133,7 @@ const CommentItem = ({
                       >
                         삭제
                       </Button>
-                    </div>
+                    </div>:undefined}
                   </>
                 )}
               </div>
@@ -161,6 +163,7 @@ const CommentItem = ({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 existingUsers={existingUsers}
+                isLoggedIn={isLoggedIn}
               />
             ))}
           </div>
@@ -177,6 +180,7 @@ const CommentItem = ({
       onEdit={onEdit}
       onDelete={onDelete}
       existingUsers={existingUsers}
+      isLoggedIn={isLoggedIn}
     />
   );
 };

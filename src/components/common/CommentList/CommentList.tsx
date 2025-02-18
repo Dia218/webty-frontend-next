@@ -12,8 +12,13 @@ interface CommentListProps {
   existingUsers?: UserDataResponseDto[];
   error?: string | null;
   isLoading?: boolean;
+  isLoggedIn: boolean;
 }
-
+/**
+ * TODO[O]: 로그인상태가 아니라면 답글/수정/삭제가 안되어야함
+ * TODO[O]: 댓글 작성 시 멘션 기능 구현 
+ * TODO: 에러시에 각 Snackbar or Toast UI 구현
+ */
 const CommentList = ({
   comments,
   currentUserId,
@@ -22,18 +27,11 @@ const CommentList = ({
   onReply,
   existingUsers = [],
   error,
-  isLoading
+  isLoading,
+  isLoggedIn
 }: CommentListProps) => {
   if (isLoading) {
     return <div className="text-center text-gray-500">댓글을 불러오는 중...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 p-4 rounded-lg bg-red-50">
-        {error}
-      </div>
-    );
   }
 
   if (!comments || comments.length === 0) {
@@ -45,6 +43,10 @@ const CommentList = ({
 
   return (
     <div className="space-y-6">
+      {
+      (Boolean(error)&&<div className="text-center text-red-500 p-4 rounded-lg bg-red-50">
+        {error}
+      </div>)}
       {rootComments.map((comment) => (
         <CommentItem
           key={comment.commentId}
@@ -54,6 +56,7 @@ const CommentList = ({
           onDelete={onDelete}
           onReply={onReply}
           existingUsers={existingUsers}
+          isLoggedIn={isLoggedIn}
         />
       ))}
     </div>

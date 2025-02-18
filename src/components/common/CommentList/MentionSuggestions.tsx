@@ -22,9 +22,9 @@ export default function MentionSuggestions({
       }}
     >
       <div className="p-2 space-y-1">
-        {users.map((user) => (
+        {users.map((user,index) => (
           <Button
-            key={`mention-${user.id}-${user.nickname}`}
+            key={`mention-${user.id}-${user.nickname}-${index}`}
             variant="ghost"
             className="w-full justify-start text-sm hover:bg-gray-100"
             onClick={() => onSelect(user)}
