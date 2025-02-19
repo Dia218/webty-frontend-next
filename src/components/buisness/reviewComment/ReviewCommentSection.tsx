@@ -23,7 +23,7 @@ const ReviewCommentSection = ({ reviewId }: ReviewCommentSectionProps) => {
   return (
     <div className="mt-8 space-y-6">
       {/* 댓글 작성 영역 */}
-      {isLoggedIn && (
+      {isLoggedIn ? (
         <CommentContainer>
           <div className="flex flex-col gap-4">
             <div className="text-sm text-gray-500">
@@ -41,15 +41,21 @@ const ReviewCommentSection = ({ reviewId }: ReviewCommentSectionProps) => {
               </CommentAvatar>
               <div className="flex-1">
                 <div className="mb-2 font-medium text-sm">
-                  {nickname || '로그인이 필요합니다'}
+                  {nickname}
                 </div>
                 <CommentArea
                   onSubmit={handleCreateComment}
-                  placeholder={isLoggedIn ? "댓글을 입력하세요(@를 입력하여 사용자 멘션)" : "댓글을 작성하려면 로그인이 필요합니다"}
+                  placeholder="댓글을 입력하세요(@를 입력하여 사용자 멘션)"
                   existingUsers={comments.map(comment => comment.user)}
                 />
               </div>
             </div>
+          </div>
+        </CommentContainer>
+      ) : (
+        <CommentContainer>
+          <div className="flex items-center justify-center py-6 text-gray-500">
+            로그인시, '댓글 작성' 및 '작성했던 댓글과 대댓글에 대한 수정, 삭제'가 가능합니다.
           </div>
         </CommentContainer>
       )}
