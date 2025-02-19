@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
 import { PageDto } from '@/lib/types/common/PageDto';
