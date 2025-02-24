@@ -90,7 +90,7 @@ const NestedCommentItem = ({
                   mentions={comment.mentions || []} 
                 />
                 <div className="flex items-center space-x-2 mt-2">
-                  {isLoggedIn && comment.user.id === currentUserId && (
+                  {isLoggedIn && comment.user.userid === currentUserId && (
                     <>
                       <Button 
                         variant="ghost" 
