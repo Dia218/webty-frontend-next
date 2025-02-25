@@ -23,7 +23,7 @@ export const useAuth = () => {
       })
       .then((data) => {
         setIsLoggedIn(true);
-        setId(data.id);
+        setId(data.userid);
         setNickname(data.nickname);
         setProfileImage(data.profileImage);
       })

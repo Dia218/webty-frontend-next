@@ -1,90 +1,159 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { CommentResponseDto } from '@/lib/types/reviewComment/CommentResponseDto';
 import { PageDto } from '@/lib/types/common/PageDto';
+import { CommentRequestDto } from '@/lib/types/reviewComment/CommentRequestDto';
 
+export const API_BASE_URL = 'http://localhost:8080';
+
+// 리뷰 댓글 API 훅
 export const useReviewComments = (reviewId: number) => {
   const [comments, setComments] = useState<CommentResponseDto[]>([]);
-  const [newComment, setNewComment] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-  const [editedComment, setEditedComment] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(0);
+  const [size, setSize] = useState<number>(10);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get<PageDto<CommentResponseDto>>(
-          `/api/reviews/${reviewId}/comments`
-        );
-        setComments(response.data.content);
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      } finally {
-        setIsLoading(false);
+  // 댓글 조회
+  const fetchComments = useCallback(async () => {
+    if (!reviewId) return;
+    
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get<PageDto<CommentResponseDto>>(
+        `${API_BASE_URL}/reviews/${reviewId}/comments`,
+        { 
+          params: { page, size },
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      );
+      
+      if (response.data) {
+        setComments(response.data.content || []);
+        setTotalPages(response.data.totalPages || 1);
       }
-    };
+    } catch (err: any) {
+      console.error('댓글 조회 중 오류 발생:', err);
+      setError(err.response?.data?.message || '댓글을 불러오는데 실패했습니다.');
+      setComments([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [reviewId, page, size]);
 
-    fetchComments();
-  }, [reviewId]);
-
-  const handleCreateComment = async () => {
-    if (newComment.trim() === '') return;
+  // 댓글 생성
+  const handleCreateComment = useCallback(async (commentRequestDto: CommentRequestDto): Promise<CommentResponseDto | null> => {
+    if (!commentRequestDto.content.trim()) {
+      setError('댓글 내용을 입력해주세요.');
+      return null;
+    }
 
     try {
       const response = await axios.post<CommentResponseDto>(
-        `/api/reviews/${reviewId}/comments`,
-        { content: newComment }
+        `${API_BASE_URL}/reviews/${reviewId}/comments`,
+        {
+          content: commentRequestDto.content.trim(),
+          parentCommentId: commentRequestDto.parentCommentId || null,
+          mentions: commentRequestDto.mentions || []
+        },
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
       );
-      setComments([...comments, response.data]);
-      setNewComment('');
-    } catch (error) {
-      console.error('Error creating comment:', error);
+      
+      if (response.data) {
+        await fetchComments();
+        return response.data;
+      }
+      return null;
+    } catch (err: any) {
+      console.error('댓글 작성 중 오류 발생:', err);
+      setError(err.response?.data?.message || '댓글 작성에 실패했습니다.');
+      return null;
     }
-  };
+  }, [reviewId, fetchComments]);
 
-  const handleUpdateComment = async (commentId: number) => {
-    if (editedComment.trim() === '') return;
+  // 댓글 수정
+  const handleUpdateComment = useCallback(async (
+    commentId: number,
+    commentRequestDto: CommentRequestDto
+  ): Promise<CommentResponseDto | null> => {
+    if (!commentRequestDto.content.trim()) {
+      setError('댓글 내용을 입력해주세요.');
+      return null;
+    }
 
     try {
       const response = await axios.put<CommentResponseDto>(
-        `/api/reviews/${reviewId}/comments/${commentId}`,
-        { content: editedComment }
+        `${API_BASE_URL}/reviews/${reviewId}/comments/${commentId}`,
+        commentRequestDto,
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
       );
-      setComments(
-        comments.map((comment) =>
-          comment.commentId === commentId ? response.data : comment
-        )
-      );
-      setEditingCommentId(null);
-      setEditedComment('');
-    } catch (error) {
-      console.error('Error updating comment:', error);
+      
+      if (response.data) {
+        await fetchComments();
+        return response.data;
+      }
+      return null;
+    } catch (err: any) {
+      console.error('댓글 수정 중 오류 발생:', err);
+      setError(err.response?.data?.message || '댓글 수정에 실패했습니다.');
+      return null;
     }
-  };
+  }, [reviewId, fetchComments]);
 
-  const handleDeleteComment = async (commentId: number) => {
+  // 댓글 삭제
+  const handleDeleteComment = useCallback(async (commentId: number) => {
     try {
-      await axios.delete(`/api/reviews/${reviewId}/comments/${commentId}`);
-      setComments(
-        comments.filter((comment) => comment.commentId !== commentId)
+      await axios.delete(
+        `${API_BASE_URL}/reviews/${reviewId}/comments/${commentId}`,
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
       );
-    } catch (error) {
-      console.error('Error deleting comment:', error);
+      await fetchComments();
+    } catch (err: any) {
+      console.error('댓글 삭제 중 오류 발생:', err);
+      setError(err.response?.data?.message || '댓글 삭제에 실패했습니다.');
     }
-  };
+  }, [reviewId, fetchComments]);
+
+  useEffect(() => {
+    if (reviewId) {
+      fetchComments();
+    }
+  }, [fetchComments, reviewId]);
 
   return {
     comments,
-    newComment,
-    setNewComment,
     isLoading,
-    editingCommentId,
-    setEditingCommentId,
-    editedComment,
-    setEditedComment,
+    error,
     handleCreateComment,
     handleUpdateComment,
     handleDeleteComment,
+    page,
+    setPage,
+    totalPages,
+    fetchComments,
   };
 };

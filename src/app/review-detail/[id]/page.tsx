@@ -1,24 +1,21 @@
 'use client';
 
-import useReviews from '@/lib/api/review/review';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'next/navigation';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
-import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation'; // useParams 사용
+import useReviews from '@/lib/api/review/review';
 import ReviewDetail from '@/components/buisness/review/ReviewDetail';
 import { getRecommendationStatus } from '@/lib/api/review/recommend';
 import { useAuth } from '@/lib/api/security/useAuth';
+import ReviewCommentSection from '@/components/buisness/reviewComment/ReviewCommentSection';
 
 export default function Page() {
-  const params = useParams(); //  Next.js에서 동적 라우트 가져오기
+  const params = useParams();
   const id = params?.id;
   const { fetchReviewById } = useReviews();
   const { isLoggedIn, loginId } = useAuth();
-
-  if (!id) {
-    return <div className="text-center text-red-500">잘못된 요청입니다.</div>;
-  }
-
   const reviewId = Number(id);
+
   const [review, setReview] = useState<any>(null);
   const [recommendationStatus, setRecommendationStatus] = useState<{
     likes: boolean;
@@ -26,12 +23,13 @@ export default function Page() {
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef<boolean>(false); // 중복방지
+  const hasFetched = useRef<boolean>(false);
 
   useEffect(() => {
     if (isLoggedIn === null) return;
     if (hasFetched.current) return;
     hasFetched.current = true;
+
     const fetchData = async () => {
       try {
         const reviewData = await fetchReviewById(reviewId);
@@ -50,26 +48,26 @@ export default function Page() {
     };
 
     fetchData();
-  }, [reviewId, isLoggedIn]);
+  }, [reviewId, isLoggedIn, fetchReviewById]);
 
-  if (isLoggedIn === null || loading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
-  }
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
-    <>
+    <div>
       <NavigationBar />
-      <div style={{ height: '20px' }} />
-      <ReviewDetail
-        review={review}
-        recommendationStatus={recommendationStatus}
-        isLoggedIn={isLoggedIn}
-        id={loginId}
-      />
-    </>
+      <div className="h-5" />
+      <div className="container mx-auto px-4">
+        <ReviewDetail
+          review={review}
+          recommendationStatus={recommendationStatus}
+          isLoggedIn={isLoggedIn ?? false}
+          id={loginId}
+        />
+
+        {/* 댓글 섹션 */}
+        <ReviewCommentSection reviewId={reviewId} />
+      </div>
+    </div>
   );
 }
