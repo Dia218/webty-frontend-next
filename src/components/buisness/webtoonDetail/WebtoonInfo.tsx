@@ -13,6 +13,7 @@ import {
 } from '@/lib/api/webtoon/favorite';
 import { useAuth } from '@/lib/api/security/useAuth';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
+import { logUserActivity } from '@/lib/api/user/logUserActivity';
 
 interface WebtoonDetailProps {
   webtoon: WebtoonDetailDto;
@@ -24,6 +25,12 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
+
+  useEffect(() => {
+    if (webtoon) {   //if문이 없으면 webtoon이 null일때도 api요청해 오류 발생
+      logUserActivity(webtoon);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
