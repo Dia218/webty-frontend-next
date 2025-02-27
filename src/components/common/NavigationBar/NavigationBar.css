@@ -14,19 +14,25 @@
     text-decoration: none;
 }
 
+.search-container {
+    width: 400px;
+    max-width: 100%;
+}
+
 .search-box {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 5px;
+    width: 100%;
 }
 
 .search-box input {
     border: none;
     outline: none;
     padding: 5px;
-    width: 200px;
+    width: 100%;
 }
 
 .search-box button {
@@ -53,4 +59,12 @@
 
 .nav-buttons button:hover {
     background-color: #0056b3;
+}
+
+.write-btn {
+    background-color: #28a745 !important;
+}
+
+.write-btn:hover {
+    background-color: #218838 !important;
 }

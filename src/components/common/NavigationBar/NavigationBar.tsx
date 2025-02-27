@@ -13,15 +13,7 @@ import WriteReviewModal from '@/components/common/ReviewWriteModal/ReviewWriteMo
 const NavigationBar: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const router = useRouter(); // 페이지 이동을 위한 useRouter 훅
-  const [searchText, setSearchText] = useState('');
   const pathname = usePathname();
-
-  const handleSearch = () => {
-    if (searchText.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchText)}`); // 검색 페이지로 이동
-    }
-  };
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -30,20 +22,6 @@ const NavigationBar: React.FC = () => {
       <div className="logo">
         <Link href="/">WEBTY</Link>
       </div>
-
-      {/* 검색창 */}
-      {!HIDDEN_ELEMENTS.search.includes(pathname) && (
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="검색어를 입력하세요"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // 엔터 키 검색
-          />
-          <button onClick={handleSearch}>🔍</button>
-        </div>
-      )}
 
       {/* 버튼 그룹 */}
       <div className="nav-buttons">
