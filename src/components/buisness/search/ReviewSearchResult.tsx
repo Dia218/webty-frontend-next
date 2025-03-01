@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { Button } from '@/components/ui/button';
 import { SmallReviewList } from '@/components/common/SmallReviewList/SmallReviewList';
@@ -12,6 +12,13 @@ interface ReviewPageProps {
   searchType?: string;
 }
 
+interface SearchResponse {
+  results: ReviewItemResponseDto[];
+  currentPage: number;
+  totalPages: number;
+  totalElements: number;
+}
+
 const ReviewPage: React.FC<ReviewPageProps> = ({ searchQuery, searchType = 'all' }) => {
   const [reviews, setReviews] = useState<ReviewItemResponseDto[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -20,45 +27,77 @@ const ReviewPage: React.FC<ReviewPageProps> = ({ searchQuery, searchType = 'all'
   const [sortBy, setSortBy] = useState('recommend');
   const { search } = useSearch();
 
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setReviews([]);
-      return;
-    }
-
-    const fetchSearchResults = async () => {
-      setIsLoading(true);
-      console.log('🔍 검색 API 요청:', { searchQuery, currentPage, searchType, sortBy });
-
-      try {
-        // 리뷰 타입이 아닌 경우에도 리뷰 결과를 보여주되, 검색 타입에 맞게 필터링
-        const searchTypeParam = 
-          searchType === 'review' ? 'reviewContent' : 
-          searchType === 'user' ? 'nickname' : 
-          searchType === 'webtoon' ? 'webtoonName' : 
-          undefined; // 'all'인 경우 undefined로 설정하여 백엔드에서 전체 검색 수행
-        
-        const data = await search(searchQuery, currentPage, 10, searchTypeParam, sortBy, searchType);
-        if (data) {
-          console.log('✅ 검색 API 응답 데이터:', data);
-          setReviews(data.results || []);
-          // 백엔드에서 페이지 정보를 제공하지 않으므로 임시로 설정
-          // 실제로는 백엔드에서 페이지 정보를 받아와야 함
-          setTotalPages(Math.ceil(data.results.length / 10) || 1);
-        } else {
-          console.warn('⚠️ 검색 API 응답이 예상과 다름:', data);
-          setReviews([]);
-        }
-      } catch (error) {
-        console.error('❌ 검색 API 요청 실패:', error);
+  const fetchSearchResults = useCallback(async () => {
+    if (!searchQuery.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      console.log('검색 시작:', {
+        searchQuery,
+        currentPage,
+        sortBy,
+        searchType,
+        filter: searchType === 'review' ? 'review' : 'all'
+      });
+      
+      // 백엔드 API에 맞게 파라미터 설정
+      const searchTypeParam = searchType === 'review' ? 'reviewContent' : undefined;
+      const filterParam = searchType === 'review' ? 'review' : 'all';
+      
+      console.log('검색 API 호출 직전 파라미터:', {
+        searchQuery, 
+        currentPage, 
+        sortBy, 
+        searchTypeParam, 
+        filterParam
+      });
+      
+      const data = await search(
+        searchQuery,
+        currentPage,
+        10,
+        searchTypeParam,
+        sortBy,
+        filterParam
+      );
+      
+      console.log('검색 결과:', data);
+      
+      if (data && Array.isArray(data.results)) {
+        console.log(`검색 결과 ${data.results.length}건 찾음`);
+        setReviews(data.results);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(data.currentPage || 0);
+      } else {
+        console.warn('검색 결과가 없거나 잘못된 형식:', data);
         setReviews([]);
-      } finally {
-        setIsLoading(false);
+        setTotalPages(1);
+        setCurrentPage(0);
       }
-    };
+    } catch (error: any) {
+      console.error('검색 중 오류 발생:', error);
+      setReviews([]);
+      setTotalPages(1);
+      setCurrentPage(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchQuery, currentPage, sortBy, searchType, search]);
 
-    fetchSearchResults();
-  }, [searchQuery, currentPage, searchType, sortBy]);
+  useEffect(() => {
+    console.log('검색어 또는 정렬 방식 변경:', { searchQuery, sortBy });
+    if (searchQuery) {
+      setCurrentPage(0);
+      fetchSearchResults();
+    }
+  }, [searchQuery, sortBy]);
+
+  useEffect(() => {
+    console.log('페이지 변경:', currentPage);
+    if (searchQuery && currentPage > 0) {
+      fetchSearchResults();
+    }
+  }, [currentPage]);
 
   const goToNextPage = () => {
     setCurrentPage((prev) => (prev < totalPages - 1 ? prev + 1 : prev));
@@ -70,7 +109,7 @@ const ReviewPage: React.FC<ReviewPageProps> = ({ searchQuery, searchType = 'all'
 
   const handleSortChange = (value: string) => {
     setSortBy(value);
-    setCurrentPage(0); // 정렬 변경 시 첫 페이지로 이동
+    setCurrentPage(0);
   };
 
   return (

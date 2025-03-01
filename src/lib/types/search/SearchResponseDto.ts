@@ -8,4 +8,10 @@ export interface SearchResponseDto {
   keyword: string;
   // 검색 결과(리뷰 목록)
   results: ReviewItemResponseDto[];
+  // 현재 페이지 번호 (0부터 시작)
+  currentPage: number;
+  // 전체 페이지 수
+  totalPages: number;
+  // 전체 결과 수
+  totalElements: number;
 } 
