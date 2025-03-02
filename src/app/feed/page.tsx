@@ -2,7 +2,7 @@
 
 import FeedReview from '@/components/buisness/review/FeedReview';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
-import SearchBar from '@/components/common/SearchBar/SearchBar';
+import SearchContainer from '@/components/common/Search';
 import useReviews from '@/lib/api/review/review';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -26,8 +26,11 @@ const FeedPage = () => {
     <div className="flex flex-col min-h-screen">
       <NavigationBar /> {/* 네비게이션 바 */}
       
-      {/* 검색 영역 */}
-      <SearchBar onSearch={handleSearch} />
+      {/* 검색 영역 - 탭 표시 */}
+      <SearchContainer 
+        onSearch={handleSearch} 
+        showTabs={true} 
+      />
       
       {/* 피드 컨텐츠 */}
       <div className="flex-1">

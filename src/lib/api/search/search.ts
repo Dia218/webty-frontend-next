@@ -39,6 +39,7 @@ export const search = async (
     
     console.log('🔍 검색 API 요청 URL:', `${API_BASE_URL}/search`);
     console.log('🔍 검색 API 요청 파라미터:', JSON.stringify(params, null, 2));
+    console.log('🔍 정렬 매개변수 확인:', { sortBy, filter, searchType });
     
     const response = await axios.get<SearchResponseDto>(`${API_BASE_URL}/search`, {
       params,
@@ -52,6 +53,29 @@ export const search = async (
     
     console.log('✅ 검색 API 응답 상태:', response.status);
     console.log('✅ 검색 API 응답 데이터:', JSON.stringify(response.data, null, 2));
+    console.log('✅ 정렬 결과 확인:', { 
+      요청정렬: sortBy, 
+      결과개수: response.data?.results?.length || 0,
+      필터: filter,
+      검색유형: searchType
+    });
+    
+    // 정렬 결과 검증 - 첫 5개 항목의 정렬 관련 필드 확인
+    if (response.data?.results?.length > 0) {
+      const sortFields = {
+        recommend: 'recommendCount',
+        viewCount: 'viewCount',
+        recent: 'reviewId'  // createdAt이 없어 reviewId로 대체
+      };
+      
+      const field = sortFields[sortBy as keyof typeof sortFields] || 'recommendCount';
+      const sampleItems = response.data.results.slice(0, 5).map(item => ({
+        reviewId: item.reviewId,
+        [field]: item[field as keyof typeof item]
+      }));
+      
+      console.log(`✅ ${sortBy} 정렬 검증:`, sampleItems);
+    }
     
     // 데이터 유효성 검사
     if (!response.data) {
