@@ -13,7 +13,8 @@ import {
 } from '@/lib/api/webtoon/favorite';
 import { useAuth } from '@/lib/api/security/useAuth';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
-import { logUserActivity } from '@/lib/api/user/logUserActivity';
+import { logUserActivity } from '@/lib/api/userActivity/logUserActivity';
+import { WebtoonSummaryDto } from '@/lib/types/webtoon/WebtoonSummaryDto';
 
 interface WebtoonDetailProps {
   webtoon: WebtoonDetailDto;
@@ -25,12 +26,24 @@ export default function WebtoonDetail({ webtoon }: WebtoonDetailProps) {
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState('');
+ 
+  const { loginId } = useAuth();
 
   useEffect(() => {
-    if (webtoon) {   //if문이 없으면 webtoon이 null일때도 api요청해 오류 발생
-      logUserActivity(webtoon);
+    console.log("WebtoonDetail렌더링됨",{ isLoggedIn, loginId });
+    if (webtoon) {  
+      if (isLoggedIn && loginId) {
+        console.log("로그기록", { isLoggedIn, loginId });
+        // SummaryDto로 변환
+        const webtoonSummary: WebtoonSummaryDto = {
+          webtoonId: webtoon.webtoonId,
+          webtoonName: webtoon.webtoonName, 
+          thumbnailUrl: webtoon.thumbnailUrl,
+        };
+        logUserActivity(loginId, webtoonSummary);
+      }
     }
-  }, []);
+  }, [isLoggedIn,loginId]);
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {

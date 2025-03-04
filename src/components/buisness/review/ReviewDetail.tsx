@@ -20,8 +20,9 @@ import ReviewInfo from '@/components/buisness/review/ReviewInfo';
 import ReviewContentBox from '@/components/buisness/review/ReviewContentBox';
 import ReviewWebtoonBox from '@/components/common/ReviewWebtoonBox/ReviewWebtoonBox';
 import { useEffect } from 'react';
-import { logUserActivity } from '@/lib/api/user/logUserActivity';
-
+import { logUserActivity } from '@/lib/api/userActivity/logUserActivity';
+import { useAuth } from '@/lib/api/security/useAuth';
+import { useState } from 'react';
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
   recommendationStatus: { likes: boolean; hates: boolean } | null;
@@ -38,11 +39,17 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
   const { deleteReview } = useReviews();
   const router = useRouter();
 
+  const { loginId } = useAuth();
+
   useEffect(() => {
-    if (review.webtoon) {   //if문이 없으면 review.webtoon이 null일때도 api요청해 오류 발생
-      logUserActivity(review.webtoon);
+    console.log("ReviewDetail 렌더링됨", { isLoggedIn, loginId });
+    if (review.webtoon) {  
+      if (isLoggedIn && loginId) {
+        console.log("로그기록", { isLoggedIn, loginId });
+        logUserActivity(loginId, review.webtoon);
+      }
     }
-  }, []);
+  }, [isLoggedIn, loginId]);
 
   const handleDelete = async () => {
     try {
