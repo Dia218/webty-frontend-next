@@ -81,32 +81,40 @@ export const SimilarWebtoonBox = ({
                     </p>
 
                     {/* Progress Bar Section */}
-                    <div className="w-full h-3 bg-gray-200 rounded-lg relative overflow-hidden">
+                    <div className="w-full h-6 bg-gray-200 rounded-lg relative overflow-hidden">
+                      {/* 동의 수: 왼쪽 정렬 */}
                       <div
-                        className="absolute top-0 left-0 h-full bg-green-500"
+                        className="absolute top-0 left-0 h-full bg-green-500 flex items-center pl-2 text-sm text-white"
                         style={{ width: `${agreeRate}%` }}
-                      />
+                      >
+                        {webtoon.agreeCount > 0 && (
+                          <span className="ml-1">{webtoon.agreeCount}</span>
+                        )}
+                      </div>
+
+                      {/* 비동의 수: 오른쪽 정렬 */}
                       <div
-                        className="absolute top-0 right-0 h-full bg-red-500"
+                        className="absolute top-0 right-0 h-full bg-red-500 flex items-center justify-end pr-2 text-sm text-white"
                         style={{ width: `${disagreeRate}%` }}
-                      />
+                      >
+                        {webtoon.disagreeCount > 0 && (
+                          <span className="mr-1">{webtoon.disagreeCount}</span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="mt-2 text-xs text-gray-500 text-center">
-                      동의: {webtoon.agreeCount} | 비동의:{' '}
-                      {webtoon.disagreeCount}
-                      <div className="mt-2 flex justify-center gap-2">
-                        <AgreeButton
-                          isLoggedIn={isLoggedIn ?? false}
-                          onActivate={() => console.log('Agree!')}
-                          onDeactivate={() => console.log('Agree 취소!')}
-                        />
-                        <DisagreeButton
-                          isLoggedIn={isLoggedIn ?? false}
-                          onActivate={() => console.log('DisAgree!')}
-                          onDeactivate={() => console.log('DisAgree 취소!')}
-                        />
-                      </div>
+                    {/* 버튼 간격 조절 - 양쪽 마진 추가 */}
+                    <div className="mt-2 flex justify-between px-6">
+                      <AgreeButton
+                        isLoggedIn={isLoggedIn ?? false}
+                        onActivate={() => console.log('Agree!')}
+                        onDeactivate={() => console.log('Agree 취소!')}
+                      />
+                      <DisagreeButton
+                        isLoggedIn={isLoggedIn ?? false}
+                        onActivate={() => console.log('DisAgree!')}
+                        onDeactivate={() => console.log('DisAgree 취소!')}
+                      />
                     </div>
                   </div>
                 </div>
