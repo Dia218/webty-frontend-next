@@ -106,3 +106,74 @@ export const DislikeButton: React.FC<ButtonProps> = ({
     </div>
   );
 };
+
+interface BaseButtonProps {
+  isInitialActive?: boolean;
+  isLoggedIn: boolean;
+  onActivate: () => void;
+  onDeactivate: () => void;
+  icon: string;
+  activeColor: string;
+  inactiveColor: string;
+}
+
+const AgreeButtonBase: React.FC<BaseButtonProps> = ({
+  isInitialActive = false,
+  isLoggedIn,
+  onActivate,
+  onDeactivate,
+  icon,
+  activeColor,
+  inactiveColor,
+}) => {
+  const [isActive, setIsActive] = useState(isInitialActive);
+  const router = useRouter();
+
+  const handleClick = async () => {
+    if (!isLoggedIn) return;
+
+    setIsActive((prev) => !prev);
+
+    if (isActive) {
+      await onDeactivate();
+    } else {
+      await onActivate();
+    }
+
+    router.refresh();
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={!isLoggedIn}
+      className={`w-12 h-12 rounded-full flex items-center justify-center border transition ${
+        isActive ? activeColor : inactiveColor
+      } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      {icon}
+    </button>
+  );
+};
+
+export const AgreeButton: React.FC<
+  Omit<BaseButtonProps, 'icon' | 'activeColor' | 'inactiveColor'>
+> = (props) => (
+  <AgreeButtonBase
+    {...props}
+    icon="👍"
+    activeColor="bg-blue-500 text-white"
+    inactiveColor="bg-white text-black border-gray-300"
+  />
+);
+
+export const DisagreeButton: React.FC<
+  Omit<BaseButtonProps, 'icon' | 'activeColor' | 'inactiveColor'>
+> = (props) => (
+  <AgreeButtonBase
+    {...props}
+    icon="👎"
+    activeColor="bg-red-500 text-white"
+    inactiveColor="bg-white text-black border-gray-300"
+  />
+);

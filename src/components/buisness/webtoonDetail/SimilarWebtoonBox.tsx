@@ -3,6 +3,11 @@ import { getSimilarList } from '@/lib/api/similar/similar';
 import { SimilarWebtoonDto } from '@/lib/types/similar/SimilarWebtoonDto';
 import { PageDto } from '@/lib/types/common/PageDto';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/lib/api/security/useAuth';
+import {
+  AgreeButton,
+  DisagreeButton,
+} from '@/components/common/RecommendButton/RecommendButton';
 
 interface SimilarWebtoonListProps {
   targetWebtoonId: number;
@@ -11,6 +16,7 @@ interface SimilarWebtoonListProps {
 export const SimilarWebtoonBox = ({
   targetWebtoonId,
 }: SimilarWebtoonListProps) => {
+  const { isLoggedIn } = useAuth();
   const [similarList, setSimilarList] = useState<SimilarWebtoonDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -20,7 +26,7 @@ export const SimilarWebtoonBox = ({
 
   useEffect(() => {
     fetchSimilarWebtoons(currentPage);
-  }, [currentPage]);
+  }, [isLoggedIn, currentPage]);
 
   const fetchSimilarWebtoons = async (page: number) => {
     setLoading(true);
@@ -86,9 +92,21 @@ export const SimilarWebtoonBox = ({
                       />
                     </div>
 
-                    {/* 찬성/반대 텍스트 (아래 배치) */}
                     <div className="mt-2 text-xs text-gray-500 text-center">
-                      찬성: {webtoon.agreeCount} | 반대: {webtoon.disagreeCount}
+                      동의: {webtoon.agreeCount} | 비동의:{' '}
+                      {webtoon.disagreeCount}
+                      <div className="mt-2 flex justify-center gap-2">
+                        <AgreeButton
+                          isLoggedIn={isLoggedIn ?? false}
+                          onActivate={() => console.log('Agree!')}
+                          onDeactivate={() => console.log('Agree 취소!')}
+                        />
+                        <DisagreeButton
+                          isLoggedIn={isLoggedIn ?? false}
+                          onActivate={() => console.log('DisAgree!')}
+                          onDeactivate={() => console.log('DisAgree 취소!')}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
