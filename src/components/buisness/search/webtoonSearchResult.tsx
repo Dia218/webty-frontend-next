@@ -55,13 +55,15 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({
         isInitialLoadComplete: isInitialLoadComplete.current
       });
       
-      // API 호출 시 limit 파라미터 추가
-      const response = await fetchWebtoons({
-        query: searchQuery,
-        searchType: searchType,
-        page: pageToLoad,
-        size: limit || 10 // limit이 제공되면 사용하고, 아니면 기본값 10 사용
-      });
+      // API 호출 시 올바른 파라미터 형식으로 변경
+      const response = await fetchWebtoons(
+        pageToLoad, // 첫 번째 인자: page
+        limit || 10, // 두 번째 인자: size
+        { 
+          webtoonName: searchQuery, // 필수 속성: webtoonName
+          searchType: searchType 
+        } // 세 번째 인자: params 객체
+      );
       
       if (response) {
         if (isLoadingMore) {

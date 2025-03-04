@@ -91,19 +91,13 @@ const SearchByAll: React.FC<SearchByAllProps> = ({
       리뷰: reviewResults.length,
       사용자: userResults.length,
       웹툰: webtoonResults.length,
-      중복제거후: uniqueReviews.length
+      중복제거후: uniqueReviews.length,
+      정렬: sortBy
     });
     
-    // 정렬 (정렬 기준에 따라)
-    if (sortBy === 'recent') {
-      // createdAt이 없으므로 reviewId로 대체 (일반적으로 최신 항목이 더 큰 ID를 가짐)
-      return uniqueReviews.sort((a, b) => b.reviewId - a.reviewId);
-    } else if (sortBy === 'viewCount') {
-      return uniqueReviews.sort((a, b) => b.viewCount - a.viewCount);
-    } else { // 'recommend'
-      // likeCount 대신 recommendCount 사용
-      return uniqueReviews.sort((a, b) => b.recommendCount - a.recommendCount);
-    }
+    // 백엔드에서 각 결과는 이미 정렬되어 옴
+    // 로컬에서는 단순 통합만 수행하고 정렬은 백엔드에 의존
+    return uniqueReviews;
   }, [reviewSearch.items, userSearch.items, webtoonSearch.items, sortBy]);
 
   // 더 보기 기능을 위한 상태

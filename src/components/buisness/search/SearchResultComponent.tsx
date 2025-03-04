@@ -55,6 +55,12 @@ const SearchResultComponent = ({
     ? reviewItems.length > 0 
     : webtoonItems.length > 0;
 
+  // 정렬 변경 핸들러 - 로그 추가
+  const handleSort = (newSortBy: string) => {
+    console.log(`정렬 변경: ${sortBy} → ${newSortBy}, 결과 타입: ${resultType}`);
+    onSortChange(newSortBy);
+  };
+
   return (
     <div className="max-w-6xl">
       {showTitle && title && (
@@ -63,7 +69,7 @@ const SearchResultComponent = ({
       
       {/* 정렬 옵션 - 리뷰 타입일 때만 표시 */}
       {resultType === 'review' && (
-        <SortControl sortBy={sortBy} onSortChange={onSortChange} />
+        <SortControl sortBy={sortBy} onSortChange={handleSort} />
       )}
       
       {hasResults ? (
@@ -72,7 +78,7 @@ const SearchResultComponent = ({
           {resultType === 'review' ? (
             <SmallReviewList reviews={reviewItems} />
           ) : (
-            <WebtoonList webtoons={webtoonItems} onImageError={handleImageError} />
+            <WebtoonList webtoons={webtoonItems} />
           )}
           
           {/* 더 보기 버튼 */}
