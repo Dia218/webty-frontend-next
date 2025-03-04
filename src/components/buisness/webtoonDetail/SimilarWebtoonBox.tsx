@@ -1,0 +1,125 @@
+import { useEffect, useState } from 'react';
+import { getSimilarList } from '@/lib/api/similar/similar';
+import { SimilarWebtoonDto } from '@/lib/types/similar/SimilarWebtoonDto';
+import { PageDto } from '@/lib/types/common/PageDto';
+import { Button } from '@/components/ui/button';
+
+interface SimilarWebtoonListProps {
+  targetWebtoonId: number;
+}
+
+export const SimilarWebtoonBox = ({
+  targetWebtoonId,
+}: SimilarWebtoonListProps) => {
+  const [similarList, setSimilarList] = useState<SimilarWebtoonDto[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // 페이지네이션을 위한 상태
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+
+  useEffect(() => {
+    fetchSimilarWebtoons(currentPage);
+  }, [currentPage]);
+
+  const fetchSimilarWebtoons = async (page: number) => {
+    setLoading(true);
+    const data: PageDto<SimilarWebtoonDto> | null = await getSimilarList(
+      targetWebtoonId,
+      page
+    );
+    if (data) {
+      setSimilarList(data.content);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+    }
+    setLoading(false);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  return (
+    <div className="p-4 max-w-9xl mx-auto max-h-[500px] overflow-y-auto">
+      <h2 className="text-lg font-bold mb-2">유사 웹툰 목록</h2>
+
+      {loading ? (
+        <p className="text-center">로딩 중...</p>
+      ) : similarList.length > 0 ? (
+        <>
+          <div className="h-[370px] overflow-y-auto border rounded-lg p-2">
+            {similarList.map((webtoon) => {
+              const totalVotes = webtoon.agreeCount + webtoon.disagreeCount;
+              const agreeRate =
+                totalVotes > 0 ? (webtoon.agreeCount / totalVotes) * 100 : 0;
+              const disagreeRate = 100 - agreeRate;
+
+              return (
+                <div
+                  key={webtoon.similarId}
+                  className="flex gap-4 mb-4 p-4 border rounded-lg items-center"
+                >
+                  <img
+                    src={webtoon.similarThumbnailUrl}
+                    alt="웹툰 썸네일"
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover"
+                  />
+                  <div className="flex flex-col flex-1">
+                    <p className="text-sm font-semibold mb-2">
+                      {webtoon.similarWebtoonName}
+                    </p>
+
+                    {/* Progress Bar Section */}
+                    <div className="w-full h-3 bg-gray-200 rounded-lg relative overflow-hidden">
+                      <div
+                        className="absolute top-0 left-0 h-full bg-green-500"
+                        style={{ width: `${agreeRate}%` }}
+                      />
+                      <div
+                        className="absolute top-0 right-0 h-full bg-red-500"
+                        style={{ width: `${disagreeRate}%` }}
+                      />
+                    </div>
+
+                    {/* 찬성/반대 텍스트 (아래 배치) */}
+                    <div className="mt-2 text-xs text-gray-500 text-center">
+                      찬성: {webtoon.agreeCount} | 반대: {webtoon.disagreeCount}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 페이지네이션 버튼 */}
+          <div className="flex justify-between mt-4">
+            <Button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 0}
+              variant="outline"
+            >
+              이전
+            </Button>
+            <span className="text-sm">
+              {currentPage + 1} / {totalPages}
+            </span>
+            <Button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages - 1}
+              variant="outline"
+            >
+              다음
+            </Button>
+          </div>
+        </>
+      ) : (
+        <p className="text-center text-gray-500">유사 웹툰이 없습니다.</p>
+      )}
+    </div>
+  );
+};
