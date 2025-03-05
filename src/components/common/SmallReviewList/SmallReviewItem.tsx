@@ -16,9 +16,6 @@ const SmallReviewItem: React.FC<{ review: ReviewItemResponseDto }> = ({
     <div
       className="border p-4 rounded-lg shadow-md flex justify-between items-start cursor-pointer hover:shadow-lg transition-shadow duration-200"
       onClick={handleNavigate} // 클릭 시 라우터 작동
-      data-review-id={review.reviewId}
-      data-view-count={review.viewCount}
-      data-recommend-count={review.recommendCount}
     >
       {/* 왼쪽 컨텐츠 */}
       <div className="flex-1">
