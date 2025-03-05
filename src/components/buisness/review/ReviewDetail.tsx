@@ -91,7 +91,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
               viewCount={review.viewCount}
               createdAt={review.createdAt}
               updatedAt={review.updatedAt}
-              showButtons={review.userDataResponse.id === id}
+              showButtons={review.userDataResponse.userid === id}
             />
           </div>
 
