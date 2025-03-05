@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSearchLogic } from '@/lib/api/search/searchLogic';
+import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 
-interface SearchByAllProps {
+interface SearchByAllCategoriesProps {
   searchQuery: string;
   limit?: number;
   showTitle?: boolean;
@@ -16,7 +16,7 @@ interface SearchByAllProps {
  * 웹툰, 사용자, 리뷰 검색 결과를 모두 통합하여 하나의 리스트로 표시합니다.
  * 각 검색 유형(리뷰, 사용자, 웹툰)의 결과를 하나로 통합하여 표시합니다.
  */
-const SearchByAll: React.FC<SearchByAllProps> = ({ 
+const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({ 
   searchQuery,
   limit,
   showTitle = true
@@ -86,19 +86,9 @@ const SearchByAll: React.FC<SearchByAllProps> = ({
       return true;
     });
     
-    // 로그로 각 유형별 검색 결과 수 확인
-    console.log('검색 결과 통계:', {
-      리뷰: reviewResults.length,
-      사용자: userResults.length,
-      웹툰: webtoonResults.length,
-      중복제거후: uniqueReviews.length,
-      정렬: sortBy
-    });
-    
-    // 백엔드에서 각 결과는 이미 정렬되어 옴
-    // 로컬에서는 단순 통합만 수행하고 정렬은 백엔드에 의존
+    // 백엔드에서 이미 정렬된 결과를 유지하고 중복만 제거
     return uniqueReviews;
-  }, [reviewSearch.items, userSearch.items, webtoonSearch.items, sortBy]);
+  }, [reviewSearch.items, userSearch.items, webtoonSearch.items]);
 
   // 더 보기 기능을 위한 상태
   const hasMore = reviewSearch.hasMore || userSearch.hasMore || webtoonSearch.hasMore;
@@ -141,4 +131,4 @@ const SearchByAll: React.FC<SearchByAllProps> = ({
   );
 };
 
-export default SearchByAll; 
+export default SearchByAllCategories; 

@@ -28,9 +28,9 @@ const UsersSearch = dynamic(
   }
 );
 
-// 웹툰 검색을 위한 WebtoonSearchResult
-const WebtoonSearchResult = dynamic(
-  () => import('@/components/buisness/search/WebtoonSearchResult'),
+// 웹툰 검색을 위한 ResultOfWebtoonsSearch
+const ResultOfWebtoonsSearch = dynamic(
+  () => import('@/components/buisness/search/ResultOfWebtoonsSearch'),
   {
     ssr: false,
   }
@@ -38,7 +38,7 @@ const WebtoonSearchResult = dynamic(
 
 // 모든 검색 결과를 위한 AllSearchResults
 const AllSearchResults = dynamic(
-  () => import('@/components/buisness/search/SearchByAll'),
+  () => import('@/components/buisness/search/SearchByAllCategories'),
   {
     ssr: false,
   }
@@ -48,30 +48,42 @@ const AllSearchResults = dynamic(
 const MemoizedReviewsSearch = memo(ReviewsSearch);
 const MemoizedWebtoonsSearch = memo(WebtoonsSearch);
 const MemoizedUsersSearch = memo(UsersSearch);
-const MemoizedWebtoonSearchResult = memo(WebtoonSearchResult);
+const MemoizedResultOfWebtoonsSearch = memo(ResultOfWebtoonsSearch);
 const MemoizedAllSearchResults = memo(AllSearchResults);
 
-const SearchPage: React.FC = () => {
+export const SearchPage: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const searchQuery = searchParams.get('query') || '';
   const typeParam = searchParams.get('type') || 'all';
   const [activeTab, setActiveTab] = useState(typeParam);
+  
+  // 정렬 파라미터 추출 및 상태 관리
+  const sortParam = searchParams.get('sort') || 'recommend';
+  const [activeSort, setActiveSort] = useState(sortParam);
 
-  // useCallback으로 핸들러 함수 메모이제이션
+  // handleSearch 함수에 정렬 파라미터 추가
   const handleSearch = useCallback((query: string, type: string) => {
     if (query.trim()) {
-      router.push(`/search?query=${encodeURIComponent(query)}&type=${type}`);
+      router.push(`/search?query=${encodeURIComponent(query)}&type=${type}&sort=${activeSort}`);
     }
-  }, [router]);
+  }, [router, activeSort]);
 
-  // 탭 변경 핸들러
+  // 탭 변경 시 정렬 상태 유지
   const handleTabChange = useCallback((tab: string) => {
     setActiveTab(tab);
     if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${tab}`);
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${tab}&sort=${activeSort}`);
     }
-  }, [searchQuery, router]);
+  }, [searchQuery, router, activeSort]);
+  
+  // 정렬 변경 핸들러
+  const handleSortChange = useCallback((sort: string) => {
+    setActiveSort(sort);
+    if (searchQuery.trim()) {
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${activeTab}&sort=${sort}`);
+    }
+  }, [searchQuery, activeTab, router]);
 
   // 검색 결과가 없을 때 표시할 컴포넌트
   if (!searchQuery.trim()) {
@@ -96,31 +108,28 @@ const SearchPage: React.FC = () => {
   const renderSearchResults = () => {
     switch (activeTab) {
       case 'all':
-        // 전체 검색 - AllSearchResults 컴포넌트 사용
         return (
           <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">전체 검색 결과</h2>
+            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
             <MemoizedAllSearchResults 
-              key={`all-search-${searchQuery}`}
+              key={`all-search-${searchQuery}-${activeSort}`}
               searchQuery={searchQuery}
               showTitle={false}
             />
           </div>
         );
       case 'webtoon':
-        // 웹툰 검색 - 웹툰 이름으로 검색한 리뷰 결과
         return (
           <div className="w-full">
             <h2 className="text-xl font-bold mb-4">웹툰 관련 리뷰</h2>
             <MemoizedWebtoonsSearch 
-              key={`webtoon-review-${searchQuery}`}
+              key={`webtoon-review-${searchQuery}-${activeSort}`}
               searchQuery={searchQuery}
               showTitle={false}
             />
           </div>
         );
       case 'review':
-        // 리뷰 검색 - 리뷰 제목 및 내용으로 검색한 결과
         return (
           <div className="w-full">
             <h2 className="text-xl font-bold mb-4">리뷰 검색 결과</h2>
@@ -132,7 +141,6 @@ const SearchPage: React.FC = () => {
           </div>
         );
       case 'user':
-        // 사용자 검색 - 사용자 닉네임으로 검색한 리뷰 결과
         return (
           <div className="w-full">
             <h2 className="text-xl font-bold mb-4">사용자 작성 리뷰</h2>
@@ -144,15 +152,14 @@ const SearchPage: React.FC = () => {
           </div>
         );
       default:
-        // 기본값은 전체 검색과 동일
+        // 'all' 케이스로 폴백 - URL 파라미터가 잘못된 경우를 대비
         return (
           <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">리뷰 검색 결과</h2>
-            <MemoizedReviewsSearch 
-              key={`default-review-${searchQuery}`}
+            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
+            <MemoizedAllSearchResults 
+              key={`all-search-${searchQuery}-${activeSort}`}
               searchQuery={searchQuery}
               showTitle={false}
-              searchType="all"
             />
           </div>
         );
@@ -185,7 +192,7 @@ const SearchPage: React.FC = () => {
           <div className="w-full md:w-1/3">
             <div className="w-full">
               <h2 className="text-xl font-bold mb-4">웹툰 검색 결과</h2>
-              <MemoizedWebtoonSearchResult 
+              <MemoizedResultOfWebtoonsSearch 
                 key={`webtoon-${searchQuery}`}
                 searchQuery={searchQuery}
                 searchType="webtoonName"
@@ -197,6 +204,7 @@ const SearchPage: React.FC = () => {
     </div>
   );
 };
+
 
 // 최상위 `export default`에 `Suspense` 적용
 export default function SearchPageWithSuspense() {

@@ -1,15 +1,18 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/searchLogic';
+import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
-interface WebtoonsSearchProps {
+interface SearchByWebtoonNameProps {
   searchQuery: string;
   limit?: number;
   showTitle?: boolean;
 }
 
-const WebtoonsSearch = ({ searchQuery, limit, showTitle = true }: WebtoonsSearchProps) => {
+/**
+ * 웹툰 이름으로 검색 결과를 표시하는 컴포넌트
+ */
+const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByWebtoonNameProps) => {
   const {
     items: reviews,
     isLoading,
@@ -54,4 +57,4 @@ const WebtoonsSearch = ({ searchQuery, limit, showTitle = true }: WebtoonsSearch
   );
 };
 
-export default WebtoonsSearch; 
+export default SearchByWebtoonName; 

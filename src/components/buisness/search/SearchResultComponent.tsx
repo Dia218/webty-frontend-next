@@ -28,6 +28,10 @@ interface SearchResultComponentProps {
   loadMore: () => void;
 }
 
+/**
+ * 검색 결과를 표시하는 공통 컴포넌트
+ * 리뷰 또는 웹툰 검색 결과를 표시할 수 있습니다.
+ */
 const SearchResultComponent = ({
   title,
   showTitle = true,
@@ -55,9 +59,8 @@ const SearchResultComponent = ({
     ? reviewItems.length > 0 
     : webtoonItems.length > 0;
 
-  // 정렬 변경 핸들러 - 로그 추가
+  // 정렬 변경 핸들러
   const handleSort = (newSortBy: string) => {
-    console.log(`정렬 변경: ${sortBy} → ${newSortBy}, 결과 타입: ${resultType}`);
     onSortChange(newSortBy);
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/searchLogic';
+import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByNickNameProps {
@@ -9,6 +9,9 @@ interface SearchByNickNameProps {
   showTitle?: boolean;
 }
 
+/**
+ * 사용자 닉네임으로 검색 결과를 표시하는 컴포넌트
+ */
 const SearchByNickName = ({ searchQuery, limit, showTitle = true }: SearchByNickNameProps) => {
   const {
     items: reviews,

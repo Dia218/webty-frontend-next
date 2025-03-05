@@ -6,13 +6,17 @@ import { fetchWebtoons } from '@/lib/api/webtoon/webtoon';
 import WebtoonList from '@/components/common/WebtoonList/WebtoonList';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 
-interface WebtoonPageProps {
+interface ResultOfWebtoonsSearchProps {
   searchQuery: string;
   searchType?: string;
   limit?: number;
 }
 
-const WebtoonPage: React.FC<WebtoonPageProps> = ({ 
+/**
+ * 웹툰 검색 API를 직접 호출하여 결과를 표시하는 컴포넌트
+ * 검색 API 대신 웹툰 전용 API를 사용합니다.
+ */
+const ResultOfWebtoonsSearch: React.FC<ResultOfWebtoonsSearchProps> = ({ 
   searchQuery, 
   searchType = 'webtoonName',
   limit
@@ -46,14 +50,6 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({
     try {
       // 검색어가 변경되었으면 페이지를 0으로 설정
       const pageToLoad = isLoadingMore ? currentPage + 1 : 0;
-      
-      console.log('웹툰 검색 API 호출:', {
-        query: searchQuery,
-        searchType: searchType,
-        page: pageToLoad,
-        isLoadingMore,
-        isInitialLoadComplete: isInitialLoadComplete.current
-      });
       
       // API 호출 시 올바른 파라미터 형식으로 변경
       const response = await fetchWebtoons(
@@ -100,7 +96,7 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, searchType, currentPage, isLoading, fetchWebtoons]);
+  }, [searchQuery, searchType, currentPage, isLoading, limit]);
 
   // 검색어 변경 시 데이터 초기화 및 첫 페이지 로드
   useEffect(() => {
@@ -133,10 +129,9 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({
   // 더 보기 버튼 클릭 시 호출되는 함수
   const handleLoadMore = useCallback(() => {
     if (!isLoading && hasMore) {
-      console.log('더 보기 버튼 클릭:', { currentPage, nextPage: currentPage + 1 });
       loadWebtoons(true);
     }
-  }, [isLoading, hasMore, currentPage, loadWebtoons]);
+  }, [isLoading, hasMore, loadWebtoons]);
 
   // 이미지 에러 핸들링 함수 추가
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -200,4 +195,4 @@ const WebtoonPage: React.FC<WebtoonPageProps> = ({
   );
 };
 
-export default WebtoonPage;
+export default ResultOfWebtoonsSearch;

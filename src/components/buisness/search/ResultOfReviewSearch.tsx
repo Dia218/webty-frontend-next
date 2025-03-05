@@ -2,15 +2,18 @@
 
 import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import WebtoonsSearch from './SearchByWebtoonName';
-import UsersSearch from './SearchByNickName';
-import ReviewsSearch from './SearchByReview';
+import SearchByWebtoonName from './SearchByWebtoonName';
+import SearchByNickName from './SearchByNickName';
+import SearchByReview from './SearchByReview';
 
-interface AllSearchProps {
+interface ResultOfReviewSearchProps {
   searchQuery: string;
 }
 
-const AllSearch = ({ searchQuery }: AllSearchProps) => {
+/**
+ * 카테고리별 검색 결과를 탭으로 보여주는 컴포넌트
+ */
+const ResultOfReviewSearch = ({ searchQuery }: ResultOfReviewSearchProps) => {
   const [activeTab, setActiveTab] = useState('all');
 
   if (!searchQuery) {
@@ -40,33 +43,33 @@ const AllSearch = ({ searchQuery }: AllSearchProps) => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">웹툰 결과</h2>
               </div>
-              <WebtoonsSearch searchQuery={searchQuery} limit={3} showTitle={false} />
+              <SearchByWebtoonName searchQuery={searchQuery} limit={3} showTitle={false} />
             </div>
             
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">사용자 결과</h2>
               </div>
-              <UsersSearch searchQuery={searchQuery} limit={3} showTitle={false} />
+              <SearchByNickName searchQuery={searchQuery} limit={3} showTitle={false} />
             </div>
             
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">리뷰 결과</h2>
               </div>
-              <ReviewsSearch searchQuery={searchQuery} limit={3} showTitle={false} />
+              <SearchByReview searchQuery={searchQuery} limit={3} showTitle={false} />
             </div>
           </div>
         ) : activeTab === 'webtoons' ? (
-          <WebtoonsSearch searchQuery={searchQuery} showTitle={false} />
+          <SearchByWebtoonName searchQuery={searchQuery} showTitle={false} />
         ) : activeTab === 'users' ? (
-          <UsersSearch searchQuery={searchQuery} showTitle={false} />
+          <SearchByNickName searchQuery={searchQuery} showTitle={false} />
         ) : (
-          <ReviewsSearch searchQuery={searchQuery} showTitle={false} />
+          <SearchByReview searchQuery={searchQuery} showTitle={false} />
         )}
       </Tabs>
     </div>
   );
 };
 
-export default AllSearch; 
+export default ResultOfReviewSearch; 

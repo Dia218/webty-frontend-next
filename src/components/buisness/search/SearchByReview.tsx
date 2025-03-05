@@ -1,16 +1,19 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/searchLogic';
+import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
-interface ReviewsSearchProps {
+interface SearchByReviewProps {
   searchQuery: string;
   limit?: number;
   showTitle?: boolean;
   searchType?: string;
 }
 
-const ReviewsSearch = ({ searchQuery, limit, showTitle = true, searchType = 'review' }: ReviewsSearchProps) => {
+/**
+ * 리뷰 내용으로 검색 결과를 표시하는 컴포넌트
+ */
+const SearchByReview = ({ searchQuery, limit, showTitle = true, searchType = 'review' }: SearchByReviewProps) => {
   const {
     items: reviews,
     isLoading,
@@ -55,4 +58,4 @@ const ReviewsSearch = ({ searchQuery, limit, showTitle = true, searchType = 'rev
   );
 };
 
-export default ReviewsSearch; 
+export default SearchByReview; 
