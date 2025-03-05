@@ -7,7 +7,7 @@ import {
   GhostTabsContent,
 } from '@/components/common/GhostTabs/GhostTabs';
 import ResponsiveReviewBox from '@/components/common/ResponsiveReviewBox/ResponsiveReviewBox';
-import { SimilarWebtoonBox } from './SimilarWebtoonBox';
+import SimilarWebtoonBox from './SimilarWebtoonBox';
 
 const WebtoonDrawerTaps: React.FC<{ webtoonId: number }> = ({ webtoonId }) => {
   return (
@@ -18,7 +18,7 @@ const WebtoonDrawerTaps: React.FC<{ webtoonId: number }> = ({ webtoonId }) => {
       </GhostTabsList>
 
       <GhostTabsContent value="firstTap">
-        <SimilarWebtoonBox targetWebtoonId={webtoonId} />
+        <SimilarWebtoonBox webtoonId={webtoonId} />
       </GhostTabsContent>
       <GhostTabsContent value="secondTap">
         <ResponsiveReviewBox webtoonId={webtoonId} />

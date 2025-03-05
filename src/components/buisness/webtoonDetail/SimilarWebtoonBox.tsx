@@ -1,210 +1,168 @@
+'use client';
 import { useEffect, useState } from 'react';
-import { getSimilarList } from '@/lib/api/similar/similar';
-import { SimilarWebtoonDto } from '@/lib/types/similar/SimilarWebtoonDto';
-import { PageDto } from '@/lib/types/common/PageDto';
+import useSimilar from '@/lib/api/voting/similar';
+import useVote from '@/lib/api/voting/vote';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/api/security/useAuth';
-import {
-  AgreeButton,
-  DisagreeButton,
-} from '@/components/common/RecommendButton/RecommendButton';
-import { cancelVote, vote } from '@/lib/api/voting/vote';
+import { useGlobalWebSocket } from '@/lib/utils/WebSocketContext';
 
-interface SimilarWebtoonListProps {
-  targetWebtoonId: number;
+interface SimilarWebtoonPanelProps {
+  webtoonId: number;
 }
 
-export const SimilarWebtoonBox = ({
-  targetWebtoonId,
-}: SimilarWebtoonListProps) => {
-  const { isLoggedIn } = useAuth();
-  const [similarList, setSimilarList] = useState<SimilarWebtoonDto[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+type VoteType = 'agree' | 'disagree' | null;
 
-  // 페이지네이션을 위한 상태
-  const [currentPage, setCurrentPage] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
+export default function SimilarWebtoonPanel({
+  webtoonId,
+}: SimilarWebtoonPanelProps) {
+  const {
+    similarWebtoons,
+    setSimilarWebtoons,
+    loading,
+    error,
+    fetchSimilarList,
+    hasMore,
+    page,
+  } = useSimilar(webtoonId);
+
+  const { sendVote, cancelVote, getVoteStatus } = useVote();
+  const { voteUpdates } = useGlobalWebSocket();
+
+  const [userVotes, setUserVotes] = useState<Record<number, VoteType>>({});
 
   useEffect(() => {
-    fetchSimilarWebtoons(currentPage);
-  }, [isLoggedIn, currentPage]);
-
-  const fetchSimilarWebtoons = async (page: number) => {
-    setLoading(true);
-    const data: PageDto<SimilarWebtoonDto> | null = await getSimilarList(
-      targetWebtoonId,
-      page
-    );
-    if (data) {
-      setSimilarList(data.content);
-      setCurrentPage(data.currentPage);
-      setTotalPages(data.totalPages);
+    if (voteUpdates && voteUpdates.content) {
+      console.log('글로벌 vote 업데이트:', voteUpdates);
+      const filtered = voteUpdates.content.filter(
+        (vote: any) => vote.targetWebtoonId === webtoonId
+      );
+      setSimilarWebtoons(filtered);
     }
-    setLoading(false);
-  };
+  }, [voteUpdates, setSimilarWebtoons, webtoonId]);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setCurrentPage(newPage);
+  useEffect(() => {
+    similarWebtoons.forEach((webtoon) => {
+      if (userVotes[webtoon.similarId] === undefined) {
+        (async () => {
+          const statusResponse = await getVoteStatus(webtoon.similarId);
+          setUserVotes((prev) => ({
+            ...prev,
+            [webtoon.similarId]: statusResponse?.voteType
+              ? (statusResponse.voteType.toLowerCase() as VoteType)
+              : null,
+          }));
+        })();
+      }
+    });
+  }, [similarWebtoons, getVoteStatus]);
+
+  const handleVote = async (similarId: number, vote: 'agree' | 'disagree') => {
+    try {
+      const currentVote = userVotes[similarId];
+      if (currentVote === vote) {
+        const res = await cancelVote(similarId);
+        if (res?.status === 200) {
+          setUserVotes((prev) => ({ ...prev, [similarId]: null }));
+        }
+      } else {
+        const res = await sendVote(similarId, vote);
+        if (res?.status === 200) {
+          setUserVotes((prev) => ({ ...prev, [similarId]: vote }));
+        }
+      }
+    } catch (err) {
+      console.error('투표 요청 실패:', err);
     }
-  };
-
-  const updateVoteCount = (
-    similarId: number,
-    type: 'AGREE' | 'DISAGREE',
-    change: number
-  ) => {
-    setSimilarList((prevList) =>
-      prevList.map((item) =>
-        item.similarId === similarId
-          ? {
-              ...item,
-              agreeCount:
-                type === 'AGREE' ? item.agreeCount + change : item.agreeCount,
-              disagreeCount:
-                type === 'DISAGREE'
-                  ? item.disagreeCount + change
-                  : item.disagreeCount,
-            }
-          : item
-      )
-    );
   };
 
   return (
-    <div className="p-4 max-w-9xl mx-auto max-h-[500px] overflow-y-auto">
-      <h2 className="text-lg font-bold mb-2">유사 웹툰 목록</h2>
+    <div className="h-screen flex flex-col overflow-hidden">
+      <div className="h-[60vh] overflow-y-auto p-4">
+        {similarWebtoons.length > 0 ? (
+          similarWebtoons.map((webtoon) => {
+            const userVote = userVotes[webtoon.similarId];
+            const totalVotes = webtoon.agreeCount + webtoon.disagreeCount;
+            const agreePercentage =
+              totalVotes > 0 ? (webtoon.agreeCount / totalVotes) * 100 : 0;
 
-      {loading ? (
-        <p className="text-center">로딩 중...</p>
-      ) : similarList.length > 0 ? (
-        <>
-          <div className="h-[370px] overflow-y-auto border rounded-lg p-2">
-            {similarList.map((webtoon) => {
-              const totalVotes = webtoon.agreeCount + webtoon.disagreeCount;
-              const agreeRate =
-                totalVotes > 0 ? (webtoon.agreeCount / totalVotes) * 100 : 0;
-              const disagreeRate = 100 - agreeRate;
-
-              return (
-                <div
-                  key={webtoon.similarId}
-                  className="flex gap-4 mb-4 p-4 border rounded-lg items-center"
-                >
-                  <img
-                    src={webtoon.similarThumbnailUrl}
-                    alt="웹툰 썸네일"
-                    width={100}
-                    height={100}
-                    className="rounded-lg object-cover"
-                  />
-                  <div className="flex flex-col flex-1">
-                    <p className="text-sm font-semibold mb-2">
-                      {webtoon.similarWebtoonName}
-                    </p>
-
-                    {/* Progress Bar Section */}
-                    <div className="w-full h-6 bg-gray-200 rounded-lg relative overflow-hidden">
-                      {/* 동의 수: 왼쪽 정렬 */}
+            return (
+              <div
+                key={webtoon.similarId}
+                className="flex flex-row gap-4 border p-3 rounded-lg mb-3 shadow-sm px-4"
+              >
+                <img
+                  src={webtoon.similarThumbnailUrl}
+                  alt={`웹툰 ${webtoon.similarWebtoonId}`}
+                  className="w-40 h-40 rounded object-cover"
+                />
+                <div className="flex-1 flex flex-col justify-between">
+                  <p className="text-base font-semibold">
+                    {webtoon.similarWebtoonName}
+                  </p>
+                  <div className="text-sm text-gray-700 flex gap-2 items-center">
+                    <span>동의: {webtoon.agreeCount}</span>
+                    <span>비동의: {webtoon.disagreeCount}</span>
+                    <span className="text-gray-400">|</span>
+                    <span>결과: {webtoon.similarResult}</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 rounded mt-2 relative overflow-hidden">
+                    {totalVotes > 0 && (
                       <div
-                        className="absolute top-0 left-0 h-full bg-green-500 flex items-center pl-2 text-sm text-white"
-                        style={{ width: `${agreeRate}%` }}
-                      >
-                        {webtoon.agreeCount > 0 && (
-                          <span className="ml-1">{webtoon.agreeCount}</span>
-                        )}
-                      </div>
-
-                      {/* 비동의 수: 오른쪽 정렬 */}
+                        className="h-2 absolute top-0 left-0 bg-green-500"
+                        style={{ width: `${agreePercentage}%` }}
+                      ></div>
+                    )}
+                    {totalVotes > 0 && agreePercentage < 100 && (
                       <div
-                        className="absolute top-0 right-0 h-full bg-red-500 flex items-center justify-end pr-2 text-sm text-white"
-                        style={{ width: `${disagreeRate}%` }}
-                      >
-                        {webtoon.disagreeCount > 0 && (
-                          <span className="mr-1">{webtoon.disagreeCount}</span>
-                        )}
-                      </div>
-                    </div>
+                        className="h-2 absolute top-0 right-0 bg-red-500"
+                        style={{ width: `${100 - agreePercentage}%` }}
+                      ></div>
+                    )}
+                  </div>
 
-                    {/* 버튼 간격 조절 - 양쪽 마진 추가 */}
-                    <div className="mt-2 flex justify-between px-6">
-                      <AgreeButton
-                        isLoggedIn={isLoggedIn ?? false}
-                        onActivate={async () => {
-                          try {
-                            await vote(webtoon.similarId, 'AGREE');
-                            updateVoteCount(webtoon.similarId, 'AGREE', 1);
-                          } catch (error: any) {
-                            if (error.response?.status === 400) {
-                              alert('이미 찬성 투표를 하셨습니다.');
-                            } else {
-                              console.warn('❌ 투표 요청 실패:', error);
-                            }
-                          }
-                        }}
-                        onDeactivate={async () => {
-                          try {
-                            await cancelVote(webtoon.similarId);
-                            updateVoteCount(webtoon.similarId, 'AGREE', -1);
-                          } catch (error) {
-                            console.warn('❌ 투표 취소 요청 실패:', error);
-                          }
-                        }}
-                      />
-                      <DisagreeButton
-                        isLoggedIn={isLoggedIn ?? false}
-                        onActivate={async () => {
-                          try {
-                            await vote(webtoon.similarId, 'DISAGREE');
-                            updateVoteCount(webtoon.similarId, 'DISAGREE', 1);
-                          } catch (error: any) {
-                            if (error.response?.status === 400) {
-                              alert('이미 반대 투표를 하셨습니다.');
-                            } else {
-                              console.warn('❌ 투표 요청 실패:', error);
-                            }
-                          }
-                        }}
-                        onDeactivate={async () => {
-                          try {
-                            await cancelVote(webtoon.similarId);
-                            updateVoteCount(webtoon.similarId, 'DISAGREE', -1);
-                          } catch (error) {
-                            console.warn('❌ 투표 취소 요청 실패:', error);
-                          }
-                        }}
-                      />
-                    </div>
+                  <div className="flex justify-between px-4 mt-2">
+                    <button
+                      className={`text-sm px-3 py-1 rounded ${
+                        userVote === 'agree'
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gray-200 text-black'
+                      }`}
+                      onClick={() => handleVote(webtoon.similarId, 'agree')}
+                    >
+                      👍
+                    </button>
+                    <button
+                      className={`text-sm px-3 py-1 rounded ${
+                        userVote === 'disagree'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-200 text-black'
+                      }`}
+                      onClick={() => handleVote(webtoon.similarId, 'disagree')}
+                    >
+                      👎
+                    </button>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* 페이지네이션 버튼 */}
-          <div className="flex justify-between mt-4">
-            <Button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 0}
-              variant="outline"
-            >
-              이전
-            </Button>
-            <span className="text-sm">
-              {currentPage + 1} / {totalPages}
-            </span>
-            <Button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage >= totalPages - 1}
-              variant="outline"
-            >
-              다음
-            </Button>
-          </div>
-        </>
-      ) : (
-        <p className="text-center text-gray-500">유사 웹툰이 없습니다.</p>
-      )}
+              </div>
+            );
+          })
+        ) : (
+          <p className="text-center text-gray-500 mt-4">
+            등록된 유사 웹툰이 없습니다.
+          </p>
+        )}
+      </div>
+      {/* 페이지 버튼 */}
+      <div className="p-4 border-t flex justify-between">
+        <Button
+          disabled={page === 0}
+          onClick={() => fetchSimilarList(page - 1)}
+        >
+          이전
+        </Button>
+        <Button disabled={!hasMore} onClick={() => fetchSimilarList(page + 1)}>
+          다음
+        </Button>
+      </div>
     </div>
   );
-};
+}
