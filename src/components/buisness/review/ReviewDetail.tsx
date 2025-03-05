@@ -19,7 +19,10 @@ import ReviewRecommendationBox from '@/components/buisness/review/ReviewRecommen
 import ReviewInfo from '@/components/buisness/review/ReviewInfo';
 import ReviewContentBox from '@/components/buisness/review/ReviewContentBox';
 import ReviewWebtoonBox from '@/components/common/ReviewWebtoonBox/ReviewWebtoonBox';
-
+import { useEffect } from 'react';
+import { logUserActivity } from '@/lib/api/userActivity/logUserActivity';
+import { useAuth } from '@/lib/api/security/useAuth';
+import { useState } from 'react';
 interface ReviewDetailProps {
   review: ReviewDetailResponseDto;
   recommendationStatus: { likes: boolean; hates: boolean } | null;
@@ -35,6 +38,18 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
 }) => {
   const { deleteReview } = useReviews();
   const router = useRouter();
+
+  const { loginId } = useAuth();
+
+  useEffect(() => {
+    console.log("ReviewDetail 렌더링됨", { isLoggedIn, loginId });
+    if (review.webtoon) {  
+      if (isLoggedIn && loginId) {
+        console.log("로그기록", { isLoggedIn, loginId });
+        logUserActivity(loginId, review.webtoon);
+      }
+    }
+  }, [isLoggedIn, loginId]);
 
   const handleDelete = async () => {
     try {
@@ -76,7 +91,7 @@ const ReviewDetail: React.FC<ReviewDetailProps> = ({
               viewCount={review.viewCount}
               createdAt={review.createdAt}
               updatedAt={review.updatedAt}
-              showButtons={review.userDataResponse.id === id}
+              showButtons={review.userDataResponse.userid === id}
             />
           </div>
 

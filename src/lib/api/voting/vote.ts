@@ -1,60 +1,102 @@
+import { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/vote';
+const useVote = () => {
+  const [error, setError] = useState<string | null>(null);
 
-// 특정 similarId에 대한 투표 요청
-// voteType = "AGREE" or "DISAGREE"
-export const vote = async (
-  similarId: number,
-  voteType: string,
-  page: number = 0,
-  size: number = 10
-): Promise<void> => {
-  try {
-    await axios.post(
-      `${API_BASE_URL}/${similarId}`,
-      null, // POST 요청 바디는 없으므로 null 처리
-      {
-        params: { voteType, page, size },
-        withCredentials: true,
+  const BASE_URL = 'http://localhost:8080/vote';
+
+  const axiosInstance = axios.create({
+    withCredentials: true,
+  });
+
+  // 투표 요청 (POST)
+  const sendVote = async (
+    similarId: number,
+    voteType: 'agree' | 'disagree',
+    page: number = 0,
+    size: number = 10
+  ) => {
+    try {
+      setError(null); // 이전 오류 초기화
+
+      const response = await axiosInstance.post(
+        `${BASE_URL}/${similarId}`,
+        null,
+        {
+          params: { voteType, page, size },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(`${similarId}번 유사 웹툰에 "${voteType}" 투표 완료`);
       }
-    );
-    console.log(`✅ 투표 성공: similarId=${similarId}, voteType=${voteType}`);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.warn('❌ 투표 요청 실패:', {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    } else {
-      console.warn('❌ 예상치 못한 오류:', error);
+      return response;
+    } catch (err) {
+      setError('Failed to send vote');
+      console.error('❌ 투표 요청 중 오류 발생:', err);
     }
-    throw error; // catch에서 다시 throw하면 프론트에서 alert 처리 가능
-  }
+  };
+
+  // 투표 취소 요청 (DELETE)
+  const cancelVote = async (
+    similarId: number,
+    page: number = 0,
+    size: number = 10
+  ) => {
+    try {
+      setError(null);
+
+      const response = await axiosInstance.delete(`${BASE_URL}/${similarId}`, {
+        params: { page, size },
+      });
+
+      if (response.status === 200) {
+        console.log(`${similarId}번 유사 웹툰 투표 취소 완료`);
+      }
+      return response;
+    } catch (err) {
+      setError('Failed to cancel vote');
+      console.error('❌ 투표 취소 요청 중 오류 발생:', err);
+    }
+  };
+
+  // 투표 상태 조회 요청 (GET)
+  const getVoteStatus = async (
+    similarId: number,
+    page: number = 0,
+    size: number = 10
+  ) => {
+    try {
+      setError(null);
+
+      const response = await axiosInstance.get(
+        `${BASE_URL}/${similarId}/status`,
+        {
+          withCredentials: true, // 로그인한 사용자만 자신의 투표 상태를 확인할 수 있도록 설정
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(
+          `${similarId}번 유사 웹툰 투표 상태 조회 완료`,
+          response.data
+        );
+      }
+      return response.data;
+    } catch (err) {
+      setError('Failed to get vote status');
+      console.error('❌ 투표 상태 조회 중 오류 발생:', err);
+      return null;
+    }
+  };
+
+  return {
+    sendVote,
+    cancelVote,
+    getVoteStatus,
+    error,
+  };
 };
 
-// 특정 similarId에 대한 투표 취소 요청
-export const cancelVote = async (
-  similarId: number,
-  page: number = 0,
-  size: number = 10
-): Promise<void> => {
-  try {
-    await axios.delete(`${API_BASE_URL}/${similarId}`, {
-      params: { page, size },
-      withCredentials: true,
-    });
-    console.log(`✅ 투표 취소 성공: similarId=${similarId}`);
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.warn('❌ 투표 요청 실패:', {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-    } else {
-      console.warn('❌ 예상치 못한 오류:', error);
-    }
-    throw error; // catch에서 다시 throw하면 프론트에서 alert 처리 가능
-  }
-};
+export default useVote;
