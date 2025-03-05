@@ -3,7 +3,7 @@ import { WebtoonSummaryDto } from '../webtoon/WebtoonSummaryDto';
 export interface ReviewDetailResponseDto {
   reviewId: number;
   userDataResponse: {
-    id: number;
+    userid: number;
     nickname: string;
     profileImage: string;
   };
