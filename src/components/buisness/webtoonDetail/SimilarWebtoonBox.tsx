@@ -8,6 +8,7 @@ import {
   AgreeButton,
   DisagreeButton,
 } from '@/components/common/RecommendButton/RecommendButton';
+import { cancelVote, vote } from '@/lib/api/voting/vote';
 
 interface SimilarWebtoonListProps {
   targetWebtoonId: number;
@@ -107,13 +108,13 @@ export const SimilarWebtoonBox = ({
                     <div className="mt-2 flex justify-between px-6">
                       <AgreeButton
                         isLoggedIn={isLoggedIn ?? false}
-                        onActivate={() => console.log('Agree!')}
-                        onDeactivate={() => console.log('Agree 취소!')}
+                        onActivate={() => vote(webtoon.similarId, 'AGREE')}
+                        onDeactivate={() => cancelVote(webtoon.similarId)}
                       />
                       <DisagreeButton
                         isLoggedIn={isLoggedIn ?? false}
-                        onActivate={() => console.log('DisAgree!')}
-                        onDeactivate={() => console.log('DisAgree 취소!')}
+                        onActivate={() => vote(webtoon.similarId, 'DISAGREE')}
+                        onDeactivate={() => cancelVote(webtoon.similarId)}
                       />
                     </div>
                   </div>
