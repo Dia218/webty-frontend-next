@@ -22,7 +22,15 @@ export const vote = async (
     );
     console.log(`✅ 투표 성공: similarId=${similarId}, voteType=${voteType}`);
   } catch (error) {
-    console.error('❌ 투표 요청 실패:', error);
+    if (axios.isAxiosError(error)) {
+      console.warn('❌ 투표 요청 실패:', {
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    } else {
+      console.warn('❌ 예상치 못한 오류:', error);
+    }
+    throw error; // catch에서 다시 throw하면 프론트에서 alert 처리 가능
   }
 };
 
@@ -39,6 +47,14 @@ export const cancelVote = async (
     });
     console.log(`✅ 투표 취소 성공: similarId=${similarId}`);
   } catch (error) {
-    console.error('❌ 투표 취소 요청 실패:', error);
+    if (axios.isAxiosError(error)) {
+      console.warn('❌ 투표 요청 실패:', {
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    } else {
+      console.warn('❌ 예상치 못한 오류:', error);
+    }
+    throw error; // catch에서 다시 throw하면 프론트에서 alert 처리 가능
   }
 };

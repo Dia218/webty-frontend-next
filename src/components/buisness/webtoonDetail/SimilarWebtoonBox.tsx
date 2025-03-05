@@ -49,6 +49,28 @@ export const SimilarWebtoonBox = ({
     }
   };
 
+  const updateVoteCount = (
+    similarId: number,
+    type: 'AGREE' | 'DISAGREE',
+    change: number
+  ) => {
+    setSimilarList((prevList) =>
+      prevList.map((item) =>
+        item.similarId === similarId
+          ? {
+              ...item,
+              agreeCount:
+                type === 'AGREE' ? item.agreeCount + change : item.agreeCount,
+              disagreeCount:
+                type === 'DISAGREE'
+                  ? item.disagreeCount + change
+                  : item.disagreeCount,
+            }
+          : item
+      )
+    );
+  };
+
   return (
     <div className="p-4 max-w-9xl mx-auto max-h-[500px] overflow-y-auto">
       <h2 className="text-lg font-bold mb-2">유사 웹툰 목록</h2>
@@ -108,13 +130,49 @@ export const SimilarWebtoonBox = ({
                     <div className="mt-2 flex justify-between px-6">
                       <AgreeButton
                         isLoggedIn={isLoggedIn ?? false}
-                        onActivate={() => vote(webtoon.similarId, 'AGREE')}
-                        onDeactivate={() => cancelVote(webtoon.similarId)}
+                        onActivate={async () => {
+                          try {
+                            await vote(webtoon.similarId, 'AGREE');
+                            updateVoteCount(webtoon.similarId, 'AGREE', 1);
+                          } catch (error: any) {
+                            if (error.response?.status === 400) {
+                              alert('이미 찬성 투표를 하셨습니다.');
+                            } else {
+                              console.warn('❌ 투표 요청 실패:', error);
+                            }
+                          }
+                        }}
+                        onDeactivate={async () => {
+                          try {
+                            await cancelVote(webtoon.similarId);
+                            updateVoteCount(webtoon.similarId, 'AGREE', -1);
+                          } catch (error) {
+                            console.warn('❌ 투표 취소 요청 실패:', error);
+                          }
+                        }}
                       />
                       <DisagreeButton
                         isLoggedIn={isLoggedIn ?? false}
-                        onActivate={() => vote(webtoon.similarId, 'DISAGREE')}
-                        onDeactivate={() => cancelVote(webtoon.similarId)}
+                        onActivate={async () => {
+                          try {
+                            await vote(webtoon.similarId, 'DISAGREE');
+                            updateVoteCount(webtoon.similarId, 'DISAGREE', 1);
+                          } catch (error: any) {
+                            if (error.response?.status === 400) {
+                              alert('이미 반대 투표를 하셨습니다.');
+                            } else {
+                              console.warn('❌ 투표 요청 실패:', error);
+                            }
+                          }
+                        }}
+                        onDeactivate={async () => {
+                          try {
+                            await cancelVote(webtoon.similarId);
+                            updateVoteCount(webtoon.similarId, 'DISAGREE', -1);
+                          } catch (error) {
+                            console.warn('❌ 투표 취소 요청 실패:', error);
+                          }
+                        }}
                       />
                     </div>
                   </div>
