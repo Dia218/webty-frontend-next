@@ -1,5 +1,6 @@
 'use client';
 
+import RecommendWebtoon from '@/components/buisness/recommendWebtoon/RecommendWebtoon';
 import FeedReview from '@/components/buisness/review/FeedReview';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import useReviews from '@/lib/api/review/review';
@@ -18,6 +19,7 @@ const FeedPage = () => {
   return (
     <>
       <NavigationBar /> {/* 네비게이션 바 */}
+      <RecommendWebtoon/>
       <FeedReview /> {/* ReviewList */}
       {/* VotingList */}
     </>
