@@ -1,4 +1,3 @@
-import React from 'react';
 import { UserDataResponseDto } from '@/lib/types/user/UserDataResponseDto';
 import { Button } from '@/components/ui/button';
 
@@ -9,7 +8,7 @@ interface MentionSuggestionsProps {
 
 export default function MentionSuggestions({
   users,
-  onSelect
+  onSelect,
 }: MentionSuggestionsProps) {
   if (users.length === 0) return null;
 
@@ -18,13 +17,13 @@ export default function MentionSuggestions({
       className="absolute z-50 bg-white rounded-lg shadow-lg border border-gray-200 max-h-48 overflow-y-auto w-full mt-1"
       style={{
         top: '100%',
-        left: 0
+        left: 0,
       }}
     >
       <div className="p-2 space-y-1">
-        {users.map((user,index) => (
+        {users.map((user, index) => (
           <Button
-            key={`mention-${user.id}-${user.nickname}-${index}`}
+            key={`mention-${user.userid}-${user.nickname}-${index}`}
             variant="ghost"
             className="w-full justify-start text-sm hover:bg-gray-100"
             onClick={() => onSelect(user)}
@@ -44,4 +43,4 @@ export default function MentionSuggestions({
       </div>
     </div>
   );
-} 
+}

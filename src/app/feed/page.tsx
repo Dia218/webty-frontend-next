@@ -1,5 +1,6 @@
 'use client';
 
+import RecommendWebtoon from '@/components/buisness/recommendWebtoon/RecommendWebtoon';
 import FeedReview from '@/components/buisness/review/FeedReview';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import SearchContainer from '@/components/common/Search';
@@ -25,6 +26,7 @@ const FeedPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <NavigationBar /> {/* 네비게이션 바 */}
+
       
       {/* 검색 영역 - 탭 표시 */}
       <SearchContainer 
@@ -38,6 +40,12 @@ const FeedPage = () => {
         {/* VotingList */}
       </div>
     </div>
+
+      <RecommendWebtoon/>
+      <FeedReview /> {/* ReviewList */}
+      {/* VotingList */}
+    </>
+
   );
 };
 
