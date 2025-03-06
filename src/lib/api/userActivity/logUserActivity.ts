@@ -1,7 +1,7 @@
 
 import { WebtoonSummaryDto } from '../../types/webtoon/WebtoonSummaryDto';
 
-export function logUserActivity(userId: number, webtoon: WebtoonSummaryDto) {
+export const logUserActivity = async(userId: number, webtoon: WebtoonSummaryDto) => {
 
     fetch('http://localhost:8080/activity/logs', {  
     method: 'POST',
