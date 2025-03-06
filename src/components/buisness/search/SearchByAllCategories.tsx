@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
-import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 
 interface SearchByAllCategoriesProps {
   searchQuery: string;
@@ -13,92 +12,31 @@ interface SearchByAllCategoriesProps {
 
 /**
  * 전체 검색 결과 컴포넌트
- * 웹툰, 사용자, 리뷰 검색 결과를 모두 통합하여 하나의 리스트로 표시합니다.
- * 각 검색 유형(리뷰, 사용자, 웹툰)의 결과를 하나로 통합하여 표시합니다.
+ * 웹툰, 사용자, 리뷰 검색 결과를 모두 통합하여 하나의 정렬된 리스트로 표시합니다.
  */
 const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({ 
   searchQuery,
   limit,
   showTitle = true
 }) => {
-  // 리뷰 검색 로직 - 리뷰 제목 및 내용 검색
-  const reviewSearch = useSearchLogic(searchQuery, 'review', 'recommend', limit);
+  // 단일 통합 검색 사용 (all 타입으로 검색)
+  const allSearch = useSearchLogic(searchQuery, 'all', 'recommend', limit);
   
-  // 사용자 검색 로직 - 사용자 닉네임 검색
-  const userSearch = useSearchLogic(searchQuery, 'user', 'recommend', limit);
+  // 정렬 상태
+  const [sortBy, setSortBy] = useState(allSearch.sortBy);
   
-  // 웹툰 이름 검색 로직 - 웹툰 이름 검색
-  const webtoonSearch = useSearchLogic(searchQuery, 'webtoon', 'recommend', limit);
-  
-  // 로딩 상태 통합
-  const isLoading = reviewSearch.isLoading || userSearch.isLoading || webtoonSearch.isLoading;
-  
-  // 정렬 상태 공유 (리뷰 검색의 정렬을 기준으로 함)
-  const [sortBy, setSortBy] = useState(reviewSearch.sortBy);
-  
-  // 정렬 변경 시 모든 검색에 적용
+  // 정렬 변경 핸들러
   const handleSortChange = useCallback((newSortBy: string) => {
     setSortBy(newSortBy);
-    reviewSearch.handleSortChange(newSortBy);
-    userSearch.handleSortChange(newSortBy);
-    webtoonSearch.handleSortChange(newSortBy);
-  }, [reviewSearch, userSearch, webtoonSearch]);
+    allSearch.handleSortChange(newSortBy);
+  }, [allSearch]);
 
   // 정렬 동기화
   useEffect(() => {
-    if (sortBy !== reviewSearch.sortBy) {
-      setSortBy(reviewSearch.sortBy);
+    if (sortBy !== allSearch.sortBy) {
+      setSortBy(allSearch.sortBy);
     }
-  }, [reviewSearch.sortBy]);
-
-  // 모든 검색 결과 통합
-  const allReviews = useMemo(() => {
-    // 검색 결과에 출처 레이블 추가
-    const reviewResults = reviewSearch.items.map(item => ({
-      ...item,
-      searchResultSource: '리뷰'
-    }));
-    
-    const userResults = userSearch.items.map(item => ({
-      ...item,
-      searchResultSource: '사용자'
-    }));
-    
-    const webtoonResults = webtoonSearch.items.map(item => ({
-      ...item,
-      searchResultSource: '웹툰'
-    }));
-    
-    // 모든 결과를 합치기
-    const combined: (ReviewItemResponseDto & { searchResultSource: string })[] = [
-      ...reviewResults, 
-      ...userResults, 
-      ...webtoonResults
-    ];
-    
-    // 중복 제거 (reviewId 기준)
-    const uniqueIds = new Set<number>();
-    const uniqueReviews = combined.filter(review => {
-      if (uniqueIds.has(review.reviewId)) {
-        return false;
-      }
-      uniqueIds.add(review.reviewId);
-      return true;
-    });
-    
-    // 백엔드에서 이미 정렬된 결과를 유지하고 중복만 제거
-    return uniqueReviews;
-  }, [reviewSearch.items, userSearch.items, webtoonSearch.items]);
-
-  // 더 보기 기능을 위한 상태
-  const hasMore = reviewSearch.hasMore || userSearch.hasMore || webtoonSearch.hasMore;
-  
-  // 더 보기 클릭 시 모든 검색에 적용
-  const loadMore = useCallback(() => {
-    reviewSearch.loadMore();
-    userSearch.loadMore();
-    webtoonSearch.loadMore();
-  }, [reviewSearch, userSearch, webtoonSearch]);
+  }, [allSearch.sortBy]);
 
   if (!searchQuery.trim()) {
     return (
@@ -115,16 +53,16 @@ const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({
         title="전체 검색 결과"
         showTitle={showTitle}
         resultType="review"
-        reviewItems={allReviews}
-        isLoading={isLoading}
-        currentPage={0}
-        totalPages={1}
+        reviewItems={allSearch.items}
+        isLoading={allSearch.isLoading}
+        currentPage={allSearch.currentPage}
+        totalPages={allSearch.totalPages}
         sortBy={sortBy}
         onSortChange={handleSortChange}
-        onPrevPage={() => {}}
-        onNextPage={() => {}}
-        hasMore={hasMore}
-        loadMore={loadMore}
+        onPrevPage={allSearch.goToPrevPage}
+        onNextPage={allSearch.goToNextPage}
+        hasMore={allSearch.hasMore}
+        loadMore={allSearch.loadMore}
         emptyMessage="검색 결과가 없습니다. 다른 검색어를 입력해보세요."
       />
     </div>
