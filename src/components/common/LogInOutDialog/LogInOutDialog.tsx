@@ -19,9 +19,9 @@ const LogInOutDialog = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button className="write-btn">
+        <Button variant="ghost" className="write-btn">
           {isLoggedIn ? '로그아웃' : '로그인'}
-        </button>
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
