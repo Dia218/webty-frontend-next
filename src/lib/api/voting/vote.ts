@@ -84,8 +84,14 @@ const useVote = () => {
         );
       }
       return response.data;
-    } catch (err) {
-      setError('Failed to get vote status');
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        // 로그인 안 한 경우 조용히 무시
+        console.warn('로그인하지 않은 사용자 - 투표 상태 조회 건너뜀');
+        return null;
+      }
+
+      setError('Failed to get vote status'); // 다른 오류일 경우만 에러 표시
       console.error('❌ 투표 상태 조회 중 오류 발생:', err);
       return null;
     }
