@@ -24,28 +24,12 @@ const FeedPage = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <NavigationBar /> {/* 네비게이션 바 */}
-
-      
-      {/* 검색 영역 - 탭 표시 */}
-      <SearchContainer 
-        onSearch={handleSearch} 
-        showTabs={true} 
-      />
-      
-      {/* 피드 컨텐츠 */}
-      <div className="flex-1">
-        <FeedReview /> {/* ReviewList */}
-        {/* VotingList */}
-      </div>
-    </div>
-
-      <RecommendWebtoon/>
-      <FeedReview /> {/* ReviewList */}
-      {/* VotingList */}
+    <>
+      <NavigationBar />
+      <SearchContainer onSearch={handleSearch} showTabs={true} />
+      <RecommendWebtoon />
+      <FeedReview />
     </>
-
   );
 };
 
