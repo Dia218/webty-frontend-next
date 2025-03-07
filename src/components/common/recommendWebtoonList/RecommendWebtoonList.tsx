@@ -32,7 +32,7 @@ const RecommendWebtoonList: React.FC<RecommendWebtoonListProps> = ({
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
         // 오른쪽 버튼 활성화 조건: scrollLeft + clientWidth < scrollWidth
-        setCanScrollRight(scrollLeft + clientWidth < scrollWidth);
+        setCanScrollRight(scrollLeft + clientWidth >= scrollWidth);
         // 왼쪽 버튼 활성화 조건: scrollLeft > 0
         setCanScrollLeft(scrollLeft > 0);
       }
@@ -61,7 +61,10 @@ const RecommendWebtoonList: React.FC<RecommendWebtoonListProps> = ({
     }, []);
   
     return (
-      <div className="relative border border-gray-300 rounded-lg m-3 p">
+      <>
+      {/* 로그인된 상태에서만 버튼 보이기 */}
+      {showButtons && (
+      <div className="relative border border-gray-300 rounded-lg m-3 pl-2">
         {/* "추천 웹툰" 제목 */}
         <h2 className="text-[18px] font-bold text-left ml-3 mt-3 text-gray-700">
           추천 웹툰
@@ -77,16 +80,15 @@ const RecommendWebtoonList: React.FC<RecommendWebtoonListProps> = ({
           ))}
         </div>
   
-        {/* 로그인된 상태에서만 버튼 보이기 */}
-        {showButtons && (
+
           <>
             {/* 왼쪽 이동 버튼 */}
             <button
               onClick={scrollLeft}
               className={`absolute top-1/2 left-2 transform -translate-y-1/2 
                                     bg-transparent text-[42px] font-bold antialiased
-                                    ${canScrollLeft ? '' : 'opacity-50 '}`}
-              disabled={!canScrollLeft}
+                                    ${canScrollLeft ? '' : 'opacity-10 '}`}
+              //disabled={!canScrollLeft}
             >
               &lt;
             </button>
@@ -97,13 +99,15 @@ const RecommendWebtoonList: React.FC<RecommendWebtoonListProps> = ({
               className={`absolute top-1/2 right-2 transform -translate-y-1/2 
                                    bg-transparent text-[42px] font-bold antialiased
                                    ${canScrollRight ? '' : 'opacity-10 '}`}
-              disabled={!canScrollRight}
+              //disabled={!canScrollRight}
             >
               &gt;
             </button>
           </>
-        )}
+      
       </div>
+     )}
+      </>
     );
   };
   
