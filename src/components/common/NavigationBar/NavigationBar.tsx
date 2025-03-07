@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // 페이지 이동을 위해 추가
 import { useAuth } from '@/lib/api/security/useAuth';
-import './NavigationBar.css';
 import LogInOutDialog from '../LogInOutDialog/LogInOutDialog';
 import { usePathname } from 'next/navigation';
 import { HIDDEN_ELEMENTS } from './hiddenElements';
 import WriteReviewModal from '@/components/common/ReviewWriteModal/ReviewWriteModal';
+import { Button } from '@/components/ui/button';
 
 const NavigationBar: React.FC = () => {
   const { isLoggedIn } = useAuth();
@@ -19,9 +19,9 @@ const NavigationBar: React.FC = () => {
   return (
     <nav className="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between">
       {/* 로고 */}
-      <div className="logo">
-        <Link href="/">WEBTY</Link>
-      </div>
+      <Link href="/" className="flex items-center">
+        <img src="/assets/logo.svg" alt="Webty Logo" className="h-10 w-auto" />
+      </Link>
 
       {/* 버튼 그룹 */}
       <div className="nav-buttons">
@@ -29,18 +29,20 @@ const NavigationBar: React.FC = () => {
           pathname.startsWith(route)
         ) &&
           isLoggedIn && (
-            <button onClick={() => setIsModalOpen(true)} className="write-btn">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="mx-5 write-btn"
+            >
               글 작성
-            </button>
+            </Button>
           )}
 
         {isLoggedIn && (
           <Link href="/mypage">
-            <button>마이페이지</button>
+            <Button variant="ghost">마이페이지</Button>
           </Link>
         )}
 
-        {/* 로그인 / 로그아웃 모달 */}
         <LogInOutDialog />
       </div>
       <WriteReviewModal
