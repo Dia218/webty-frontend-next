@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
-import { useSearchSuggestions } from '@/lib/api/search';
+import { useSearchSuggestions } from '@/lib/api/search/hooks/useSearchSuggestions';
 import { Loader2 } from 'lucide-react';
 
 interface SearchBarProps {

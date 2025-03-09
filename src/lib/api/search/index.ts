@@ -26,8 +26,6 @@ export {
 // types
 export type { 
   SearchResult,
-  SearchTypeMapping,
   SearchLogicParams,
-  FetchResultsParams,
-  SearchSuggestionDto
-} from './types/searchTypes'; 
+  FetchResultsParams
+} from './types/searchTypes';

@@ -5,6 +5,7 @@ export type {
   SearchResult,
   SearchTypeMapping,
   SearchLogicParams,
-  FetchResultsParams,
-  SearchSuggestionDto
+  FetchResultsParams
 } from './searchTypes'; 
+
+// SearchSuggestionDto는 @/lib/types/search/SearchSuggestionDto에서 직접 임포트하세요. 

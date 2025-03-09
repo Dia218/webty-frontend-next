@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPopularSearchTerms } from '@/lib/api/search';
+import { getPopularSearchTerms } from '@/lib/api/search/api/searchApi';
 import { Loader2 } from 'lucide-react';
 
 interface PopularSearchTermsProps {

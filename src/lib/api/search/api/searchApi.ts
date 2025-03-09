@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
-import { SearchSuggestionDto } from '../types/searchTypes';
+import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
 import { convertSortParam } from '../utils/searchMappings';
 
 /**
