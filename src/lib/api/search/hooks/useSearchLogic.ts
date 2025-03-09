@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
-import { SearchResult } from './searchTypes';
+import { SearchResult } from '../types/searchTypes';
 import { useSearchCore } from './useSearchCore';
 
 /**

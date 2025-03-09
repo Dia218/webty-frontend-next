@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
+import { useEffect } from 'react';
+import { useSearchLogic } from '@/lib/api/search';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByAllCategoriesProps {
   searchQuery: string;
   limit?: number;
   showTitle?: boolean;
+  onResultsStatus?: (hasResults: boolean) => void;
 }
 
 /**
@@ -17,26 +18,29 @@ interface SearchByAllCategoriesProps {
 const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({ 
   searchQuery,
   limit,
-  showTitle = true
+  showTitle = true,
+  onResultsStatus
 }) => {
   // 단일 통합 검색 사용 (all 타입으로 검색)
-  const allSearch = useSearchLogic(searchQuery, 'all', 'recommend', limit);
+  const {
+    items: searchResults,
+    isLoading,
+    currentPage,
+    totalPages,
+    sortBy,
+    goToNextPage,
+    goToPrevPage,
+    handleSortChange,
+    hasMore,
+    loadMore
+  } = useSearchLogic(searchQuery, 'all', 'recommend', limit);
   
-  // 정렬 상태
-  const [sortBy, setSortBy] = useState(allSearch.sortBy);
-  
-  // 정렬 변경 핸들러
-  const handleSortChange = useCallback((newSortBy: string) => {
-    setSortBy(newSortBy);
-    allSearch.handleSortChange(newSortBy);
-  }, [allSearch]);
-
-  // 정렬 동기화
+  // 검색 결과 상태를 부모 컴포넌트에 전달
   useEffect(() => {
-    if (sortBy !== allSearch.sortBy) {
-      setSortBy(allSearch.sortBy);
+    if (onResultsStatus) {
+      onResultsStatus(searchResults.length > 0);
     }
-  }, [allSearch.sortBy]);
+  }, [searchResults, onResultsStatus]);
 
   if (!searchQuery.trim()) {
     return (
@@ -53,17 +57,17 @@ const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({
         title="전체 검색 결과"
         showTitle={showTitle}
         resultType="review"
-        reviewItems={allSearch.items}
-        isLoading={allSearch.isLoading}
-        currentPage={allSearch.currentPage}
-        totalPages={allSearch.totalPages}
+        reviewItems={searchResults}
+        isLoading={isLoading}
+        currentPage={currentPage}
+        totalPages={totalPages}
         sortBy={sortBy}
         onSortChange={handleSortChange}
-        onPrevPage={allSearch.goToPrevPage}
-        onNextPage={allSearch.goToNextPage}
-        hasMore={allSearch.hasMore}
-        loadMore={allSearch.loadMore}
-        emptyMessage="검색 결과가 없습니다. 다른 검색어를 입력해보세요."
+        onPrevPage={goToPrevPage}
+        onNextPage={goToNextPage}
+        hasMore={hasMore}
+        loadMore={loadMore}
+        emptyMessage={`"${searchQuery}"에 대한 검색 결과가 없습니다.`}
       />
     </div>
   );

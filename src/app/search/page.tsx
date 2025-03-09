@@ -2,9 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense, memo, useCallback, useState } from 'react';
+import { Suspense, memo, useCallback, useState, useEffect } from 'react';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
 import SearchContainer from '@/components/common/Search';
+import PopularSearchTerms from '@/components/common/Search/PopularSearchTerms';
+import SearchResults from '@/components/buisness/search/SearchByAllCategories';
+import SearchByWebtoonName from '@/components/buisness/search/SearchByWebtoonName';
+import SearchByNickName from '@/components/buisness/search/SearchByNickName';
+import SearchByReview from '@/components/buisness/search/SearchByReview';
 
 // 동적 임포트 최적화
 const ReviewsSearch = dynamic(
@@ -51,118 +56,80 @@ const MemoizedUsersSearch = memo(UsersSearch);
 const MemoizedResultOfWebtoonsSearch = memo(ResultOfWebtoonsSearch);
 const MemoizedAllSearchResults = memo(AllSearchResults);
 
+/**
+ * 검색 페이지 컴포넌트
+ */
 export const SearchPage: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const searchQuery = searchParams.get('query') || '';
+  const queryParam = searchParams.get('query') || '';
   const typeParam = searchParams.get('type') || 'all';
-  const [activeTab, setActiveTab] = useState(typeParam);
-  
-  // 정렬 파라미터 추출 및 상태 관리
   const sortParam = searchParams.get('sort') || 'recommend';
-  const [activeSort, setActiveSort] = useState(sortParam);
 
-  // handleSearch 함수에 정렬 파라미터 추가
-  const handleSearch = useCallback((query: string, type: string) => {
-    if (query.trim()) {
-      router.push(`/search?query=${encodeURIComponent(query)}&type=${type}&sort=${activeSort}`);
-    }
-  }, [router, activeSort]);
+  const [searchQuery, setSearchQuery] = useState(queryParam);
+  const [searchType, setSearchType] = useState(typeParam);
+  const [sortBy, setSortBy] = useState(sortParam);
+  const [hasResults, setHasResults] = useState(false);
+
+  useEffect(() => {
+    setSearchQuery(queryParam);
+    setSearchType(typeParam);
+    setSortBy(sortParam);
+  }, [queryParam, typeParam, sortParam]);
+
+  // 검색 결과가 있는지 여부를 업데이트하는 콜백 함수
+  const handleResultsStatus = (hasAnyResults: boolean) => {
+    setHasResults(hasAnyResults);
+  };
+
+  // 검색 시 실행할 핸들러
+  const handleSearch = (query: string, type: string) => {
+    setSearchQuery(query);
+    setSearchType(type);
+  };
+  
+  // 인기 검색어 클릭 시 실행할 핸들러
+  const handlePopularTermClick = (term: string) => {
+    setSearchQuery(term);
+    setSearchType('all');
+  };
 
   // 탭 변경 시 정렬 상태 유지
   const handleTabChange = useCallback((tab: string) => {
-    setActiveTab(tab);
+    setSearchType(tab);
     if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${tab}&sort=${activeSort}`);
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${tab}&sort=${sortBy}`);
     }
-  }, [searchQuery, router, activeSort]);
+  }, [searchQuery, router, sortBy]);
   
   // 정렬 변경 핸들러
   const handleSortChange = useCallback((sort: string) => {
-    setActiveSort(sort);
+    setSortBy(sort);
     if (searchQuery.trim()) {
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${activeTab}&sort=${sort}`);
+      router.push(`/search?query=${encodeURIComponent(searchQuery)}&type=${searchType}&sort=${sort}`);
     }
-  }, [searchQuery, activeTab, router]);
+  }, [searchQuery, searchType, router]);
 
-  // 검색 결과가 없을 때 표시할 컴포넌트
-  if (!searchQuery.trim()) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <NavigationBar />
-        <SearchContainer
-          initialQuery={searchQuery}
-          initialType={activeTab}
-          onSearch={handleSearch}
-          onTabChange={handleTabChange}
-          showTabs={true}
-        />
-        <div className="max-w-6xl mx-auto py-4 flex-1 w-full flex items-center justify-center">
-          <p className="text-gray-500">검색어를 입력해주세요.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // 활성화된 탭에 따라 적절한 검색 컴포넌트 선택
   const renderSearchResults = () => {
-    switch (activeTab) {
-      case 'all':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
-            <MemoizedAllSearchResults 
-              key={`all-search-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
+    if (!searchQuery) {
+      return (
+        <div className="text-center p-8">
+          <h2 className="text-xl font-bold mb-4">검색어를 입력해주세요</h2>
+          <PopularSearchTerms onTermClick={handlePopularTermClick} className="max-w-2xl mx-auto" />
+        </div>
+      );
+    }
+
+    switch (searchType) {
       case 'webtoon':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">웹툰 관련 리뷰</h2>
-            <MemoizedWebtoonsSearch 
-              key={`webtoon-review-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-      case 'review':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">리뷰 검색 결과</h2>
-            <MemoizedReviewsSearch 
-              key={`review-only-${searchQuery}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
+        return <SearchByWebtoonName searchQuery={searchQuery} onResultsStatus={handleResultsStatus} />;
       case 'user':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">사용자 작성 리뷰</h2>
-            <MemoizedUsersSearch 
-              key={`user-review-${searchQuery}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
+        return <SearchByNickName searchQuery={searchQuery} onResultsStatus={handleResultsStatus} />;
+      case 'review':
+        return <SearchByReview searchQuery={searchQuery} onResultsStatus={handleResultsStatus} />;
+      case 'all':
       default:
-        // 'all' 케이스로 폴백 - URL 파라미터가 잘못된 경우를 대비
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
-            <MemoizedAllSearchResults 
-              key={`all-search-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
+        return <SearchResults searchQuery={searchQuery} onResultsStatus={handleResultsStatus} />;
     }
   };
 
@@ -174,7 +141,7 @@ export const SearchPage: React.FC = () => {
       {/* 검색 영역 */}
       <SearchContainer
         initialQuery={searchQuery}
-        initialType={activeTab}
+        initialType={searchType}
         onSearch={handleSearch}
         onTabChange={handleTabChange}
         showTabs={true}
@@ -201,6 +168,15 @@ export const SearchPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 검색 결과가 없을 때 인기 검색어 표시 */}
+      {searchQuery && !hasResults && (
+        <div className="mt-8 text-center">
+          <h3 className="text-lg font-medium mb-2">"{searchQuery}"에 대한 검색 결과가 없습니다.</h3>
+          <p className="text-gray-500 mb-6">다른 검색어로 시도해보세요.</p>
+          <PopularSearchTerms onTermClick={handlePopularTermClick} className="max-w-2xl mx-auto" />
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { SearchTypeMapping } from './searchTypes';
+import { SearchTypeMapping } from '../types/searchTypes';
 
 /**
  * 검색 타입에 따른 백엔드 파라미터 매핑 함수

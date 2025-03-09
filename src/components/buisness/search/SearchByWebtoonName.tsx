@@ -1,18 +1,20 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
+import { useEffect } from 'react';
+import { useSearchLogic } from '@/lib/api/search';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByWebtoonNameProps {
   searchQuery: string;
   limit?: number;
   showTitle?: boolean;
+  onResultsStatus?: (hasResults: boolean) => void;
 }
 
 /**
  * 웹툰 이름으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByWebtoonNameProps) => {
+const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true, onResultsStatus }: SearchByWebtoonNameProps) => {
   const {
     items: reviews,
     isLoading,
@@ -25,6 +27,13 @@ const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByW
     hasMore,
     loadMore
   } = useSearchLogic(searchQuery, 'webtoon', 'recommend', limit);
+
+  // 검색 결과 상태를 부모 컴포넌트에 전달
+  useEffect(() => {
+    if (onResultsStatus) {
+      onResultsStatus(reviews.length > 0);
+    }
+  }, [reviews, onResultsStatus]);
 
   if (!searchQuery) {
     return showTitle ? (

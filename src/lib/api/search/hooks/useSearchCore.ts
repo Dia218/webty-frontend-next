@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
-import { getSearchParams, convertSortParam } from './searchMappings';
-import { search } from './searchApi';
+import { getSearchParams, convertSortParam } from '../utils/searchMappings';
+import { search } from '../api/searchApi';
 
 /**
  * 검색 데이터 가져오기 및 상태 관리를 위한 핵심 훅

@@ -5,26 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
+import { useSearchSuggestions } from '@/lib/api/search';
+import { Loader2 } from 'lucide-react';
 
 interface SearchBarProps {
   initialQuery?: string;
   initialType?: string;
   onSearch?: (query: string, type: string) => void;
 }
-
-// 임시 자동완성 데이터 (실제로는 API에서 가져와야 함)
-const AUTOCOMPLETE_DATA = [
-  '아이네',
-  '아이유',
-  '아이폰',
-  '아이패드',
-  '아이맥',
-  '아이돌',
-  '아이언맨',
-  '아이스크림',
-  '아이스아메리카노',
-  '아이템',
-];
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
   initialQuery = '', 
@@ -35,28 +23,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [searchText, setSearchText] = useState(initialQuery);
   const [searchType, setSearchType] = useState(initialType);
   const [isFocused, setIsFocused] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // 자동완성 API 훅 사용
+  const { suggestions, isLoading, error } = useSearchSuggestions({
+    searchText,
+    suggestionType: searchType !== 'all' ? searchType : undefined,
+  });
 
   useEffect(() => {
     setSearchText(initialQuery);
     setSearchType(initialType);
   }, [initialQuery, initialType]);
 
+  // 선택 인덱스 초기화 (검색어나 자동완성 목록이 변경되면)
   useEffect(() => {
-    // 검색어가 있을 때만 자동완성 표시
-    if (searchText.trim()) {
-      // 검색어와 일치하는 자동완성 데이터 필터링
-      const filtered = AUTOCOMPLETE_DATA.filter(item => 
-        item.toLowerCase().includes(searchText.toLowerCase())
-      );
-      setSuggestions(filtered);
-    } else {
-      setSuggestions([]);
-    }
     setSelectedIndex(-1);
-  }, [searchText]);
+  }, [searchText, suggestions]);
 
   // 클릭 이벤트 처리 (외부 클릭 시 자동완성 닫기)
   useEffect(() => {
@@ -146,16 +130,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 variant="ghost" 
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 rounded-md"
               >
-                <Search className="h-5 w-5 text-gray-500" />
+                {isLoading ? <Loader2 className="h-5 w-5 text-gray-500 animate-spin" /> : <Search className="h-5 w-5 text-gray-500" />}
               </Button>
             </div>
           </div>
           
           {/* 자동완성 드롭다운 */}
-          {isFocused && suggestions.length > 0 && (
+          {isFocused && (suggestions.length > 0 || isLoading) && (
             <div className="absolute z-10 w-full left-0 bg-white border border-gray-300 mt-1 rounded-md shadow-lg max-h-60 overflow-auto">
               <ul className="py-1">
-                {suggestions.map((suggestion, index) => (
+                {isLoading && (
+                  <li className="px-4 py-2 text-gray-500 flex items-center">
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    자동완성 로딩 중...
+                  </li>
+                )}
+                
+                {!isLoading && suggestions.length === 0 && searchText.length >= 2 && (
+                  <li className="px-4 py-2 text-gray-500">
+                    검색 결과가 없습니다
+                  </li>
+                )}
+                
+                {!isLoading && suggestions.map((suggestion, index) => (
                   <li
                     key={index}
                     className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${

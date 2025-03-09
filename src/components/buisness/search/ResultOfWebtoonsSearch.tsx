@@ -150,7 +150,6 @@ const ResultOfWebtoonsSearch: React.FC<ResultOfWebtoonsSearchProps> = ({
         <>
           <WebtoonList 
             webtoons={limit ? webtoons.slice(0, limit) : webtoons} 
-            onImageError={handleImageError} 
           />
           
           {/* 더 보기 버튼 - limit이 설정된 경우 표시하지 않음 */}
