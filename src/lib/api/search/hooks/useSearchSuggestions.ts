@@ -6,6 +6,9 @@ interface UseSearchSuggestionsProps {
   debounceTime?: number;
   suggestionType?: string;
   sortBy?: string;
+  minMatchScore?: number;
+  limit?: number;
+  minLength?: number;
 }
 
 interface UseSearchSuggestionsResult {
@@ -21,16 +24,20 @@ export const useSearchSuggestions = ({
   searchText,
   debounceTime = 300,
   suggestionType,
-  sortBy = 'recommend'
+  sortBy = 'recommend',
+  minMatchScore = 0.5,
+  limit = 7,
+  minLength = 2
 }: UseSearchSuggestionsProps): UseSearchSuggestionsResult => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    // 검색어가 없으면 추천 목록 비우기
-    if (!searchText || searchText.length < 2) {
+    // 검색어가 없거나 최소 길이보다 짧으면 추천 목록 비우기
+    if (!searchText || searchText.length < minLength) {
       setSuggestions([]);
+      setIsLoading(false);
       return;
     }
 
@@ -38,7 +45,13 @@ export const useSearchSuggestions = ({
     const timer = setTimeout(async () => {
       try {
         setIsLoading(true);
-        const response = await getSearchSuggestions(searchText, suggestionType, sortBy);
+        const response = await getSearchSuggestions(
+          searchText,
+          suggestionType,
+          sortBy,
+          minMatchScore,
+          limit
+        );
         
         if (response) {
           setSuggestions(response.suggestions);
@@ -58,7 +71,7 @@ export const useSearchSuggestions = ({
 
     // 컴포넌트 언마운트 또는 searchText 변경 시 타이머 정리
     return () => clearTimeout(timer);
-  }, [searchText, debounceTime, suggestionType, sortBy]);
+  }, [searchText, debounceTime, suggestionType, sortBy, minMatchScore, limit, minLength]);
 
   return { suggestions, isLoading, error };
 };

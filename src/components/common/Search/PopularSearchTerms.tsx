@@ -8,6 +8,10 @@ import { Loader2 } from 'lucide-react';
 interface PopularSearchTermsProps {
   onTermClick?: (term: string) => void;
   className?: string;
+  minScore?: number;
+  limit?: number;
+  recentDays?: number;
+  showRank?: boolean;
 }
 
 /**
@@ -15,7 +19,11 @@ interface PopularSearchTermsProps {
  */
 const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({ 
   onTermClick,
-  className = ''
+  className = '',
+  minScore = 1, // 최소 인기 점수
+  limit = 10, // 최대 표시 개수
+  recentDays = 7, // 최근 7일 동안의 데이터
+  showRank = true // 순위 표시 여부
 }) => {
   const router = useRouter();
   const [popularTerms, setPopularTerms] = useState<string[]>([]);
@@ -26,7 +34,8 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
     const fetchPopularTerms = async () => {
       try {
         setIsLoading(true);
-        const response = await getPopularSearchTerms();
+        // 개선된 API 함수 호출 (minScore, limit, recentDays 파라미터 추가)
+        const response = await getPopularSearchTerms(minScore, limit, recentDays);
         
         if (response && response.suggestions.length > 0) {
           setPopularTerms(response.suggestions);
@@ -45,7 +54,7 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
     };
 
     fetchPopularTerms();
-  }, []);
+  }, [minScore, limit, recentDays]);
 
   const handleTermClick = (term: string) => {
     if (onTermClick) {
@@ -90,7 +99,7 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
             onClick={() => handleTermClick(term)}
             className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm transition-colors"
           >
-            {index + 1}. {term}
+            {showRank && <span className="font-bold text-blue-500 mr-1">{index + 1}</span>} {term}
           </button>
         ))}
       </div>

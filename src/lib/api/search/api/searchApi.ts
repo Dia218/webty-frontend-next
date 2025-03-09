@@ -128,14 +128,18 @@ export const searchByViewCount = async (
 export const getSearchSuggestions = async (
   prefix: string,
   suggestionType?: string,
-  sortBy: string = 'recommend'
+  sortBy: string = 'recommend',
+  minMatchScore: number = 0.5,
+  limit: number = 7
 ): Promise<SearchSuggestionDto | null> => {
   try {
     const response = await axios.get<SearchSuggestionDto>(`${API_BASE_URL}/search/suggestions`, {
       params: {
         prefix,
         suggestionType,
-        sortBy
+        sortBy,
+        minMatchScore,
+        limit
       }
     });
     return response.data;
@@ -148,9 +152,19 @@ export const getSearchSuggestions = async (
 /**
  * 인기 검색어 목록을 가져오는 함수
  */
-export const getPopularSearchTerms = async (): Promise<SearchSuggestionDto | null> => {
+export const getPopularSearchTerms = async (
+  minScore?: number,
+  limit: number = 10,
+  recentDays?: number
+): Promise<SearchSuggestionDto | null> => {
   try {
-    const response = await axios.get<SearchSuggestionDto>(`${API_BASE_URL}/search/popular`);
+    const response = await axios.get<SearchSuggestionDto>(`${API_BASE_URL}/search/popular`, {
+      params: {
+        minScore,
+        limit,
+        recentDays
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('인기 검색어 API 호출 중 오류 발생:', error);
