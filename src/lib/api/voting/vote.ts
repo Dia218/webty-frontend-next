@@ -20,7 +20,7 @@ const useVote = () => {
       setError(null); // 이전 오류 초기화
 
       const response = await axiosInstance.post(
-        `${API_BASE_URL}/${similarId}`,
+        `${API_BASE_URL}/vote/${similarId}`,
         null,
         {
           params: { voteType, page, size },
@@ -47,7 +47,7 @@ const useVote = () => {
       setError(null);
 
       const response = await axiosInstance.delete(
-        `${API_BASE_URL}/${similarId}`,
+        `${API_BASE_URL}/vote/${similarId}`,
         {
           params: { page, size },
         }
@@ -73,7 +73,7 @@ const useVote = () => {
       setError(null);
 
       const response = await axiosInstance.get(
-        `${API_BASE_URL}/${similarId}/status`,
+        `${API_BASE_URL}/vote/${similarId}/status`,
         {
           withCredentials: true, // 로그인한 사용자만 자신의 투표 상태를 확인할 수 있도록 설정
         }
