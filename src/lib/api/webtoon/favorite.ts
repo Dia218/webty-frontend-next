@@ -1,4 +1,5 @@
 import axios from 'axios';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 export interface FavoriteDto {
   webtoonId: string;
@@ -7,7 +8,7 @@ export interface FavoriteDto {
 export const addFavoriteWebtoon = async (webtoonId: string) => {
   try {
     const response = await axios.post(
-      `http://localhost:8080/favorite/${webtoonId}`,
+      `${API_BASE_URL}/favorite/${webtoonId}`,
       {}, // 빈 객체를 request body로 전달 (POST 요청이므로 필요)
       {
         withCredentials: true, // 쿠키 인증 추가
@@ -23,7 +24,7 @@ export const addFavoriteWebtoon = async (webtoonId: string) => {
 export const deleteFavoriteWebtoon = async (webtoonId: string) => {
   try {
     const response = await axios.delete(
-      `http://localhost:8080/favorite/${webtoonId}`,
+      `${API_BASE_URL}/favorite/${webtoonId}`,
       {
         withCredentials: true,
       }
@@ -37,7 +38,7 @@ export const deleteFavoriteWebtoon = async (webtoonId: string) => {
 
 export const getFavoriteWebtoonList = async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/favorite/list`, {
+    const response = await axios.get(`${API_BASE_URL}/favorite/list`, {
       withCredentials: true,
     });
     return response.data;
@@ -49,12 +50,9 @@ export const getFavoriteWebtoonList = async () => {
 
 export const checkFavoriteWebtoon = async (webtoonId: string) => {
   try {
-    const response = await axios.get(
-      `http://localhost:8080/favorite/${webtoonId}`,
-      {
-        withCredentials: true, // 쿠키 인증 추가
-      }
-    );
+    const response = await axios.get(`${API_BASE_URL}/favorite/${webtoonId}`, {
+      withCredentials: true, // 쿠키 인증 추가
+    });
     return response.data;
   } catch (error) {
     console.error('관심 웹툰 여부 확인 실패:', error);

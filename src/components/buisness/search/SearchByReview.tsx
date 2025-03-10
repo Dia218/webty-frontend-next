@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSearchLogic } from '@/lib/api/search';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByReviewProps {
@@ -12,7 +11,12 @@ interface SearchByReviewProps {
 /**
  * 리뷰 내용으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByReview = ({ searchQuery, onResultsStatus }: SearchByReviewProps) => {
+const SearchByReview = ({
+  searchQuery,
+  limit,
+  showTitle = true,
+  searchType = 'review',
+}: SearchByReviewProps) => {
   const {
     items: searchResults,
     isLoading,
@@ -23,8 +27,8 @@ const SearchByReview = ({ searchQuery, onResultsStatus }: SearchByReviewProps) =
     goToPrevPage,
     handleSortChange,
     hasMore,
-    loadMore
-  } = useSearchLogic(searchQuery, 'review', 'recommend');
+    loadMore,
+  } = useSearchLogic(searchQuery, searchType, 'recommend', limit);
 
   // 검색 결과 상태를 부모 컴포넌트에 전달
   useEffect(() => {
@@ -54,4 +58,4 @@ const SearchByReview = ({ searchQuery, onResultsStatus }: SearchByReviewProps) =
   );
 };
 
-export default SearchByReview; 
+export default SearchByReview;

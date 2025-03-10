@@ -4,6 +4,7 @@ import { ReviewRequestDto } from '@/lib/types/review/ReviewRequestDto';
 import { PageDto } from '@/lib/types/common/PageDto';
 import { ReviewItemResponseDto } from '@/lib/types/review/ReviewItemResponseDto';
 import { ReviewDetailResponseDto } from '@/lib/types/review/ReviewDetailResponseDto';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 interface ReviewRequest {
   title: string;
@@ -22,7 +23,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
     setError(null);
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        `http://localhost:8080/reviews`,
+        `${API_BASE_URL}/reviews`,
         { params: { page, size } }
       );
       console.log(response.data);
@@ -44,7 +45,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   ): Promise<ReviewDetailResponseDto | undefined> => {
     try {
       const response = await axios.get<ReviewDetailResponseDto>(
-        `http://localhost:8080/reviews/${reviewId}`
+        `${API_BASE_URL}/reviews/${reviewId}`
       );
       console.log('상세조회 API 호출');
       console.log(response.data);
@@ -59,7 +60,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   const fetchUserReviews = async (page: number) => {
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        `http://localhost:8080/reviews/me?page=${page}`,
+        `${API_BASE_URL}/reviews/me?page=${page}`,
         { withCredentials: true }
       );
       return response.data;
@@ -81,7 +82,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   const fetchReviewsSortedByViewCount = async () => {
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        'http://localhost:8080/reviews/view-count-desc',
+        `${API_BASE_URL}/reviews/view-count-desc`,
         {
           params: { page, size },
         }
@@ -98,7 +99,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
 
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        'http://localhost:8080/reviews/search',
+        `${API_BASE_URL}/reviews/search`,
         {
           params: { page, size, title },
         }
@@ -144,7 +145,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
     // );
 
     try {
-      const response = await fetch('http://localhost:8080/reviews/create', {
+      const response = await fetch(`${API_BASE_URL}/reviews/create`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -177,14 +178,10 @@ const useReviews = (page: number = 0, size: number = 10) => {
     console.log('요청 데이터', formData);
 
     try {
-      await axios.put(
-        `http://localhost:8080/reviews/put/${reviewId}`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          withCredentials: true,
-        }
-      );
+      await axios.put(`${API_BASE_URL}/reviews/put/${reviewId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
+      });
       fetchReviews();
     } catch (err) {
       setError('Failed to update review');
@@ -194,7 +191,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   // 게시글 삭제
   const deleteReview = async (reviewId: number) => {
     try {
-      await axios.delete(`http://localhost:8080/reviews/delete/${reviewId}`, {
+      await axios.delete(`${API_BASE_URL}/reviews/delete/${reviewId}`, {
         withCredentials: true,
       });
       setReviews((prevReviews) =>
@@ -215,7 +212,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
 
     try {
       const response = await axios.get<PageDto<ReviewItemResponseDto>>(
-        `http://localhost:8080/reviews/webtoon/${webtoonId}`,
+        `${API_BASE_URL}/reviews/webtoon/${webtoonId}`,
         { params: { page, size } }
       );
       return response.data;
@@ -227,7 +224,7 @@ const useReviews = (page: number = 0, size: number = 10) => {
   // 게시글 스포일러 요청
   const spoilerReview = async (reviewId: number) => {
     try {
-      await axios.patch(`http://localhost:8080/reviews/spoiler/${reviewId}`);
+      await axios.patch(`${API_BASE_URL}/reviews/spoiler/${reviewId}`);
     } catch (err: any) {
       setError('리뷰를 스포일러 등록하는데 실패했습니다.');
     }

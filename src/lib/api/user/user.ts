@@ -1,6 +1,5 @@
 import { useState } from 'react';
-
-const BASE_URL = 'http://localhost:8080/user';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 export const user = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +14,7 @@ export const user = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${BASE_URL}/nickname`, {
+      const response = await fetch(`${API_BASE_URL}/user/nickname`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -46,7 +45,7 @@ export const user = () => {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      const response = await fetch(`${BASE_URL}/profileImage`, {
+      const response = await fetch(`${API_BASE_URL}/user/profileImage`, {
         method: 'PATCH',
         credentials: 'include',
         body: formData,
@@ -71,7 +70,7 @@ export const user = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/users`, {
+      const response = await fetch(`${API_BASE_URL}/user/users`, {
         method: 'DELETE',
         credentials: 'include',
       });

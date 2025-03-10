@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSearchLogic } from '@/lib/api/search';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByNickNameProps {
@@ -10,11 +9,14 @@ interface SearchByNickNameProps {
   showTitle?: boolean;
   onResultsStatus?: (hasResults: boolean) => void;
 }
-
 /**
  * 사용자 닉네임으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByNickName = ({ searchQuery, limit, showTitle = true, onResultsStatus }: SearchByNickNameProps) => {
+const SearchByNickName = ({
+  searchQuery,
+  limit,
+  showTitle = true,
+}: SearchByNickNameProps) => {
   const {
     items: reviews,
     isLoading,
@@ -25,7 +27,7 @@ const SearchByNickName = ({ searchQuery, limit, showTitle = true, onResultsStatu
     goToPrevPage,
     handleSortChange,
     hasMore,
-    loadMore
+    loadMore,
   } = useSearchLogic(searchQuery, 'user', 'recommend', limit);
 
   // 검색 결과 상태를 부모 컴포넌트에 전달
@@ -66,4 +68,4 @@ const SearchByNickName = ({ searchQuery, limit, showTitle = true, onResultsStatu
   );
 };
 
-export default SearchByNickName; 
+export default SearchByNickName;

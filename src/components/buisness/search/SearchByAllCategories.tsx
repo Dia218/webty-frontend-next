@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSearchLogic } from '@/lib/api/search';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByAllCategoriesProps {
@@ -15,27 +15,27 @@ interface SearchByAllCategoriesProps {
  * 전체 검색 결과 컴포넌트
  * 웹툰, 사용자, 리뷰 검색 결과를 모두 통합하여 하나의 정렬된 리스트로 표시합니다.
  */
-const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({ 
+const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({
   searchQuery,
   limit,
   showTitle = true,
-  onResultsStatus
 }) => {
   // 단일 통합 검색 사용 (all 타입으로 검색)
-  const {
-    items: searchResults,
-    isLoading,
-    currentPage,
-    totalPages,
-    sortBy,
-    goToNextPage,
-    goToPrevPage,
-    handleSortChange,
-    hasMore,
-    loadMore
-  } = useSearchLogic(searchQuery, 'all', 'recommend', limit);
-  
-  // 검색 결과 상태를 부모 컴포넌트에 전달
+  const allSearch = useSearchLogic(searchQuery, 'all', 'recommend', limit);
+
+  // 정렬 상태
+  const [sortBy, setSortBy] = useState(allSearch.sortBy);
+
+  // 정렬 변경 핸들러
+  const handleSortChange = useCallback(
+    (newSortBy: string) => {
+      setSortBy(newSortBy);
+      allSearch.handleSortChange(newSortBy);
+    },
+    [allSearch]
+  );
+
+  // 정렬 동기화
   useEffect(() => {
     if (onResultsStatus) {
       onResultsStatus(searchResults.length > 0);
@@ -73,4 +73,4 @@ const SearchByAllCategories: React.FC<SearchByAllCategoriesProps> = ({
   );
 };
 
-export default SearchByAllCategories; 
+export default SearchByAllCategories;
