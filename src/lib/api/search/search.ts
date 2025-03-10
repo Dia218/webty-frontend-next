@@ -1,12 +1,8 @@
 import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
-import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
 import { convertSortParam } from '@/lib/service/search/searchMappings';
-
-/**
- * API 기본 URL
- */
-const API_BASE_URL = 'http://localhost:8080';
+import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 /**
  * 검색 API를 호출하는 함수

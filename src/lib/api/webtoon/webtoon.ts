@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { WebtoonDetailDto } from '@/lib/types/webtoon/WebtoonDetailDto';
 import { PageDto } from '@/lib/types/common/PageDto';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 // API 호출 함수
 export const fetchWebtoonById = async (
@@ -8,7 +9,7 @@ export const fetchWebtoonById = async (
 ): Promise<WebtoonDetailDto> => {
   try {
     const response = await axios.get<WebtoonDetailDto>(
-      `http://localhost:8080/webtoons/${id}`
+      `${API_BASE_URL}/webtoons/${id}`
     );
     return response.data;
   } catch (error) {
@@ -27,7 +28,7 @@ export const fetchWebtoons = async (
 
   try {
     const response = await axios.get<PageDto<WebtoonDetailDto>>(
-      `http://localhost:8080/webtoons`,
+      `${API_BASE_URL}/webtoons`,
       {
         params: {
           ...params,
