@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getSearchSuggestions } from '@/lib/api/search/api/searchApi';
+import { getSearchSuggestions } from '@/lib/api/search/api/search';
 
 interface UseSearchSuggestionsProps {
   searchText: string;

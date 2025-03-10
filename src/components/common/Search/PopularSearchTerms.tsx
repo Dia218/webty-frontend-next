@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPopularSearchTerms, clearSearchCache } from '@/lib/api/search/api/searchApi';
+import { getPopularSearchTerms, clearSearchCache } from '@/lib/api/search/api/search';
 import { Loader2, Trash2 } from 'lucide-react';
 
 interface PopularSearchTermsProps {
