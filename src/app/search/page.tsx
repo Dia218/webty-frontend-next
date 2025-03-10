@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import SearchContent from '@/components/buisness/search/SearchContent';
 
-export default function SearchPageW() {
+export default function SearchPage() {
   return (
     <Suspense
       fallback={
