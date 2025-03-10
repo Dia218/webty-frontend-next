@@ -170,4 +170,19 @@ export const getPopularSearchTerms = async (
     console.error('인기 검색어 API 호출 중 오류 발생:', error);
     return null;
   }
+};
+
+/**
+ * 검색 관련 캐시를 삭제하는 함수
+ * @returns 성공 여부
+ */
+export const clearSearchCache = async (): Promise<boolean> => {
+  try {
+    const response = await axios.post<{ message: string }>(`${API_BASE_URL}/search/clear-cache`);
+    console.log('검색 기록 삭제 완료:', response.data.message);
+    return true;
+  } catch (error) {
+    console.error('검색 기록 삭제 중 오류 발생:', error);
+    return false;
+  }
 }; 

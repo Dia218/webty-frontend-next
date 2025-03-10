@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getPopularSearchTerms } from '@/lib/api/search/api/searchApi';
-import { Loader2 } from 'lucide-react';
+import { getPopularSearchTerms, clearSearchCache } from '@/lib/api/search/api/searchApi';
+import { Loader2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface PopularSearchTermsProps {
   onTermClick?: (term: string) => void;
@@ -20,7 +21,7 @@ interface PopularSearchTermsProps {
 const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({ 
   onTermClick,
   className = '',
-  minScore = 1, // 최소 인기 점수
+  minScore = 5, // 최소 인기 점수
   limit = 10, // 최대 표시 개수
   recentDays = 7, // 최근 7일 동안의 데이터
   showRank = true // 순위 표시 여부
@@ -28,31 +29,33 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
   const router = useRouter();
   const [popularTerms, setPopularTerms] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClearing, setIsClearing] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
-    const fetchPopularTerms = async () => {
-      try {
-        setIsLoading(true);
-        // 개선된 API 함수 호출 (minScore, limit, recentDays 파라미터 추가)
-        const response = await getPopularSearchTerms(minScore, limit, recentDays);
-        
-        if (response && response.suggestions.length > 0) {
-          setPopularTerms(response.suggestions);
-        } else {
-          // API에서 결과가 없으면 샘플 데이터 표시
-          setPopularTerms(['웹툰', '판타지', '로맨스', '액션', '일상']);
-        }
-      } catch (err) {
-        console.error('인기 검색어 조회 중 오류 발생:', err);
-        setError(err instanceof Error ? err : new Error('인기 검색어를 불러오는데 실패했습니다.'));
-        // 오류 발생시 샘플 데이터 표시
-        setPopularTerms(['웹툰', '판타지', '로맨스', '액션', '일상']);
-      } finally {
-        setIsLoading(false);
+  // fetchPopularTerms 함수를 컴포넌트 레벨로 이동
+  const fetchPopularTerms = async () => {
+    try {
+      setIsLoading(true);
+      // 개선된 API 함수 호출 (minScore, limit, recentDays 파라미터 추가)
+      const response = await getPopularSearchTerms(minScore, limit, recentDays);
+      
+      if (response && response.suggestions.length > 0) {
+        setPopularTerms(response.suggestions);
+      } else {
+        // API에서 결과가 없으면 빈 배열 설정 (안내 메시지는 렌더링 시 표시)
+        setPopularTerms([]);
       }
-    };
+    } catch (err) {
+      console.error('인기 검색어 조회 중 오류 발생:', err);
+      setError(err instanceof Error ? err : new Error('인기 검색어를 불러오는데 실패했습니다.'));
+      // 오류 발생시 빈 배열 설정
+      setPopularTerms([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPopularTerms();
   }, [minScore, limit, recentDays]);
 
@@ -61,6 +64,26 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
       onTermClick(term);
     } else {
       router.push(`/search?query=${encodeURIComponent(term)}&type=all`);
+    }
+  };
+
+  const handleClearCache = async () => {
+    try {
+      setIsClearing(true);
+      const success = await clearSearchCache();
+      
+      if (success) {
+        toast.success('검색 기록이 삭제되었습니다.');
+        // 인기 검색어 다시 불러오기
+        fetchPopularTerms();
+      } else {
+        toast.error('검색 기록 삭제 중 오류가 발생했습니다.');
+      }
+    } catch (err) {
+      console.error('캐시 삭제 중 오류 발생:', err);
+      toast.error('검색 기록 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setIsClearing(false);
     }
   };
 
@@ -84,14 +107,33 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
   if (popularTerms.length === 0) {
     return (
       <div className={`text-gray-500 p-4 ${className}`}>
-        인기 검색어가 없습니다.
+        <p>5회 이상 검색된 검색어 중, 인기순위 상위 10개만 표시됩니다.</p>
       </div>
     );
   }
 
   return (
     <div className={`p-4 ${className}`}>
-      <h3 className="font-bold text-lg mb-2">인기 검색어</h3>
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-bold text-lg">인기 검색어</h3>
+        <button
+          onClick={handleClearCache}
+          disabled={isClearing}
+          className="text-xs text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors"
+        >
+          {isClearing ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              삭제 중...
+            </>
+          ) : (
+            <>
+              <Trash2 className="h-3 w-3" />
+              검색기록 삭제
+            </>
+          )}
+        </button>
+      </div>
       <div className="flex flex-wrap gap-2">
         {popularTerms.map((term, index) => (
           <button

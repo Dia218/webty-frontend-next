@@ -39,7 +39,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     suggestionType: searchType !== 'all' ? searchType : undefined,
     minMatchScore: minMatchScore,
     limit: suggestionsLimit,
-    minLength: 2
+    minLength: 1
   });
 
   useEffect(() => {
@@ -49,7 +49,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   // 인기 검색어 표시 여부 결정
   useEffect(() => {
-    if (isFocused && (!searchText || searchText.length < 2) && showPopularTerms) {
+    if (isFocused && (!searchText || searchText.length < 1) && showPopularTerms) {
       setShowPopular(true);
     } else {
       setShowPopular(false);
@@ -184,7 +184,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   </li>
                 )}
                 
-                {!isLoading && suggestions.length === 0 && searchText.length >= 2 && (
+                {!isLoading && suggestions.length === 0 && searchText.length >= 1 && (
                   <li className="px-4 py-2 text-gray-500">
                     검색 결과가 없습니다
                   </li>
@@ -215,7 +215,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
  * 검색어와 일치하는 부분을 강조 표시하는 함수
  */
 const highlightMatchedText = (text: string, query: string): React.ReactNode => {
-  if (!query || query.length < 2) return <>{text}</>;
+  if (!query || query.length < 1) return <>{text}</>;
   
   try {
     const regex = new RegExp(`(${query})`, 'gi');
