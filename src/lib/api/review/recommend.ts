@@ -1,6 +1,6 @@
-export type RecommendationType = 'like' | 'hate';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
-const API_BASE_URL = 'http://localhost:8080/recommend';
+export type RecommendationType = 'like' | 'hate';
 
 const sendRequest = async (
   id: number,
@@ -8,7 +8,7 @@ const sendRequest = async (
   method: 'POST' | 'DELETE'
 ) => {
   try {
-    const url = `${API_BASE_URL}/${id}?type=${type}`;
+    const url = `${API_BASE_URL}/recommend/${id}?type=${type}`;
     const response = await fetch(url, {
       method,
       credentials: 'include',
@@ -37,7 +37,7 @@ export const removeRecommendHate = (id: number) =>
 
 export const getRecommendationStatus = async (id: number) => {
   try {
-    const url = `${API_BASE_URL}/${id}/recommendation`;
+    const url = `${API_BASE_URL}/recommend/${id}/recommendation`;
     const response = await fetch(url, {
       method: 'GET',
       credentials: 'include',
@@ -59,7 +59,7 @@ export const getRecommendationStatus = async (id: number) => {
 
 export const fetchRecommendedReviews = async (userId: number, page: number) => {
   try {
-    const url = `${API_BASE_URL}/user/${userId}?page=${page}`;
+    const url = `${API_BASE_URL}/recommend/user/${userId}?page=${page}`;
     const response = await fetch(url, {
       method: 'GET',
       credentials: 'include',

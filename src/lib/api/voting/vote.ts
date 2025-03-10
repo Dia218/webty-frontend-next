@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import axios from 'axios';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 const useVote = () => {
   const [error, setError] = useState<string | null>(null);
-
-  const BASE_URL = 'http://localhost:8080/vote';
 
   const axiosInstance = axios.create({
     withCredentials: true,
@@ -21,7 +20,7 @@ const useVote = () => {
       setError(null); // 이전 오류 초기화
 
       const response = await axiosInstance.post(
-        `${BASE_URL}/${similarId}`,
+        `${API_BASE_URL}/vote/${similarId}`,
         null,
         {
           params: { voteType, page, size },
@@ -47,9 +46,12 @@ const useVote = () => {
     try {
       setError(null);
 
-      const response = await axiosInstance.delete(`${BASE_URL}/${similarId}`, {
-        params: { page, size },
-      });
+      const response = await axiosInstance.delete(
+        `${API_BASE_URL}/vote/${similarId}`,
+        {
+          params: { page, size },
+        }
+      );
 
       if (response.status === 200) {
         console.log(`${similarId}번 유사 웹툰 투표 취소 완료`);
@@ -71,7 +73,7 @@ const useVote = () => {
       setError(null);
 
       const response = await axiosInstance.get(
-        `${BASE_URL}/${similarId}/status`,
+        `${API_BASE_URL}/vote/${similarId}/status`,
         {
           withCredentials: true, // 로그인한 사용자만 자신의 투표 상태를 확인할 수 있도록 설정
         }
