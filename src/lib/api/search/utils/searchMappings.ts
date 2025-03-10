@@ -6,7 +6,7 @@ import { SearchTypeMapping } from '../types/searchTypes';
  * @returns 백엔드 API 호출에 필요한 파라미터 매핑
  */
 export const getSearchParams = (type: string): SearchTypeMapping => {
-  switch(type) {
+  switch (type) {
     case 'review':
       return { searchTypeParam: 'reviewContent', filterParam: 'review' };
     case 'user':
@@ -29,4 +29,4 @@ export const getSearchParams = (type: string): SearchTypeMapping => {
 export const convertSortParam = (sortBy: string): string => {
   // recent -> latest 변환, 다른 값은 그대로 사용
   return sortBy === 'recent' ? 'latest' : sortBy;
-}; 
+};

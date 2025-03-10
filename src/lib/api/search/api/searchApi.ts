@@ -1,12 +1,10 @@
 import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
+import { convertSortParam } from '@/lib/service/search/searchMappings';
 import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
-import { convertSortParam } from '../utils/searchMappings';
 
-/**
- * API 기본 URL
- */
-const API_BASE_URL = 'http://localhost:8080';
+// API 기본 URL 정의
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 /**
  * 검색 API를 호출하는 함수
@@ -140,7 +138,12 @@ export const getSearchSuggestions = async (
         sortBy,
         minMatchScore,
         limit
-      }
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 10000
     });
     return response.data;
   } catch (error) {
@@ -163,7 +166,12 @@ export const getPopularSearchTerms = async (
         minScore,
         limit,
         recentDays
-      }
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 10000
     });
     return response.data;
   } catch (error) {

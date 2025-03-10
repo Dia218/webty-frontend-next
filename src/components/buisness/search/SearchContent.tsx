@@ -4,184 +4,168 @@ import dynamic from 'next/dynamic';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
-import SearchContainer from '@/components/common/Search';
+import SearchContainer from '@/components/common/Search/SearchContainer';
 
 // 동적 임포트
-const ReviewsSearch = dynamic(
-  () => import('@/components/buisness/search/SearchByReview'),
+const SearchResults = dynamic(
+  () => import('@/components/buisness/search/ReviewSearchResults'),
   { ssr: false }
 );
-const WebtoonsSearch = dynamic(
-  () => import('@/components/buisness/search/SearchByWebtoonName'),
-  { ssr: false }
-);
-const UsersSearch = dynamic(
-  () => import('@/components/buisness/search/SearchByNickName'),
-  { ssr: false }
-);
-const ResultOfWebtoonsSearch = dynamic(
-  () => import('@/components/buisness/search/ResultOfWebtoonsSearch'),
-  { ssr: false }
-);
-const AllSearchResults = dynamic(
-  () => import('@/components/buisness/search/SearchByAllCategories'),
+
+const WebtoonSearchResults = dynamic(
+  () => import('@/components/buisness/search/WebtoonSearchResults'),
   { ssr: false }
 );
 
 // 메모이제이션 처리
-const MemoizedReviewsSearch = memo(ReviewsSearch);
-const MemoizedWebtoonsSearch = memo(WebtoonsSearch);
-const MemoizedUsersSearch = memo(UsersSearch);
-const MemoizedResultOfWebtoonsSearch = memo(ResultOfWebtoonsSearch);
-const MemoizedAllSearchResults = memo(AllSearchResults);
+const MemoizedSearchResults = memo(SearchResults);
+const MemoizedWebtoonSearchResults = memo(WebtoonSearchResults);
 
 export default function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  // URL 파라미터에서 검색어와 타입 가져오기
   const searchQuery = searchParams.get('query') || '';
-  const typeParam = searchParams.get('type') || 'all';
-  const [activeTab, setActiveTab] = useState(typeParam);
+  const searchType = searchParams.get('type') || 'all';
+  const sortBy = searchParams.get('sort') || 'recommend';
 
-  const sortParam = searchParams.get('sort') || 'recommend';
-  const [activeSort, setActiveSort] = useState(sortParam);
+  // 현재 활성화된 탭과 정렬 상태
+  const [activeTab, setActiveTab] = useState(searchType);
+  const [activeSort, setActiveSort] = useState(sortBy);
 
+  // 검색 결과 상태
+  const [hasResults, setHasResults] = useState(true);
+  const [hasWebtoonResults, setHasWebtoonResults] = useState(false);
+
+  // 검색 핸들러
   const handleSearch = useCallback(
     (query: string, type: string) => {
-      if (query.trim()) {
-        router.push(
-          `/search?query=${encodeURIComponent(query)}&type=${type}&sort=${activeSort}`
-        );
-      }
+      if (!query.trim()) return;
+
+      // URL 업데이트
+      const params = new URLSearchParams();
+      params.set('query', query);
+      params.set('type', type);
+      params.set('sort', activeSort);
+      router.push(`/search?${params.toString()}`);
+
+      // 탭 상태 업데이트
+      setActiveTab(type);
     },
     [router, activeSort]
   );
 
+  // 탭 변경 핸들러
   const handleTabChange = useCallback(
     (tab: string) => {
+      if (tab === activeTab) return;
+
+      // URL 업데이트
+      const params = new URLSearchParams();
+      params.set('query', searchQuery);
+      params.set('type', tab);
+      params.set('sort', activeSort);
+      router.push(`/search?${params.toString()}`);
+
+      // 탭 상태 업데이트
       setActiveTab(tab);
-      if (searchQuery.trim()) {
-        router.push(
-          `/search?query=${encodeURIComponent(searchQuery)}&type=${tab}&sort=${activeSort}`
-        );
-      }
     },
-    [searchQuery, router, activeSort]
+    [searchQuery, activeTab, activeSort, router]
   );
 
+  // 정렬 변경 핸들러
   const handleSortChange = useCallback(
     (sort: string) => {
+      if (sort === activeSort) return;
+
+      // URL 업데이트
+      const params = new URLSearchParams();
+      params.set('query', searchQuery);
+      params.set('type', activeTab);
+      params.set('sort', sort);
+      router.push(`/search?${params.toString()}`);
+
+      // 정렬 상태 업데이트
       setActiveSort(sort);
-      if (searchQuery.trim()) {
-        router.push(
-          `/search?query=${encodeURIComponent(searchQuery)}&type=${activeTab}&sort=${sort}`
-        );
-      }
     },
-    [searchQuery, activeTab, router]
+    [searchQuery, activeTab, activeSort, router]
   );
 
-  if (!searchQuery.trim()) {
+  // 검색 결과 상태 업데이트 핸들러
+  const handleResultsStatus = useCallback((status: boolean) => {
+    setHasResults(status);
+  }, []);
+
+  // 웹툰 검색 결과 상태 업데이트 핸들러
+  const handleWebtoonResultsFound = useCallback((found: boolean) => {
+    setHasWebtoonResults(found);
+  }, []);
+
+  // 검색 결과 렌더링
+  const renderSearchResults = () => {
+    const titles = {
+      all: '전체 검색 결과',
+      webtoon: '웹툰명 검색 결과',
+      review: '리뷰제목 및 내용 검색 결과',
+      user: '닉네임 검색 결과'
+    };
+
     return (
-      <div className="flex flex-col min-h-screen">
-        <NavigationBar />
-        <SearchContainer
-          initialQuery={searchQuery}
-          initialType={activeTab}
-          onSearch={handleSearch}
-          onTabChange={handleTabChange}
-          showTabs={true}
+      <div className="w-full">
+        <h2 className="text-xl font-bold mb-4">{titles[activeTab as keyof typeof titles]}</h2>
+        <MemoizedSearchResults
+          key={`search-${searchQuery}-${activeTab}-${activeSort}`}
+          searchQuery={searchQuery}
+          searchType={activeTab as 'all' | 'review' | 'webtoon' | 'user'}
+          initialSort={activeSort}
+          showTitle={false}
+          onResultsStatus={handleResultsStatus}
         />
-        <div className="max-w-6xl mx-auto py-4 flex-1 w-full flex items-center justify-center">
-          <p className="text-gray-500">검색어를 입력해주세요.</p>
-        </div>
       </div>
     );
-  }
-
-  const renderSearchResults = () => {
-    switch (activeTab) {
-      case 'all':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
-            <MemoizedAllSearchResults
-              key={`all-search-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-      case 'webtoon':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">웹툰 관련 리뷰</h2>
-            <MemoizedWebtoonsSearch
-              key={`webtoon-review-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-      case 'review':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">리뷰 검색 결과</h2>
-            <MemoizedReviewsSearch
-              key={`review-only-${searchQuery}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-      case 'user':
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">사용자 작성 리뷰</h2>
-            <MemoizedUsersSearch
-              key={`user-review-${searchQuery}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-      default:
-        return (
-          <div className="w-full">
-            <h2 className="text-xl font-bold mb-4">검색 결과</h2>
-            <MemoizedAllSearchResults
-              key={`all-search-${searchQuery}-${activeSort}`}
-              searchQuery={searchQuery}
-              showTitle={false}
-            />
-          </div>
-        );
-    }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <NavigationBar />
-      <SearchContainer
-        initialQuery={searchQuery}
-        initialType={activeTab}
-        onSearch={handleSearch}
-        onTabChange={handleTabChange}
-        showTabs={true}
-      />
-      <div className="max-w-6xl mx-auto py-4 flex-1 w-full">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-2/3">{renderSearchResults()}</div>
-          <div className="w-full md:w-1/3">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <SearchContainer
+            initialQuery={searchQuery}
+            initialType={activeTab}
+            showTabs={true}
+            onSearch={handleSearch}
+            onTabChange={handleTabChange}
+            className="w-full"
+          />
+        </div>
+
+        {searchQuery ? (
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* 메인 검색 결과 */}
             <div className="w-full">
-              <h2 className="text-xl font-bold mb-4">웹툰 검색 결과</h2>
-              <MemoizedResultOfWebtoonsSearch
-                key={`webtoon-${searchQuery}`}
-                searchQuery={searchQuery}
-                searchType="webtoonName"
-              />
+              {renderSearchResults()}
+            </div>
+            
+            {/* 웹툰 검색 결과 */}
+            <div className="w-full md:w-1/3">
+              <div className="bg-white rounded-lg shadow p-4">
+                <h2 className="text-xl font-bold mb-4 text-blue-600">웹툰 검색 결과</h2>
+                <MemoizedWebtoonSearchResults
+                  key={`webtoon-${searchQuery}`}
+                  searchQuery={searchQuery}
+                  showTitle={false}
+                  onResultsFound={handleWebtoonResultsFound}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-gray-500">검색어를 입력해주세요.</p>
+          </div>
+        )}
       </div>
     </div>
   );

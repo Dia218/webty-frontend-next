@@ -26,6 +26,7 @@ interface SearchResultComponentProps {
   emptyMessage?: string;
   hasMore: boolean;
   loadMore: () => void;
+  useInfiniteScroll?: boolean;
 }
 
 /**
@@ -47,7 +48,8 @@ const SearchResultComponent = ({
   onNextPage,
   emptyMessage = '검색 결과가 없습니다.',
   hasMore,
-  loadMore
+  loadMore,
+  useInfiniteScroll = false
 }: SearchResultComponentProps) => {
   // 이미지 에러 핸들링 함수
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -63,6 +65,14 @@ const SearchResultComponent = ({
   const handleSort = (newSortBy: string) => {
     onSortChange(newSortBy);
   };
+
+  // 로딩 컴포넌트
+  const loadingIndicator = (
+    <div className="flex flex-col items-center py-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 mb-2"></div>
+      <p className="text-gray-500 text-sm">로딩 중...</p>
+    </div>
+  );
 
   return (
     <div className="max-w-6xl">
@@ -84,23 +94,22 @@ const SearchResultComponent = ({
             <WebtoonList webtoons={webtoonItems} />
           )}
           
-          {/* 더 보기 버튼 */}
-          <div className="flex justify-center mt-6">
-            {isLoading ? (
-              <div className="flex flex-col items-center py-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 mb-2"></div>
-                <p className="text-gray-500 text-sm">로딩 중...</p>
-              </div>
-            ) : hasMore ? (
-              <Button 
-                onClick={loadMore} 
-                variant="outline"
-                className="px-6"
-              >
-                더 보기
-              </Button>
-            ) : null}
-          </div>
+          {/* 더 보기 버튼 (무한 스크롤이 아닐 때만 표시) */}
+          {!useInfiniteScroll && hasMore && (
+            <div className="flex justify-center mt-6">
+              {isLoading ? (
+                loadingIndicator
+              ) : (
+                <Button 
+                  onClick={loadMore} 
+                  variant="outline"
+                  className="px-6"
+                >
+                  더 보기 ({currentPage + 1}/{totalPages})
+                </Button>
+              )}
+            </div>
+          )}
         </>
       ) : (
         <div className="py-8 text-center">

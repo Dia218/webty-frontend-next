@@ -1,4 +1,3 @@
-import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
 
 /**
  * 검색 결과 및 관련 상태/함수들을 포함하는 인터페이스(타입정의 등..)
@@ -47,5 +46,10 @@ export interface FetchResultsParams {
   limit: number;
 }
 
-// SearchSuggestionDto는 @/lib/types/search/SearchSuggestionDto에서 임포트하여 사용
-export type { SearchSuggestionDto }; 
+/**
+ * 검색 자동완성 결과 인터페이스
+ */
+export interface SearchSuggestionDto {
+  suggestions: string[];
+  searchUrl: string;
+} 
