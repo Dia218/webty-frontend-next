@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
+import { useSearchLogic } from '@/lib/service/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByNickNameProps {
@@ -12,7 +12,11 @@ interface SearchByNickNameProps {
 /**
  * 사용자 닉네임으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByNickName = ({ searchQuery, limit, showTitle = true }: SearchByNickNameProps) => {
+const SearchByNickName = ({
+  searchQuery,
+  limit,
+  showTitle = true,
+}: SearchByNickNameProps) => {
   const {
     items: reviews,
     isLoading,
@@ -23,7 +27,7 @@ const SearchByNickName = ({ searchQuery, limit, showTitle = true }: SearchByNick
     goToPrevPage,
     handleSortChange,
     hasMore,
-    loadMore
+    loadMore,
   } = useSearchLogic(searchQuery, 'user', 'recommend', limit);
 
   if (!searchQuery) {
@@ -57,4 +61,4 @@ const SearchByNickName = ({ searchQuery, limit, showTitle = true }: SearchByNick
   );
 };
 
-export default SearchByNickName; 
+export default SearchByNickName;

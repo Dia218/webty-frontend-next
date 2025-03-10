@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
+import { useSearchLogic } from '@/lib/service/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByReviewProps {
@@ -13,7 +13,12 @@ interface SearchByReviewProps {
 /**
  * 리뷰 내용으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByReview = ({ searchQuery, limit, showTitle = true, searchType = 'review' }: SearchByReviewProps) => {
+const SearchByReview = ({
+  searchQuery,
+  limit,
+  showTitle = true,
+  searchType = 'review',
+}: SearchByReviewProps) => {
   const {
     items: reviews,
     isLoading,
@@ -24,7 +29,7 @@ const SearchByReview = ({ searchQuery, limit, showTitle = true, searchType = 're
     goToPrevPage,
     handleSortChange,
     hasMore,
-    loadMore
+    loadMore,
   } = useSearchLogic(searchQuery, searchType, 'recommend', limit);
 
   if (!searchQuery) {
@@ -58,4 +63,4 @@ const SearchByReview = ({ searchQuery, limit, showTitle = true, searchType = 're
   );
 };
 
-export default SearchByReview; 
+export default SearchByReview;
