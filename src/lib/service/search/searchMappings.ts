@@ -1,4 +1,4 @@
-import { SearchTypeMapping } from './searchTypes';
+import { SearchTypeMapping, getSearchParams as apiGetSearchParams } from '@/lib/api/search/utils/searchMappings';
 
 /**
  * 검색 타입에 따른 백엔드 파라미터 매핑 함수
@@ -6,19 +6,7 @@ import { SearchTypeMapping } from './searchTypes';
  * @returns 백엔드 API 호출에 필요한 파라미터 매핑
  */
 export const getSearchParams = (type: string): SearchTypeMapping => {
-  switch (type) {
-    case 'review':
-      return { searchTypeParam: 'reviewContent', filterParam: 'review' };
-    case 'user':
-    case 'userNickname': // URL 파라미터 호환성 코드
-      return { searchTypeParam: 'nickname', filterParam: 'user' };
-    case 'webtoon':
-    case 'webtoonName': // URL 파라미터 호환성 코드
-      return { searchTypeParam: 'webtoonName', filterParam: 'webtoon' };
-    case 'all':
-    default:
-      return { searchTypeParam: undefined, filterParam: 'all' };
-  }
+  return apiGetSearchParams(type);
 };
 
 /**

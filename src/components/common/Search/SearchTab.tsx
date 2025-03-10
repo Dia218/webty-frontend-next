@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 
 interface SearchTabProps {
   activeTab: string;
-  searchQuery: string;
+  searchQuery?: string;
   onTabChange?: (tab: string) => void;
 }
 
@@ -15,7 +15,7 @@ interface SearchTabProps {
  */
 const SearchTab: React.FC<SearchTabProps> = ({ 
   activeTab, 
-  searchQuery,
+  searchQuery = '',
   onTabChange 
 }) => {
   const router = useRouter();

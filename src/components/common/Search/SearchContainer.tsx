@@ -54,24 +54,19 @@ const SearchContainer: React.FC<SearchContainerProps> = ({
   }, [router, searchQuery, onTabChange]);
 
   return (
-    <div className={`bg-gray-100 ${className}`}>
-      <div className="max-w-6xl mx-auto">
-        {/* 검색 탭 (조건부 렌더링) */}
-        {showTabs && (
-          <SearchTab
-            activeTab={activeTab}
-            searchQuery={searchQuery}
-            onTabChange={handleTabChange}
-          />
-        )}
-        
-        {/* 검색 입력 */}
-        <SearchBar
-          initialQuery={searchQuery}
-          initialType={activeTab}
-          onSearch={handleSearch}
+    <div className={`flex flex-col gap-4 ${className}`}>
+      <SearchBar
+        initialQuery={searchQuery}
+        initialType={activeTab}
+        onSearch={handleSearch}
+      />
+      {showTabs && (
+        <SearchTab
+          activeTab={activeTab}
+          searchQuery={searchQuery}
+          onTabChange={handleTabChange}
         />
-      </div>
+      )}
     </div>
   );
 };

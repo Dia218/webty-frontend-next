@@ -4,59 +4,67 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
+import { useSearchSuggestions } from '@/lib/service/search/useSearchSuggestions';
+import PopularSearchTerms from './PopularSearchTerms';
 
 interface SearchBarProps {
   initialQuery?: string;
   initialType?: string;
   onSearch?: (query: string, type: string) => void;
+  suggestionsLimit?: number;
+  minMatchScore?: number;
+  showPopularTerms?: boolean;
+  className?: string;
 }
 
-// 임시 자동완성 데이터 (실제로는 API에서 가져와야 함)
-const AUTOCOMPLETE_DATA = [
-  '아이네',
-  '아이유',
-  '아이폰',
-  '아이패드',
-  '아이맥',
-  '아이돌',
-  '아이언맨',
-  '아이스크림',
-  '아이스아메리카노',
-  '아이템',
-];
-
+/**
+ * 검색 입력 컴포넌트
+ * 자동완성 기능을 포함한 검색 입력 필드를 제공합니다.
+ */
 const SearchBar: React.FC<SearchBarProps> = ({ 
   initialQuery = '', 
   initialType = 'all',
-  onSearch
+  onSearch,
+  suggestionsLimit = 7,
+  minMatchScore = 0.5,
+  showPopularTerms = true,
+  className = ''
 }) => {
   const router = useRouter();
   const [searchText, setSearchText] = useState(initialQuery);
-  const [searchType, setSearchType] = useState(initialType);
   const [isFocused, setIsFocused] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showPopular, setShowPopular] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // 자동완성 API 훅 사용 (개선된 파라미터 적용)
+  const { suggestions, isLoading, error } = useSearchSuggestions({
+    searchText,
+    suggestionType: initialType !== 'all' ? initialType : undefined,
+    minMatchScore: minMatchScore,
+    limit: suggestionsLimit,
+    minLength: 1
+  });
+
+  // 초기값 동기화
   useEffect(() => {
     setSearchText(initialQuery);
-    setSearchType(initialType);
-  }, [initialQuery, initialType]);
+  }, [initialQuery]);
 
+  // 인기 검색어 표시 여부 결정
   useEffect(() => {
-    // 검색어가 있을 때만 자동완성 표시
-    if (searchText.trim()) {
-      // 검색어와 일치하는 자동완성 데이터 필터링
-      const filtered = AUTOCOMPLETE_DATA.filter(item => 
-        item.toLowerCase().includes(searchText.toLowerCase())
-      );
-      setSuggestions(filtered);
+    if (isFocused && !searchText && showPopularTerms) {
+      setShowPopular(true);
     } else {
-      setSuggestions([]);
+      setShowPopular(false);
     }
+  }, [isFocused, searchText, showPopularTerms]);
+
+  // 선택 인덱스 초기화 (검색어나 자동완성 목록이 변경되면)
+  useEffect(() => {
     setSelectedIndex(-1);
-  }, [searchText]);
+  }, [searchText, suggestions]);
 
   // 클릭 이벤트 처리 (외부 클릭 시 자동완성 닫기)
   useEffect(() => {
@@ -72,17 +80,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
     };
   }, []);
 
+  // 검색 실행 함수
   const handleSearch = () => {
     if (searchText.trim()) {
       if (onSearch) {
-        onSearch(searchText.trim(), searchType);
+        onSearch(searchText.trim(), initialType);
       } else {
-        router.push(`/search?query=${encodeURIComponent(searchText.trim())}&type=${searchType}`);
+        router.push(`/search?query=${encodeURIComponent(searchText.trim())}&type=${initialType}`);
       }
       setIsFocused(false);
     }
   };
 
+  // 키보드 이벤트 처리
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // 한글 입력 중에는 이벤트 처리하지 않음
     if (e.nativeEvent.isComposing) return;
@@ -108,71 +118,123 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  const handleSearchTypeChange = (type: string) => {
-    setSearchType(type);
-    if (initialQuery && !onSearch) {
-      router.push(`/search?query=${encodeURIComponent(initialQuery)}&type=${type}`);
-    }
-  };
-
+  // 자동완성 항목 클릭 처리
   const handleSuggestionClick = (suggestion: string) => {
     setSearchText(suggestion);
     if (onSearch) {
-      onSearch(suggestion, searchType);
+      onSearch(suggestion, initialType);
     } else {
-      router.push(`/search?query=${encodeURIComponent(suggestion)}&type=${searchType}`);
+      router.push(`/search?query=${encodeURIComponent(suggestion)}&type=${initialType}`);
     }
     setIsFocused(false);
   };
 
+  // 인기 검색어 클릭 처리
+  const handlePopularTermClick = (term: string) => {
+    setSearchText(term);
+    handleSearch();
+  };
+
   return (
-    <div className="bg-gray-100 py-2">
-      <div className="max-w-6xl mx-auto">
-        {/* 검색창 */}
-        <form ref={formRef} className="relative py-2 px-4">
-          <div className="flex">
-            <div className="relative flex-1">
-              <Input
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                placeholder="검색"
-                className="py-2 pl-3 pr-10 border border-gray-300 rounded-md"
-                autoComplete="off"
-              />
-              <Button 
-                onClick={handleSearch} 
-                variant="ghost" 
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 rounded-md"
-              >
-                <Search className="h-5 w-5 text-gray-500" />
-              </Button>
-            </div>
+    <div className={`relative ${className}`}>
+      <form ref={formRef} onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+        <div className="relative">
+          <Input
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            placeholder="검색어를 입력하세요"
+            className="pr-10"
+            autoComplete="off"
+          />
+          <Button 
+            type="submit"
+            variant="ghost" 
+            size="icon"
+            className="absolute right-0 top-0 h-full"
+          >
+            {isLoading ? 
+              <Loader2 className="h-5 w-5 text-gray-500 animate-spin" /> : 
+              <Search className="h-5 w-5 text-gray-500" />
+            }
+          </Button>
+        </div>
+        
+        {/* 인기 검색어 표시 */}
+        {showPopular && (
+          <div className="absolute z-10 w-full left-0 bg-white border border-gray-200 mt-1 rounded-md shadow-lg max-h-60 overflow-auto">
+            <PopularSearchTerms 
+              onTermClick={handlePopularTermClick} 
+              className="bg-white"
+              minScore={2}
+              limit={7}
+              recentDays={7}
+              showRank={true}
+            />
           </div>
-          
-          {/* 자동완성 드롭다운 */}
-          {isFocused && suggestions.length > 0 && (
-            <div className="absolute z-10 w-full left-0 bg-white border border-gray-300 mt-1 rounded-md shadow-lg max-h-60 overflow-auto">
-              <ul className="py-1">
-                {suggestions.map((suggestion, index) => (
-                  <li
-                    key={index}
-                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                      index === selectedIndex ? 'bg-gray-100' : ''
-                    }`}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </form>
-      </div>
+        )}
+        
+        {/* 자동완성 드롭다운 */}
+        {isFocused && !showPopular && (suggestions.length > 0 || isLoading) && (
+          <div className="absolute z-10 w-full left-0 bg-white border border-gray-200 mt-1 rounded-md shadow-lg max-h-60 overflow-auto">
+            <ul className="py-1">
+              {isLoading && (
+                <li className="px-4 py-2 text-gray-500 flex items-center">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  자동완성 로딩 중...
+                </li>
+              )}
+              
+              {!isLoading && suggestions.length === 0 && searchText.length >= 1 && (
+                <li className="px-4 py-2 text-gray-500">
+                  검색 결과가 없습니다
+                </li>
+              )}
+              
+              {!isLoading && suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
+                    index === selectedIndex ? 'bg-gray-100' : ''
+                  }`}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                >
+                  {/* 검색어와 일치하는 부분 강조 표시 */}
+                  {highlightMatchedText(suggestion, searchText)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </form>
     </div>
   );
+};
+
+/**
+ * 검색어와 일치하는 부분을 강조 표시하는 함수
+ */
+const highlightMatchedText = (text: string, query: string): React.ReactNode => {
+  if (!query || query.length < 1) return <>{text}</>;
+  
+  try {
+    const regex = new RegExp(`(${query})`, 'gi');
+    const parts = text.split(regex);
+    
+    return (
+      <>
+        {parts.map((part, i) => 
+          regex.test(part) ? 
+            <span key={i} className="font-bold text-blue-600">{part}</span> : 
+            <span key={i}>{part}</span>
+        )}
+      </>
+    );
+  } catch (e) {
+    // 정규표현식 오류 등의 예외 상황 처리
+    return <>{text}</>;
+  }
 };
 
 export default SearchBar;
