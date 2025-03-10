@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPopularSearchTerms, clearSearchCache } from '@/lib/api/search/api/searchApi';
 import { Loader2, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface PopularSearchTermsProps {
   onTermClick?: (term: string) => void;
@@ -73,15 +72,15 @@ const PopularSearchTerms: React.FC<PopularSearchTermsProps> = ({
       const success = await clearSearchCache();
       
       if (success) {
-        toast.success('검색 기록이 삭제되었습니다.');
+        alert('검색 기록이 삭제되었습니다.');
         // 인기 검색어 다시 불러오기
         fetchPopularTerms();
       } else {
-        toast.error('검색 기록 삭제 중 오류가 발생했습니다.');
+        alert('검색 기록 삭제 중 오류가 발생했습니다.');
       }
     } catch (err) {
       console.error('캐시 삭제 중 오류 발생:', err);
-      toast.error('검색 기록 삭제 중 오류가 발생했습니다.');
+      alert('검색 기록 삭제 중 오류가 발생했습니다.');
     } finally {
       setIsClearing(false);
     }

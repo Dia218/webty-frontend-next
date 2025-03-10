@@ -3,7 +3,7 @@
 import RecommendWebtoon from '@/components/buisness/recommendWebtoon/RecommendWebtoon';
 import FeedReview from '@/components/buisness/review/FeedReview';
 import NavigationBar from '@/components/common/NavigationBar/NavigationBar';
-import SearchContainer from '@/components/common/Search';
+import SearchContainer from '@/components/common/Search/SearchContainer';
 import useReviews from '@/lib/api/review/review';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
