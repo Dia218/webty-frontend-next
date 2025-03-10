@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/api/search/useSearchLogic';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByWebtoonNameProps {
@@ -12,7 +12,11 @@ interface SearchByWebtoonNameProps {
 /**
  * 웹툰 이름으로 검색 결과를 표시하는 컴포넌트
  */
-const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByWebtoonNameProps) => {
+const SearchByWebtoonName = ({
+  searchQuery,
+  limit,
+  showTitle = true,
+}: SearchByWebtoonNameProps) => {
   const {
     items: reviews,
     isLoading,
@@ -23,7 +27,7 @@ const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByW
     goToPrevPage,
     handleSortChange,
     hasMore,
-    loadMore
+    loadMore,
   } = useSearchLogic(searchQuery, 'webtoon', 'recommend', limit);
 
   if (!searchQuery) {
@@ -57,4 +61,4 @@ const SearchByWebtoonName = ({ searchQuery, limit, showTitle = true }: SearchByW
   );
 };
 
-export default SearchByWebtoonName; 
+export default SearchByWebtoonName;

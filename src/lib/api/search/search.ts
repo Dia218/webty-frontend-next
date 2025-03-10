@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
-import { SearchSuggestionDto } from './searchTypes';
-import { convertSortParam } from './searchMappings';
+import { convertSortParam } from '@/lib/service/search/searchMappings';
+import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
 import API_BASE_URL from '@/lib/utils/apiConfig';
 
 /**
