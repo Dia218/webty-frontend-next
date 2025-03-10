@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
-import { SearchSuggestionDto } from '../../service/searchTypes';
-import { convertSortParam } from '../../service/searchMappings';
+import { SearchSuggestionDto } from '@/lib/types/search/SearchSuggestionDto';
+import { convertSortParam } from '@/lib/service/search/searchMappings';
 
 /**
  * API 기본 URL

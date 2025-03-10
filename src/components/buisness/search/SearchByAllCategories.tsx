@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchLogic } from '@/lib/service/useSearchLogic';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByAllCategoriesProps {

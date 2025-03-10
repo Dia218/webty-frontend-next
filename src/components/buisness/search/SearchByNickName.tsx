@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchLogic } from '@/lib/service/useSearchLogic';
+import { useSearchLogic } from '@/lib/service/search/useSearchLogic';
 import SearchResultComponent from './SearchResultComponent';
 
 interface SearchByNickNameProps {
