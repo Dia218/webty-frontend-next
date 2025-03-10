@@ -1,6 +1,6 @@
-export type RecommendationType = 'like' | 'hate';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
-const API_BASE_URL = 'http://localhost:8080/recommend';
+export type RecommendationType = 'like' | 'hate';
 
 const sendRequest = async (
   id: number,

@@ -2,11 +2,7 @@ import axios from 'axios';
 import { SearchResponseDto } from '@/lib/types/search/SearchResponseDto';
 import { SearchSuggestionDto } from './searchTypes';
 import { convertSortParam } from './searchMappings';
-
-/**
- * API 기본 URL
- */
-const API_BASE_URL = 'http://localhost:8080';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 /**
  * 검색 API를 호출하는 함수
@@ -28,42 +24,45 @@ export const search = async (
   try {
     // 프론트엔드 정렬 값을 백엔드 API 파라미터에 맞게 변환
     const sortByForBackend = convertSortParam(sortBy);
-    
-    const response = await axios.get<SearchResponseDto>(`${API_BASE_URL}/search`, {
-      params: {
-        keyword,
-        page,
-        size,
-        searchType,
-        sortBy: sortByForBackend,
-        filter
-      },
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      timeout: 10000
-    });
-    
+
+    const response = await axios.get<SearchResponseDto>(
+      `${API_BASE_URL}/search`,
+      {
+        params: {
+          keyword,
+          page,
+          size,
+          searchType,
+          sortBy: sortByForBackend,
+          filter,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        timeout: 10000,
+      }
+    );
+
     if (!response.data) {
       return null;
     }
-    
+
     if (!response.data.results) {
       response.data.results = [];
     }
-    
+
     return response.data;
   } catch (error) {
     console.error('검색 API 호출 중 오류 발생:', error);
-    
+
     // 백엔드 연결 실패 시 기본 응답 제공
     return {
       keyword: keyword,
       results: [],
       currentPage: 0,
       totalPages: 0,
-      totalElements: 0
+      totalElements: 0,
     };
   }
 };
@@ -131,13 +130,16 @@ export const getSearchSuggestions = async (
   sortBy: string = 'recommend'
 ): Promise<SearchSuggestionDto | null> => {
   try {
-    const response = await axios.get<SearchSuggestionDto>(`${API_BASE_URL}/search/suggestions`, {
-      params: {
-        prefix,
-        suggestionType,
-        sortBy
+    const response = await axios.get<SearchSuggestionDto>(
+      `${API_BASE_URL}/search/suggestions`,
+      {
+        params: {
+          prefix,
+          suggestionType,
+          sortBy,
+        },
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error('자동완성 API 호출 중 오류 발생:', error);
@@ -148,12 +150,15 @@ export const getSearchSuggestions = async (
 /**
  * 인기 검색어 목록을 가져오는 함수
  */
-export const getPopularSearchTerms = async (): Promise<SearchSuggestionDto | null> => {
-  try {
-    const response = await axios.get<SearchSuggestionDto>(`${API_BASE_URL}/search/popular`);
-    return response.data;
-  } catch (error) {
-    console.error('인기 검색어 API 호출 중 오류 발생:', error);
-    return null;
-  }
-}; 
+export const getPopularSearchTerms =
+  async (): Promise<SearchSuggestionDto | null> => {
+    try {
+      const response = await axios.get<SearchSuggestionDto>(
+        `${API_BASE_URL}/search/popular`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('인기 검색어 API 호출 중 오류 발생:', error);
+      return null;
+    }
+  };

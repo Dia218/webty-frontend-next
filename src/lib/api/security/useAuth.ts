@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
-const socialLoginForKaKaoUrl = `http://localhost:8080/oauth2/authorization/kakao`;
+const socialLoginForKaKaoUrl = `${API_BASE_URL}/oauth2/authorization/kakao`;
 const redirectUrlAfterSocialLogin = 'http://localhost:3000';
-const socialLogoutUrl = `http://localhost:8080/logout`;
+const socialLogoutUrl = `${API_BASE_URL}/logout`;
 
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -11,7 +12,7 @@ export const useAuth = () => {
   const [loginId, setId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/user/info', {
+    fetch(`${API_BASE_URL}/user/info`, {
       method: 'GET',
       credentials: 'include',
     })

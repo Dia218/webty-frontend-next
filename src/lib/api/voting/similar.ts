@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SimilarRequest } from '@/lib/types/similar/SimilarRequest';
 import { SimilarResponse } from '@/lib/types/similar/SimilarResponse';
-import { PageDto } from '@/lib/types/common/PageDto'; // PageDto 추가
+import { PageDto } from '@/lib/types/common/PageDto';
+import API_BASE_URL from '@/lib/utils/apiConfig';
 
 const useSimilar = (targetWebtoonId: number) => {
   const [similarWebtoons, setSimilarWebtoons] = useState<SimilarResponse[]>([]);
@@ -16,7 +17,7 @@ const useSimilar = (targetWebtoonId: number) => {
     setError(null);
     try {
       const response = await axios.get<PageDto<SimilarResponse>>(
-        `http://localhost:8080/similar?targetWebtoonId=${targetWebtoonId}&page=${newPage}&size=10`
+        `${API_BASE_URL}/similar?targetWebtoonId=${targetWebtoonId}&page=${newPage}&size=10`
       );
 
       console.log('📌 가져온 유사 웹툰 목록:', response.data);
@@ -48,7 +49,7 @@ const useSimilar = (targetWebtoonId: number) => {
 
     try {
       const response = await axios.post<SimilarResponse>(
-        'http://localhost:8080/similar',
+        `${API_BASE_URL}/similar`,
         requestData,
         { withCredentials: true }
       );
@@ -65,7 +66,7 @@ const useSimilar = (targetWebtoonId: number) => {
   // 유사 웹툰 삭제 API 호출
   const deleteSimilar = async (similarId: number) => {
     try {
-      await axios.delete(`http://localhost:8080/similar/${similarId}`, {
+      await axios.delete(`${API_BASE_URL}/similar/${similarId}`, {
         withCredentials: true,
       });
 
