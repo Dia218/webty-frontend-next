@@ -1,4 +1,10 @@
-import { SearchTypeMapping } from '../types/searchTypes';
+/**
+ * 검색 타입과 백엔드 파라미터 매핑
+ */
+export type SearchTypeMapping = {
+  searchTypeParam: string | undefined;
+  filterParam: string;
+};
 
 /**
  * 검색 타입에 따른 백엔드 파라미터 매핑 함수
